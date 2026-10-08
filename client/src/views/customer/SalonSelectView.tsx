@@ -13,12 +13,13 @@ import { Badge } from '../../components/common/Badge';
 
 export interface SalonSelectViewProps {
   onSelectSalon: (salonId: string) => void;
+  onBackToBooking?: () => void;
   onNavigateToBarberStation?: () => void;
 }
 
 export const SalonSelectView: React.FC<SalonSelectViewProps> = ({
   onSelectSalon,
-  onNavigateToBarberStation,
+  onBackToBooking,
 }) => {
   const [filterGender, setFilterGender] = useState<'all' | 'men' | 'unisex'>('all');
 
@@ -113,22 +114,22 @@ export const SalonSelectView: React.FC<SalonSelectViewProps> = ({
             </p>
           </div>
 
-          {onNavigateToBarberStation && (
+          {onBackToBooking && (
             <button
               type="button"
-              onClick={onNavigateToBarberStation}
+              onClick={onBackToBooking}
               style={{
-                padding: '10px 16px',
-                backgroundColor: '#00685F',
-                color: '#FFFFFF',
-                borderRadius: '10px',
-                border: 'none',
+                padding: '8px 16px',
+                backgroundColor: '#EFF4FF',
+                color: '#00685F',
+                borderRadius: '8px',
+                border: '1px solid #D5E3FD',
                 fontWeight: 600,
                 fontSize: '13px',
                 cursor: 'pointer',
               }}
             >
-              Barber Workstation →
+              ← Back to Booking
             </button>
           )}
         </div>

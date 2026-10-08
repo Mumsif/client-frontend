@@ -19,13 +19,11 @@ import { Button } from '../../components/common/Button';
 export interface PassStatusViewProps {
   pass?: AppointmentResponseDTO | null;
   onBackToBooking?: () => void;
-  onNavigateToBarberStation?: () => void;
 }
 
 export const PassStatusView: React.FC<PassStatusViewProps> = ({
   pass: initialPass,
   onBackToBooking,
-  onNavigateToBarberStation,
 }) => {
   const [pass, setPass] = useState<AppointmentResponseDTO | null>(initialPass || null);
   const [isLoading, setIsLoading] = useState<boolean>(!initialPass);
@@ -145,24 +143,10 @@ export const PassStatusView: React.FC<PassStatusViewProps> = ({
           </button>
         )}
 
-        {onNavigateToBarberStation && (
-          <button
-            type="button"
-            onClick={onNavigateToBarberStation}
-            style={{
-              padding: '8px 14px',
-              backgroundColor: '#00685F',
-              color: '#FFFFFF',
-              border: 'none',
-              borderRadius: '8px',
-              fontSize: '13px',
-              fontWeight: 600,
-              cursor: 'pointer',
-            }}
-          >
-            Go to Workstation Board →
-          </button>
-        )}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: '#00685F', fontWeight: 600 }}>
+          <span className="live-pulse-dot" />
+          <span>Live Queue Sync</span>
+        </div>
       </div>
 
       {isLoading ? (
