@@ -1,0 +1,245 @@
+/* ==========================================================================
+   Trimly / GlowSlot - Design System & Global Styles
+   Extracted & Harmonized from Figma CSS Tokens & Specs
+   ========================================================================== */
+
+:root {
+  /* Brand Teal Palette (Figma primary) */
+  --color-primary: #00685F;
+  --color-primary-dark: #004D46;
+  --color-primary-light: #008378;
+  --color-primary-mint: #F4FFFC;
+  --color-primary-subtle: rgba(0, 104, 95, 0.08);
+  --color-primary-glow: rgba(0, 104, 95, 0.25);
+  --color-primary-border: rgba(0, 104, 95, 0.2);
+
+  /* Emerald Card Highlight */
+  --color-emerald-card: #008378;
+  --color-emerald-deep: #005F56;
+  --color-emerald-glow: rgba(0, 131, 120, 0.35);
+
+  /* Backgrounds & Canvas */
+  --color-bg-canvas: #F8F9FF;
+  --color-bg-card: #FFFFFF;
+  --color-bg-subtle: #EFF4FF;
+  --color-bg-pill: #E6EEFF;
+  --color-bg-badge: #DAE2FD;
+
+  /* Accent Indigo / Walk-in / Packages */
+  --color-indigo: #4648D4;
+  --color-indigo-subtle: #E1E0FF;
+  --color-indigo-deep: #07006C;
+  --color-indigo-package: #6063EE;
+
+  /* Status & Warning */
+  --color-warning-amber: #F59E0B;
+  --color-warning-text: #B45309;
+  --color-danger: #EF4444;
+  --color-success: #10B981;
+
+  /* Typography Colors */
+  --color-text-dark: #0D1C2F;
+  --color-text-muted: #3D4947;
+  --color-text-tertiary: #5C647A;
+  --color-text-white: #FFFFFF;
+
+  /* Fonts */
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Liberation Mono', monospace;
+
+  /* Shadows */
+  --shadow-subtle: 0px 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-card: 0px 4px 6px -1px rgba(0, 0, 0, 0.07), 0px 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --shadow-active: 0px 0px 0px 2px #00685F, 0px 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-header: 0px 1px 8px rgba(0, 0, 0, 0.04);
+  --shadow-dock: 0px -4px 24px rgba(0, 0, 0, 0.08);
+  --shadow-button-glow: 0px 4px 16px rgba(0, 104, 95, 0.25);
+  --shadow-emerald-card: 0px 8px 24px rgba(0, 131, 120, 0.2);
+
+  /* Radii */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-pill: 9999px;
+
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-smooth: 350ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Base Reset */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  min-height: 100%;
+  font-family: var(--font-sans);
+  background-color: var(--color-bg-canvas);
+  color: var(--color-text-dark);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.5;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-subtle);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #C4D3EA;
+  border-radius: var(--radius-pill);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #99AFCE;
+}
+
+/* Monospace Utility */
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+/* Animation Keyframes */
+@keyframes pulseDot {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(0, 104, 95, 0.7);
+  }
+  70% {
+    transform: scale(1.15);
+    box-shadow: 0 0 0 8px rgba(0, 104, 95, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(0, 104, 95, 0);
+  }
+}
+
+@keyframes pulseDotAmber {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7);
+  }
+  70% {
+    transform: scale(1.15);
+    box-shadow: 0 0 0 8px rgba(245, 158, 11, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0);
+  }
+}
+
+@keyframes slideUpFade {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes countdownBlink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+/* Reusable Interactive Helper Classes */
+.animate-slide-up {
+  animation: slideUpFade 0.4s var(--transition-smooth) forwards;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-in-out forwards;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.35s var(--transition-smooth) forwards;
+}
+
+.live-pulse-dot {
+  position: relative;
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-pill);
+  background-color: var(--color-primary);
+  animation: pulseDot 2s infinite;
+}
+
+.live-pulse-dot-amber {
+  position: relative;
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-pill);
+  background-color: var(--color-warning-amber);
+  animation: pulseDotAmber 2s infinite;
+}
+
+/* Glassmorphism Classes */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.glass-dock {
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: var(--shadow-dock);
+  border-top: 1px solid rgba(0, 104, 95, 0.08);
+}

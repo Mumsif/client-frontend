@@ -1,0 +1,116 @@
+/* ==========================================================================
+   Trimly / GlowSlot - Micro-Animations, Transitions & Responsive Polish
+   ========================================================================== */
+
+/* Interactive Button Hover & Tap */
+.btn-interactive:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.04);
+}
+
+.btn-interactive:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+/* Service Card Hover & Selection Ring */
+.service-card-item {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.2s ease;
+}
+
+.service-card-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0px 8px 20px rgba(0, 104, 95, 0.08), 0px 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.service-card-item.selected {
+  background-color: #FFFFFF;
+}
+
+/* Stylist Option Hover */
+.stylist-option {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.stylist-option:hover {
+  transform: translateY(-2px);
+  box-shadow: 0px 6px 16px rgba(0, 0, 0, 0.06);
+}
+
+/* Emerald In-Chair Card Hover Glow */
+.active-in-chair-emerald-card {
+  box-shadow: 0px 8px 24px rgba(0, 131, 120, 0.25);
+  animation: scaleIn 0.3s ease-out;
+}
+
+.btn-complete-service:hover {
+  background-color: #F4FFFC !important;
+  transform: translateY(-1px);
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+.btn-complete-service:active {
+  transform: translateY(1px);
+}
+
+/* Bottom Floating Dock CTA Pulse */
+.btn-confirm-dock:hover {
+  transform: translateY(-1px);
+  box-shadow: 0px 6px 20px rgba(0, 104, 95, 0.35) !important;
+}
+
+.btn-confirm-dock:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+/* Delay Shift Action Button */
+.btn-delay-shift:hover {
+  transform: translateY(-1px);
+  filter: brightness(0.97);
+}
+
+.btn-delay-shift:active {
+  transform: translateY(1px);
+}
+
+/* Salon Card Hover */
+.salon-card-hover:hover {
+  transform: translateY(-3px);
+  box-shadow: 0px 12px 28px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Responsive Media Queries */
+@media (max-width: 900px) {
+  .desktop-only {
+    display: none !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .customer-booking-view,
+  .workstation-dashboard-view {
+    padding-bottom: 140px !important;
+  }
+
+  .glass-dock {
+    height: auto !important;
+    padding: 16px !important;
+  }
+
+  .glass-dock > div {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+  }
+
+  .btn-confirm-dock {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  .chair-station-column {
+    max-width: 100% !important;
+  }
+}
