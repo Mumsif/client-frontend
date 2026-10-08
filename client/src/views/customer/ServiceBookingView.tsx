@@ -256,57 +256,53 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
             </div>
           </div>
 
-          {/* Quick Actions (Switch to Barber Workstation / Live Pass) */}
+          {/* Customer Navigation Quick Actions */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            {onNavigateToPassStatus && (
+            {onNavigateToSalons && (
+              <button
+                type="button"
+                onClick={onNavigateToSalons}
+                style={{
+                  padding: '7px 12px',
+                  backgroundColor: '#FFFFFF',
+                  border: '1px solid #D5E3FD',
+                  borderRadius: '8px',
+                  fontFamily: "'Plus Jakarta Sans', sans-serif",
+                  fontWeight: 600,
+                  fontSize: '12px',
+                  color: '#0D1C2F',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  transition: 'all 0.15s ease',
+                }}
+              >
+                <span>📍 Salons</span>
+              </button>
+            )}
+
+            {(hasActivePass || onNavigateToPassStatus) && (
               <button
                 type="button"
                 onClick={onNavigateToPassStatus}
                 style={{
-                  padding: '8px 14px',
-                  backgroundColor: '#EFF4FF',
-                  border: '1px solid #DAE2FD',
+                  padding: '7px 14px',
+                  backgroundColor: hasActivePass ? '#00685F' : '#EFF4FF',
+                  border: hasActivePass ? 'none' : '1px solid #DAE2FD',
                   borderRadius: '8px',
                   fontFamily: "'Plus Jakarta Sans', sans-serif",
-                  fontWeight: 600,
-                  fontSize: '13px',
-                  color: '#00685F',
+                  fontWeight: 700,
+                  fontSize: '12px',
+                  color: hasActivePass ? '#FFFFFF' : '#00685F',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '6px',
+                  boxShadow: hasActivePass ? '0 2px 8px rgba(0, 104, 95, 0.25)' : 'none',
                 }}
               >
-                <span>🎫 My Booking Pass</span>
-              </button>
-            )}
-
-            {onNavigateToBarberStation && (
-              <button
-                type="button"
-                onClick={onNavigateToBarberStation}
-                style={{
-                  padding: '8px 16px',
-                  backgroundColor: '#00685F',
-                  border: 'none',
-                  borderRadius: '8px',
-                  fontFamily: "'Plus Jakarta Sans', sans-serif",
-                  fontWeight: 600,
-                  fontSize: '13px',
-                  color: '#FFFFFF',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  boxShadow: '0 2px 8px rgba(0, 104, 95, 0.25)',
-                }}
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-                  <rect x="2" y="3" width="20" height="14" rx="2" />
-                  <line x1="8" y1="21" x2="16" y2="21" />
-                  <line x1="12" y1="17" x2="12" y2="21" />
-                </svg>
-                <span>Barber Workstation Board</span>
+                <span>🎫 {hasActivePass ? 'Active Pass' : 'My Pass'}</span>
               </button>
             )}
           </div>
@@ -924,6 +920,97 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
             <span>🔒 Verified Akkaraipattu Hub</span>
           </div>
         </section>
+
+        {/* Customer Portal Footer */}
+        <footer
+          style={{
+            width: '100%',
+            maxWidth: '1280px',
+            marginTop: '40px',
+            padding: '24px 16px 40px',
+            borderTop: '1px solid #E1E8F5',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '12px',
+            color: '#707A8A',
+            fontSize: '12px',
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: '16px',
+            }}
+          >
+            <div>
+              <strong style={{ color: '#0D1C2F', fontSize: '13px' }}>Trimly GlowSlot</strong> · Akkaraipattu Pilot Network
+              <p style={{ margin: '3px 0 0', color: '#8893A4', fontSize: '11px' }}>
+                Zero-wait salon queue management, real-time OTP tracking & barber telemetry.
+              </p>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              {onNavigateToSalons && (
+                <button
+                  type="button"
+                  onClick={onNavigateToSalons}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: '#00685F',
+                    fontSize: '12px',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    padding: 0,
+                  }}
+                >
+                  Salon Directory
+                </button>
+              )}
+
+              {onNavigateToBarberStation && (
+                <button
+                  type="button"
+                  onClick={onNavigateToBarberStation}
+                  style={{
+                    background: 'none',
+                    border: '1px solid #D5E3FD',
+                    borderRadius: '6px',
+                    padding: '5px 10px',
+                    color: '#5C647A',
+                    fontSize: '11px',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                  }}
+                >
+                  <span>🔒 Staff Portal</span>
+                </button>
+              )}
+            </div>
+          </div>
+          <div
+            style={{
+              borderTop: '1px solid #EFF4FF',
+              paddingTop: '10px',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: '8px',
+              fontSize: '11px',
+              color: '#8D98AA',
+            }}
+          >
+            <span>© 2026 Trimly GlowSlot. All rights reserved.</span>
+            <span>Eastern Province, Sri Lanka</span>
+          </div>
+        </footer>
       </main>
 
       {/* 9. Aside - Instant Sticky Summary & Flow Trigger Floating Dock */}
