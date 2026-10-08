@@ -34,15 +34,19 @@ import { Badge } from '../../components/common/Badge';
 import { useAvailableSlots } from '../../hooks/useAvailableSlots';
 
 export interface ServiceBookingViewProps {
+  hasActivePass?: boolean;
   onBookingConfirmed: (pass: AppointmentResponseDTO) => void;
   onNavigateToBarberStation?: () => void;
   onNavigateToPassStatus?: () => void;
+  onNavigateToSalons?: () => void;
 }
 
 export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
+  hasActivePass,
   onBookingConfirmed,
   onNavigateToBarberStation,
   onNavigateToPassStatus,
+  onNavigateToSalons,
 }) => {
   // State
   const [salon, setSalon] = useState<SalonDetails | null>(null);
