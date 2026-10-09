@@ -44,7 +44,7 @@ export const AuthContext = createContext<AuthContextType>({
 const DEFAULT_BARBERS: Record<string, BarberUser> = {
   chair_1: {
     id: 'barber_rifas',
-    name: 'Rifas',
+    name: 'Dhanu',
     chairId: 'chair_1',
     chairNumber: 1,
     role: 'MASTER_BARBER',
@@ -53,7 +53,7 @@ const DEFAULT_BARBERS: Record<string, BarberUser> = {
   },
   chair_2: {
     id: 'barber_kannan',
-    name: 'Kannan',
+    name: 'Thambi',
     chairId: 'chair_2',
     chairNumber: 2,
     role: 'SENIOR_STYLIST',

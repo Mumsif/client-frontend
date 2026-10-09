@@ -13,6 +13,9 @@ import React from 'react';
 import type { AppointmentResponseDTO } from '../../api/bookingApi';
 import { Badge } from '../common/Badge';
 import { Button } from '../common/Button';
+import westernCuttersImg from '../../assets/salon_hero.jpg';
+import royalBladeImg from '../../assets/royal_blade.jpg';
+import easternGlowImg from '../../assets/eastern_glow.webp';
 
 export interface BookingPassProps {
   pass: AppointmentResponseDTO;
@@ -21,6 +24,15 @@ export interface BookingPassProps {
 }
 
 export const BookingPass: React.FC<BookingPassProps> = ({ pass, onCancel, onRefresh }) => {
+  const getSalonImage = () => {
+    if (pass.salonImageUrl) return pass.salonImageUrl;
+    const nameLower = (pass.salonName || '').toLowerCase();
+    if (nameLower.includes('royal')) return royalBladeImg;
+    if (nameLower.includes('eastern')) return easternGlowImg;
+    return westernCuttersImg;
+  };
+  const salonImg = getSalonImage();
+
   return (
     <div
       style={{
@@ -35,11 +47,74 @@ export const BookingPass: React.FC<BookingPassProps> = ({ pass, onCancel, onRefr
         animation: 'slideUpFade 0.4s ease-out',
       }}
     >
+      {/* Salon Photo Banner */}
+      <div style={{ position: 'relative', height: '140px', width: '100%', overflow: 'hidden' }}>
+        <img
+          src={salonImg}
+          alt={pass.salonName}
+          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+        />
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            background: 'linear-gradient(180deg, rgba(13, 28, 47, 0.25) 0%, rgba(0, 104, 95, 0.92) 100%)',
+          }}
+        />
+        <div
+          style={{
+            position: 'absolute',
+            top: '12px',
+            right: '14px',
+          }}
+        >
+          <Badge variant="mint" isMono>
+            {pass.status}
+          </Badge>
+        </div>
+        <div
+          style={{
+            position: 'absolute',
+            bottom: '12px',
+            left: '18px',
+            right: '18px',
+            color: '#FFFFFF',
+          }}
+        >
+          <span
+            style={{
+              fontFamily: "'JetBrains Mono', monospace",
+              fontSize: '10px',
+              letterSpacing: '0.6px',
+              textTransform: 'uppercase',
+              color: '#B2EBF2',
+              display: 'block',
+            }}
+          >
+            Confirmed Booking Hub
+          </span>
+          <h3
+            style={{
+              fontFamily: "'Plus Jakarta Sans', sans-serif",
+              fontSize: '18px',
+              fontWeight: 800,
+              margin: '2px 0 0',
+              color: '#F4FFFC',
+            }}
+          >
+            {pass.salonName}
+          </h3>
+          <span style={{ fontSize: '11px', opacity: 0.85, display: 'block', marginTop: '2px' }}>
+            📍 {pass.salonAddress}
+          </span>
+        </div>
+      </div>
+
       {/* Upper Ticket Header */}
       <div
         style={{
           backgroundColor: '#008378',
-          padding: '24px',
+          padding: '18px 24px 20px',
           color: '#F4FFFC',
           position: 'relative',
         }}
@@ -69,19 +144,22 @@ export const BookingPass: React.FC<BookingPassProps> = ({ pass, onCancel, onRefr
             </h2>
           </div>
 
-          <Badge variant="mint" isMono>
-            {pass.status}
-          </Badge>
-        </div>
-
-        <div style={{ marginTop: '16px', display: 'flex', justifyContent: 'space-between' }}>
-          <div>
-            <span style={{ fontSize: '11px', opacity: 0.75 }}>Salon</span>
-            <p style={{ fontWeight: 600, fontSize: '14px', margin: '2px 0 0' }}>{pass.salonName}</p>
-          </div>
           <div style={{ textAlign: 'right' }}>
             <span style={{ fontSize: '11px', opacity: 0.75 }}>Assigned Chair</span>
-            <p style={{ fontWeight: 600, fontSize: '14px', margin: '2px 0 0' }}>{pass.chairName}</p>
+            <p style={{ fontWeight: 700, fontSize: '15px', margin: '2px 0 0' }}>{pass.chairName}</p>
+          </div>
+        </div>
+
+        <div style={{ marginTop: '12px', borderTop: '1px solid rgba(255, 255, 255, 0.2)', paddingTop: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <span style={{ fontSize: '11px', opacity: 0.75 }}>Guest / Client</span>
+            <p style={{ fontWeight: 700, fontSize: '15px', margin: '2px 0 0' }}>{pass.customerName}</p>
+          </div>
+          <div style={{ textAlign: 'right' }}>
+            <span style={{ fontSize: '11px', opacity: 0.75 }}>Contact</span>
+            <p style={{ fontWeight: 600, fontSize: '13px', margin: '2px 0 0', fontFamily: "'JetBrains Mono', monospace" }}>
+              {pass.customerPhone}
+            </p>
           </div>
         </div>
       </div>

@@ -33,20 +33,20 @@ export const WalkInModal: React.FC<WalkInModalProps> = ({
 }) => {
   const [customerName, setCustomerName] = useState<string>('');
   const [serviceType, setServiceType] = useState<'QUICK_CUT' | 'BEARD_TRIM' | 'COMBO_EXPRESS'>('QUICK_CUT');
-  const [duration, setDuration] = useState<number>(20);
-  const [price, setPrice] = useState<number>(1200);
+  const [duration, setDuration] = useState<number>(45);
+  const [price, setPrice] = useState<number>(400);
 
   const handleTypeSelect = (type: 'QUICK_CUT' | 'BEARD_TRIM' | 'COMBO_EXPRESS') => {
     setServiceType(type);
     if (type === 'QUICK_CUT') {
-      setDuration(20);
-      setPrice(1200);
+      setDuration(45);
+      setPrice(400);
     } else if (type === 'BEARD_TRIM') {
-      setDuration(15);
-      setPrice(800);
+      setDuration(20);
+      setPrice(300);
     } else {
-      setDuration(35);
-      setPrice(1800);
+      setDuration(45);
+      setPrice(800);
     }
   };
 
@@ -96,7 +96,7 @@ export const WalkInModal: React.FC<WalkInModalProps> = ({
           </label>
           <input
             type="text"
-            placeholder="e.g. John Walk-in"
+            placeholder="e.g. Walk-in Guest"
             value={customerName}
             onChange={(e) => setCustomerName(e.target.value)}
             style={{
@@ -122,13 +122,13 @@ export const WalkInModal: React.FC<WalkInModalProps> = ({
               marginBottom: '6px',
             }}
           >
-            Select Express Walk-in Package
+            Select Walk-in Grooming Service
           </label>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
             {[
-              { id: 'QUICK_CUT' as const, label: 'Express Cut', dur: '20m', cost: '1,200' },
-              { id: 'BEARD_TRIM' as const, label: 'Beard Trim', dur: '15m', cost: '800' },
-              { id: 'COMBO_EXPRESS' as const, label: 'Cut & Shave', dur: '35m', cost: '1,800' },
+              { id: 'QUICK_CUT' as const, label: 'Haircut Only', dur: '45m', cost: '400' },
+              { id: 'BEARD_TRIM' as const, label: 'Beard Trim', dur: '20m', cost: '300' },
+              { id: 'COMBO_EXPRESS' as const, label: 'Hair + Beard', dur: '45m', cost: '800' },
             ].map((pkg) => {
               const isSelected = serviceType === pkg.id;
               return (

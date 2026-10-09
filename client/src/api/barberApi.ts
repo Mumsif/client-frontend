@@ -17,6 +17,7 @@
 
 import { apiClient } from './client';
 import type { AppointmentResponseDTO } from './bookingApi';
+import { salonStore, type BarberBreak } from '../utils/salonStore';
 
 export interface BarberStationChair {
   chairId: string;
@@ -92,103 +93,52 @@ export const barberApi = {
     chairs: BarberStationChair[];
     stats: SalonTelemetryStats;
     wallet: WalletBalanceDTO;
+    breaks: BarberBreak[];
   }> {
     try {
       return await apiClient.get(`/api/v1/barber/workstation/${salonId}`);
     } catch {
-      // Mock data strictly matching the Figma CSS layers for Chair 1 (Rifas) & Chair 2 (Kannan)
+      const chairs = salonStore.getWorkstationChairs();
+      const allAppts = salonStore.getAppointments();
+      const completed = allAppts.filter((a) => a.status === 'COMPLETED');
+      const dailyRevenue = completed.reduce((acc, curr) => acc + curr.totalPriceLkr, 0);
+
       return {
-        chairs: [
-          {
-            chairId: 'chair_1',
-            chairNumber: 1,
-            barberName: 'Rifas',
-            barberAvatar: '/src/assets/barber_rifas.jpg',
-            specialization: 'Master Barber / Fade Specialist',
-            status: 'ONLINE',
-            activeInChair: {
-              appointmentId: 'app_1042',
-              ticketNumber: 'GS-1042',
-              customerName: 'David M.',
-              serviceNames: 'Skin Fade + Hot Lather Wash',
-              startedAt: '14:05',
-              totalDurationMinutes: 30,
-              remainingMinutes: 14,
-              remainingSeconds: 20,
-            },
-            upcomingQueue: [
-              {
-                appointmentId: 'app_1043',
-                ticketNumber: 'GS-1043',
-                customerName: 'Tharindu P.',
-                serviceNames: 'Standard Fade Cut & Beard Sculpt',
-                scheduledTime: '14:45',
-                status: 'NEXT_IN_LINE',
-                otp: '8492',
-              },
-              {
-                appointmentId: 'app_1044',
-                ticketNumber: 'GS-1044',
-                customerName: 'Kasun R.',
-                serviceNames: 'Ayurvedic Scalp & Oil Massage',
-                scheduledTime: '15:30',
-                status: 'RESERVED_WINDOW',
-              },
-            ],
-          },
-          {
-            chairId: 'chair_2',
-            chairNumber: 2,
-            barberName: 'Kannan',
-            barberAvatar: '/src/assets/barber_kannan.jpg',
-            specialization: 'Senior Stylist / Scalp Therapist',
-            status: 'ONLINE',
-            activeInChair: {
-              appointmentId: 'app_1040',
-              ticketNumber: 'GS-1040',
-              customerName: 'Imran K.',
-              serviceNames: 'Ayurvedic Scalp Treatment & Beard Trim',
-              startedAt: '14:00',
-              totalDurationMinutes: 40,
-              remainingMinutes: 8,
-              remainingSeconds: 45,
-            },
-            upcomingQueue: [
-              {
-                appointmentId: 'app_1045',
-                ticketNumber: 'GS-1045',
-                customerName: 'Imran K. (Followup)',
-                serviceNames: 'Kids Scissor Cut',
-                scheduledTime: '14:50',
-                status: 'NEXT_IN_LINE',
-                otp: '4190',
-              },
-              {
-                appointmentId: 'app_1046',
-                ticketNumber: 'GS-1046',
-                customerName: 'Dinesh S.',
-                serviceNames: 'Standard Haircut',
-                scheduledTime: '15:25',
-                status: 'RESERVED_WINDOW',
-              },
-            ],
-          },
-        ],
+        chairs,
         stats: {
-          dailyRevenueLkr: 28400,
-          completedAppointmentsCount: 16,
-          avgTurnaroundMinutes: 24,
-          queueVelocityScore: 98,
-          activeChairsCount: 2,
+          dailyRevenueLkr: dailyRevenue,
+          completedAppointmentsCount: completed.length,
+          avgTurnaroundMinutes: 45,
+          queueVelocityScore: chairs.some((c) => c.status === 'BUSY') ? 95 : 100,
+          activeChairsCount: chairs.filter((c) => c.status !== 'ON_BREAK').length,
           totalChairsCount: 2,
         },
-        wallet: {
-          balanceLkr: 4250,
-          currency: 'LKR',
-          commissionPerCutLkr: 50,
-          lastUpdated: '14:20 IST',
-        },
+        wallet: salonStore.getWallet(),
+        breaks: salonStore.getBarberBreaks(),
       };
+    }
+  },
+
+  /**
+   * Schedules a barber break for a specific 45m time slot.
+   * This immediately prevents customers from booking that time slot!
+   */
+  async scheduleBreak(chairId: string, timeSlot: string, reason: string = 'Tea Break'): Promise<BarberBreak> {
+    try {
+      return await apiClient.post<BarberBreak>('/api/v1/barber/break', { chairId, timeSlot, reason });
+    } catch {
+      return salonStore.scheduleBreak(chairId, timeSlot, reason);
+    }
+  },
+
+  /**
+   * Ends break and restores chair to ONLINE status.
+   */
+  async endBreak(chairId: string): Promise<void> {
+    try {
+      await apiClient.post(`/api/v1/barber/break/${chairId}/end`);
+    } catch {
+      salonStore.clearBreaksForChair(chairId);
     }
   },
 
@@ -202,11 +152,16 @@ export const barberApi = {
     try {
       return await apiClient.post<{ success: boolean; message: string }>('/api/v1/barber/verify-otp', payload);
     } catch {
-      // Simulate verification validation
-      if (payload.otp.trim().length >= 4) {
+      const appt = salonStore.getAppointments().find((a) => a.appointmentId === payload.appointmentId);
+      if (appt && appt.otp === payload.otp.trim()) {
+        salonStore.updateAppointmentStatus(payload.appointmentId, 'SEATED');
+        return { success: true, message: `OTP verified! ${appt.customerName} is seated in chair.` };
+      }
+      if (payload.otp.trim().length === 4) {
+        salonStore.updateAppointmentStatus(payload.appointmentId, 'SEATED');
         return { success: true, message: 'OTP verified successfully! Customer seated in chair.' };
       }
-      throw new Error('Invalid OTP. Please verify with customer.');
+      throw new Error('Invalid OTP. Please check with customer.');
     }
   },
 
@@ -221,6 +176,8 @@ export const barberApi = {
     try {
       return await apiClient.post(`/api/v1/barber/complete-service/${appointmentId}`);
     } catch {
+      salonStore.updateAppointmentStatus(appointmentId, 'COMPLETED');
+      salonStore.deductCommission(50);
       return { success: true, commissionDeductedLkr: 50 };
     }
   },
@@ -230,13 +187,12 @@ export const barberApi = {
    * Connects to Spring Boot:
    * @PostMapping("/api/v1/barber/delay-shift")
    * com.glowslot.service.QueueManagementService.java
-   * Cascades estimated arrival notifications to all downstream booked customers
    */
   async applyDelayShift(payload: DelayShiftRequestDTO): Promise<{ success: boolean; shiftedCount: number }> {
     try {
       return await apiClient.post('/api/v1/barber/delay-shift', payload);
     } catch {
-      return { success: true, shiftedCount: 4 };
+      return { success: true, shiftedCount: 1 };
     }
   },
 
@@ -251,34 +207,40 @@ export const barberApi = {
       return await apiClient.post('/api/v1/barber/walk-in', payload);
     } catch {
       const ticket = `WI-${Math.floor(100 + Math.random() * 900)}`;
-      return {
-        appointmentId: `app_${Date.now()}`,
+      const price = payload.priceLkr || (payload.serviceType === 'QUICK_CUT' ? 400 : payload.serviceType === 'BEARD_TRIM' ? 300 : 800);
+      const duration = payload.customDurationMinutes || 45;
+
+      const newPass: AppointmentResponseDTO = {
+        appointmentId: `app_walkin_${Date.now()}`,
         ticketNumber: ticket,
-        salonName: 'Classic Cuts Grooming Lab',
+        salonName: 'Western Cutters',
         salonAddress: 'Akkaraipattu',
         chairId: payload.chairId,
-        chairName: payload.chairId === 'chair_2' ? 'Chair 2: Kannan' : 'Chair 1: Rifas',
+        chairName: payload.chairId === 'chair_2' ? 'Chair 2: Thambi' : 'Chair 1: Dhanu',
         services: [
           {
             id: 'srv_walkin',
-            name: payload.serviceType === 'QUICK_CUT' ? 'Express Haircut' : payload.serviceType === 'BEARD_TRIM' ? 'Quick Beard Trim' : 'Express Cut & Shave',
+            name: payload.serviceType === 'QUICK_CUT' ? 'Normal Haircut Only' : payload.serviceType === 'BEARD_TRIM' ? 'Beard Trim & Sculpt' : 'Normal Haircut with Beard Cut',
             category: 'haircut',
-            durationMinutes: payload.customDurationMinutes || 20,
-            priceLkr: payload.priceLkr || 1200,
+            durationMinutes: duration,
+            priceLkr: price,
             description: 'Direct walk-in customer queued from workstation tray',
           },
         ],
-        customerName: payload.customerName || 'Walk-in Client',
-        customerPhone: 'N/A',
+        customerName: payload.customerName?.trim() || `Walk-in Guest (${ticket})`,
+        customerPhone: 'Walk-in',
         scheduledTime: 'Immediate',
         estimatedChairTime: 'Immediate',
-        totalDurationMinutes: payload.customDurationMinutes || 20,
-        totalPriceLkr: payload.priceLkr || 1200,
+        totalDurationMinutes: duration,
+        totalPriceLkr: price,
         otp: '----',
         queuePosition: 1,
         status: 'SEATED',
         createdAt: new Date().toISOString(),
       };
+
+      salonStore.saveAppointment(newPass);
+      return newPass;
     }
   },
 
@@ -291,7 +253,14 @@ export const barberApi = {
     try {
       return await apiClient.post(`/api/v1/barber/chair/${chairId}/toggle-status`, { chairId });
     } catch {
-      return currentStatus === 'ONLINE' ? 'ON_BREAK' : 'ONLINE';
+      if (currentStatus === 'ONLINE') {
+        // Quick 45m break right now
+        salonStore.scheduleBreak(chairId, 'Immediate', 'Quick Break');
+        return 'ON_BREAK';
+      } else {
+        salonStore.clearBreaksForChair(chairId);
+        return 'ONLINE';
+      }
     }
   },
 };

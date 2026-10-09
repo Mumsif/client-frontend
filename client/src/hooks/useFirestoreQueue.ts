@@ -8,6 +8,7 @@
  * - Triggers com.glowslot.service.QueueManagementService.java for queue mutations
  * - Triggers com.glowslot.service.WalletService.java for commission updates
  * - Provides live seconds countdown timer for active chairs
+ * - Synchronizes breaks and real customer bookings
  * ============================================================================
  */
 
@@ -56,6 +57,15 @@ export const useFirestoreQueue = (salonId: string = 'salon_1') => {
     loadState();
   }, [loadState]);
 
+  // Listen for real-time store updates across tabs / components
+  useEffect(() => {
+    const handleStoreUpdate = () => {
+      loadState();
+    };
+    window.addEventListener('trimly_store_updated', handleStoreUpdate);
+    return () => window.removeEventListener('trimly_store_updated', handleStoreUpdate);
+  }, [loadState]);
+
   // Live Second-by-Second Countdown Tick for In-Chair services
   useEffect(() => {
     timerRef.current = window.setInterval(() => {
@@ -93,32 +103,8 @@ export const useFirestoreQueue = (salonId: string = 'salon_1') => {
     try {
       const res = await barberApi.verifyOtp(payload);
       if (res.success) {
-        setChairs((prev) =>
-          prev.map((c) => {
-            if (c.chairId !== payload.chairId) return c;
-
-            // Find matching upcoming appointment
-            const seatedAppointment = c.upcomingQueue.find((q) => q.appointmentId === payload.appointmentId) || c.upcomingQueue[0];
-            const remainingUpcoming = c.upcomingQueue.filter((q) => q.appointmentId !== seatedAppointment?.appointmentId);
-
-            return {
-              ...c,
-              status: 'BUSY',
-              activeInChair: seatedAppointment ? {
-                appointmentId: seatedAppointment.appointmentId,
-                ticketNumber: seatedAppointment.ticketNumber,
-                customerName: seatedAppointment.customerName,
-                serviceNames: seatedAppointment.serviceNames,
-                startedAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                totalDurationMinutes: 30,
-                remainingMinutes: 29,
-                remainingSeconds: 59,
-              } : c.activeInChair,
-              upcomingQueue: remainingUpcoming,
-            };
-          })
-        );
-        showToast(`OTP Verified! Customer is seated.`, 'success');
+        await loadState();
+        showToast(res.message, 'success');
         return true;
       }
       return false;
@@ -129,29 +115,10 @@ export const useFirestoreQueue = (salonId: string = 'salon_1') => {
   };
 
   // Action: Complete service and release chair (triggers Rs. 50 deduction in WalletService)
-  const completeService = async (chairId: string, appointmentId: string) => {
+  const completeService = async (_chairId: string, appointmentId: string) => {
     try {
       await barberApi.completeService(appointmentId);
-
-      setChairs((prev) =>
-        prev.map((c) => {
-          if (c.chairId !== chairId) return c;
-          return {
-            ...c,
-            status: 'ONLINE',
-            activeInChair: undefined, // Chair is now free
-          };
-        })
-      );
-
-      // Deduct Rs. 50 platform commission and bump stats
-      if (wallet) {
-        setWallet((w) => (w ? { ...w, balanceLkr: w.balanceLkr - 50 } : null));
-      }
-      if (stats) {
-        setStats((s) => (s ? { ...s, completedAppointmentsCount: s.completedAppointmentsCount + 1, dailyRevenueLkr: s.dailyRevenueLkr + 1800 } : null));
-      }
-
+      await loadState();
       showToast(`Service Completed! Chair released. Rs. 50 commission recorded.`, 'success');
     } catch {
       showToast('Error completing service.', 'warning');
@@ -184,44 +151,8 @@ export const useFirestoreQueue = (salonId: string = 'salon_1') => {
   const registerWalkIn = async (payload: WalkInRequestDTO) => {
     try {
       const newBooking = await barberApi.registerWalkIn(payload);
-      setChairs((prev) =>
-        prev.map((c) => {
-          if (c.chairId !== payload.chairId) return c;
-          // If chair is free, seat immediately; else push to top of queue
-          if (!c.activeInChair) {
-            return {
-              ...c,
-              status: 'BUSY',
-              activeInChair: {
-                appointmentId: newBooking.appointmentId,
-                ticketNumber: newBooking.ticketNumber,
-                customerName: newBooking.customerName,
-                serviceNames: newBooking.services.map((s) => s.name).join(', '),
-                startedAt: 'Just now',
-                totalDurationMinutes: newBooking.totalDurationMinutes,
-                remainingMinutes: newBooking.totalDurationMinutes,
-                remainingSeconds: 0,
-              },
-            };
-          } else {
-            return {
-              ...c,
-              upcomingQueue: [
-                {
-                  appointmentId: newBooking.appointmentId,
-                  ticketNumber: newBooking.ticketNumber,
-                  customerName: newBooking.customerName,
-                  serviceNames: newBooking.services.map((s) => s.name).join(', '),
-                  scheduledTime: 'Walk-in Next',
-                  status: 'NEXT_IN_LINE',
-                },
-                ...c.upcomingQueue,
-              ],
-            };
-          }
-        })
-      );
-      showToast(`Walk-in ${newBooking.ticketNumber} registered to Chair!`, 'success');
+      await loadState();
+      showToast(`Walk-in customer ${newBooking.ticketNumber} registered to Chair!`, 'success');
     } catch {
       showToast('Failed to register walk-in.', 'warning');
     }
@@ -232,10 +163,35 @@ export const useFirestoreQueue = (salonId: string = 'salon_1') => {
     const chair = chairs.find((c) => c.chairId === chairId);
     if (!chair) return;
     const nextStatus = chair.status === 'ONLINE' ? 'ON_BREAK' : 'ONLINE';
-    setChairs((prev) =>
-      prev.map((c) => (c.chairId === chairId ? { ...c, status: nextStatus } : c))
-    );
-    showToast(`Chair ${chair.chairNumber} is now ${nextStatus === 'ONLINE' ? 'Online' : 'On Break'}.`, 'info');
+    if (nextStatus === 'ON_BREAK') {
+      await barberApi.scheduleBreak(chairId, 'Current', 'Immediate Break');
+    } else {
+      await barberApi.endBreak(chairId);
+    }
+    await loadState();
+    showToast(`Chair ${chair.chairNumber} (${chair.barberName}) is now ${nextStatus === 'ONLINE' ? 'Online' : 'On Break'}.`, 'info');
+  };
+
+  // Action: Schedule a specific break slot (blocks slot from customer booking)
+  const scheduleBreak = async (chairId: string, timeSlot: string, reason: string) => {
+    try {
+      await barberApi.scheduleBreak(chairId, timeSlot, reason);
+      await loadState();
+      showToast(`Break booked for ${timeSlot} (${reason}). Customer booking blocked!`, 'info');
+    } catch {
+      showToast('Failed to schedule break.', 'warning');
+    }
+  };
+
+  // Action: End Break
+  const endBreak = async (chairId: string) => {
+    try {
+      await barberApi.endBreak(chairId);
+      await loadState();
+      showToast('Break ended! Chair is back Online for bookings.', 'success');
+    } catch {
+      showToast('Failed to end break.', 'warning');
+    }
   };
 
   return {
@@ -249,6 +205,8 @@ export const useFirestoreQueue = (salonId: string = 'salon_1') => {
     applyDelayShift,
     registerWalkIn,
     toggleChairStatus,
+    scheduleBreak,
+    endBreak,
     refreshQueue: loadState,
   };
 };

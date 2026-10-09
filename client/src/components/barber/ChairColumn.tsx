@@ -4,9 +4,10 @@
  * ============================================================================
  * Matches Figma Structure:
  * - Stylist Header / State Toggle (Avatar, Online/On Break segmented control)
+ * - Break Scheduler (Barber allocates 45m break to block customer booking)
  * - Active In-Chair Emerald Card
- * - Upcoming Queue (Immediate Next with inline OTP verification)
- * - Walk-in Quick Dispatch Action Tray (Preset chips: Quick Cut, Beard Trim, Combo)
+ * - Upcoming Queue (Real customer bookings with inline OTP verification)
+ * - Walk-in Quick Dispatch Action Tray (Normal Haircut 400, Beard 300, Combo 800)
  * ============================================================================
  */
 
@@ -14,6 +15,8 @@ import React, { useState } from 'react';
 import type { BarberStationChair, OtpVerifyRequestDTO, WalkInRequestDTO } from '../../api/barberApi';
 import { ActiveInChairCard } from './ActiveInChairCard';
 import { Badge } from '../common/Badge';
+import { Modal } from '../common/Modal';
+import { STANDARD_45M_SLOTS } from '../../utils/salonStore';
 
 export interface ChairColumnProps {
   chair: BarberStationChair;
@@ -22,6 +25,8 @@ export interface ChairColumnProps {
   onRegisterWalkIn: (payload: WalkInRequestDTO) => void;
   onToggleStatus: (chairId: string) => void;
   onOpenWalkInModal: (chairId: string) => void;
+  onScheduleBreak?: (chairId: string, timeSlot: string, reason: string) => void;
+  onEndBreak?: (chairId: string) => void;
 }
 
 export const ChairColumn: React.FC<ChairColumnProps> = ({
@@ -31,10 +36,15 @@ export const ChairColumn: React.FC<ChairColumnProps> = ({
   onRegisterWalkIn,
   onToggleStatus,
   onOpenWalkInModal,
+  onScheduleBreak,
+  onEndBreak,
 }) => {
   const [otpInput, setOtpInput] = useState<string>('');
   const [selectedWalkInPreset, setSelectedWalkInPreset] = useState<'QUICK_CUT' | 'BEARD_TRIM' | 'COMBO_EXPRESS'>('QUICK_CUT');
   const [isVerifying, setIsVerifying] = useState<boolean>(false);
+  const [showBreakModal, setShowBreakModal] = useState<boolean>(false);
+  const [selectedBreakSlot, setSelectedBreakSlot] = useState<string>('13:30');
+  const [breakReason, setBreakReason] = useState<string>('Lunch Break');
 
   const isOnline = chair.status === 'ONLINE' || chair.status === 'BUSY';
   const immediateNext = chair.upcomingQueue[0];
@@ -59,16 +69,26 @@ export const ChairColumn: React.FC<ChairColumnProps> = ({
 
   const handleWalkInPresetClick = (type: 'QUICK_CUT' | 'BEARD_TRIM' | 'COMBO_EXPRESS') => {
     setSelectedWalkInPreset(type);
-    const duration = type === 'QUICK_CUT' ? 20 : type === 'BEARD_TRIM' ? 15 : 35;
-    const price = type === 'QUICK_CUT' ? 1200 : type === 'BEARD_TRIM' ? 800 : 1800;
+    const duration = type === 'QUICK_CUT' ? 45 : type === 'BEARD_TRIM' ? 20 : 45;
+    const price = type === 'QUICK_CUT' ? 400 : type === 'BEARD_TRIM' ? 300 : 800;
 
     onRegisterWalkIn({
       chairId: chair.chairId,
-      customerName: `Walk-in (${type.replace('_', ' ')})`,
+      customerName: `Walk-in Guest (${type === 'QUICK_CUT' ? 'Haircut' : type === 'BEARD_TRIM' ? 'Beard' : 'Combo'})`,
       serviceType: type,
       customDurationMinutes: duration,
       priceLkr: price,
     });
+  };
+
+  const handleConfirmBreak = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (onScheduleBreak) {
+      onScheduleBreak(chair.chairId, selectedBreakSlot, breakReason);
+    } else {
+      onToggleStatus(chair.chairId);
+    }
+    setShowBreakModal(false);
   };
 
   return (
@@ -169,7 +189,7 @@ export const ChairColumn: React.FC<ChairColumnProps> = ({
           </div>
         </div>
 
-        {/* Toggle Online / On Break (Segmented Pill) */}
+        {/* Toggle Online / Break (Segmented Pill) */}
         <div
           style={{
             display: 'flex',
@@ -183,7 +203,10 @@ export const ChairColumn: React.FC<ChairColumnProps> = ({
           <button
             type="button"
             onClick={() => {
-              if (!isOnline) onToggleStatus(chair.chairId);
+              if (!isOnline) {
+                if (onEndBreak) onEndBreak(chair.chairId);
+                else onToggleStatus(chair.chairId);
+              }
             }}
             style={{
               padding: '6px 10px',
@@ -213,9 +236,7 @@ export const ChairColumn: React.FC<ChairColumnProps> = ({
           </button>
           <button
             type="button"
-            onClick={() => {
-              if (isOnline) onToggleStatus(chair.chairId);
-            }}
+            onClick={() => setShowBreakModal(true)}
             style={{
               padding: '6px 10px',
               borderRadius: '7px',
@@ -234,6 +255,48 @@ export const ChairColumn: React.FC<ChairColumnProps> = ({
         </div>
       </div>
 
+      {/* Break Active Notification Banner */}
+      {!isOnline && (
+        <div
+          style={{
+            width: '100%',
+            padding: '12px 16px',
+            backgroundColor: '#FEF3C7',
+            border: '1px solid #F59E0B',
+            borderRadius: '10px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            gap: '12px',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#B45309', fontSize: '13px', fontWeight: 600 }}>
+            <span>☕</span>
+            <span>Chair {chair.chairNumber} ({chair.barberName}) is ON BREAK. Customers cannot book this slot.</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              if (onEndBreak) onEndBreak(chair.chairId);
+              else onToggleStatus(chair.chairId);
+            }}
+            style={{
+              padding: '6px 12px',
+              backgroundColor: '#00685F',
+              color: '#FFFFFF',
+              border: 'none',
+              borderRadius: '6px',
+              fontSize: '12px',
+              fontWeight: 600,
+              cursor: 'pointer',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            Resume Online
+          </button>
+        </div>
+      )}
+
       {/* 2. Active In-Chair Emerald Card */}
       <ActiveInChairCard
         chairId={chair.chairId}
@@ -244,7 +307,7 @@ export const ChairColumn: React.FC<ChairColumnProps> = ({
         onOpenWalkIn={() => onOpenWalkInModal(chair.chairId)}
       />
 
-      {/* 3. Upcoming Queue for Chair */}
+      {/* 3. Upcoming Queue for Chair (Real Customers Only) */}
       <div style={{ display: 'flex', flexDirection: 'column', width: '100%', gap: '8px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span
@@ -331,41 +394,38 @@ export const ChairColumn: React.FC<ChairColumnProps> = ({
             >
               <input
                 type="text"
-                placeholder={immediateNext.otp ? `Enter OTP (${immediateNext.otp})` : 'Enter 4-Digit OTP'}
+                placeholder={immediateNext.otp ? `Enter OTP (${immediateNext.otp})` : "Enter Customer's 4-Digit OTP"}
                 value={otpInput}
-                onChange={(e) => setOtpInput(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                maxLength={6}
+                onChange={(e) => setOtpInput(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                maxLength={4}
                 style={{
                   flex: 1,
-                  padding: '10px 12px',
-                  borderRadius: '8px',
-                  border: '1px solid #DAE2FD',
+                  padding: '8px 12px',
+                  borderRadius: '6px',
+                  border: '1px solid #D5E3FD',
                   backgroundColor: '#EFF4FF',
                   fontFamily: "'JetBrains Mono', monospace",
-                  fontWeight: 600,
-                  fontSize: '14px',
+                  fontWeight: 700,
+                  fontSize: '15px',
                   letterSpacing: '2px',
-                  textAlign: 'center',
                   outline: 'none',
-                  color: '#0D1C2F',
                 }}
               />
               <button
                 type="submit"
-                disabled={isVerifying || !otpInput.trim()}
+                disabled={isVerifying || otpInput.trim().length === 0}
                 style={{
-                  padding: '10px 16px',
-                  borderRadius: '8px',
+                  padding: '8px 16px',
+                  borderRadius: '6px',
                   backgroundColor: '#00685F',
                   color: '#FFFFFF',
                   border: 'none',
                   fontFamily: "'Plus Jakarta Sans', sans-serif",
                   fontWeight: 600,
-                  fontSize: '14px',
-                  cursor: isVerifying || !otpInput.trim() ? 'not-allowed' : 'pointer',
-                  opacity: !otpInput.trim() ? 0.6 : 1,
+                  fontSize: '13px',
+                  cursor: isVerifying || otpInput.trim().length === 0 ? 'not-allowed' : 'pointer',
+                  opacity: isVerifying || otpInput.trim().length === 0 ? 0.6 : 1,
                   whiteSpace: 'nowrap',
-                  transition: 'all 0.18s ease',
                 }}
               >
                 {isVerifying ? 'Verifying...' : 'Verify & Seat'}
@@ -375,15 +435,17 @@ export const ChairColumn: React.FC<ChairColumnProps> = ({
         ) : (
           <div
             style={{
-              padding: '16px',
-              backgroundColor: '#EFF4FF',
+              padding: '24px 16px',
+              backgroundColor: '#F8F9FF',
               borderRadius: '12px',
               textAlign: 'center',
               fontSize: '13px',
               color: '#5C647A',
+              border: '1px dashed #D5E3FD',
             }}
           >
-            No customers waiting in line.
+            <p style={{ margin: 0, fontWeight: 600, color: '#0D1C2F' }}>No upcoming bookings in queue.</p>
+            <p style={{ margin: '4px 0 0', fontSize: '12px' }}>Chair is ready for customer booking or walk-in dispatch.</p>
           </div>
         )}
 
@@ -426,25 +488,37 @@ export const ChairColumn: React.FC<ChairColumnProps> = ({
               </div>
               <span style={{ fontSize: '12px', color: '#5C647A' }}>{item.serviceNames}</span>
             </div>
+
             <div style={{ textAlign: 'right' }}>
-              <Badge variant="soft" isMono>
+              <span
+                style={{
+                  fontFamily: "'JetBrains Mono', monospace",
+                  fontWeight: 600,
+                  fontSize: '13px',
+                  color: '#00685F',
+                  display: 'block',
+                }}
+              >
                 {item.scheduledTime}
-              </Badge>
+              </span>
+              <span style={{ fontSize: '11px', color: '#5C647A' }}>Reserved</span>
             </div>
           </div>
         ))}
       </div>
 
-      {/* 4. Walk-in Quick Dispatch Action Tray (Purple / Indigo) */}
+      {/* 4. Walk-in Quick Dispatch Action Tray */}
       <div
         style={{
           width: '100%',
-          backgroundColor: '#E1E0FF',
+          backgroundColor: '#EFF4FF',
           borderRadius: '12px',
           padding: '16px',
           display: 'flex',
           flexDirection: 'column',
-          gap: '10px',
+          gap: '12px',
+          marginTop: 'auto',
+          border: '1px solid #DAE2FD',
         }}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -452,32 +526,32 @@ export const ChairColumn: React.FC<ChairColumnProps> = ({
             style={{
               fontFamily: "'Plus Jakarta Sans', sans-serif",
               fontWeight: 700,
-              fontSize: '12px',
+              fontSize: '11px',
               letterSpacing: '0.4px',
               textTransform: 'uppercase',
-              color: '#07006C',
+              color: '#3D4947',
             }}
           >
-            ⚡ WALK-IN QUICK DISPATCH
+            WALK-IN QUICK DISPATCH TRAY
           </span>
           <span
             style={{
               fontFamily: "'JetBrains Mono', monospace",
-              fontSize: '11px',
+              fontSize: '10px',
+              color: '#4648D4',
               fontWeight: 600,
-              color: '#07006C',
             }}
           >
             Instant Chair Push
           </span>
         </div>
 
-        {/* Preset Chips */}
+        {/* Preset Chips with Real Pricing */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '6px' }}>
           {[
-            { id: 'QUICK_CUT' as const, label: 'Quick Cut', time: '20m · Rs 1,200' },
-            { id: 'BEARD_TRIM' as const, label: 'Beard Trim', time: '15m · Rs 800' },
-            { id: 'COMBO_EXPRESS' as const, label: 'Express Combo', time: '35m · Rs 1,800' },
+            { id: 'QUICK_CUT' as const, label: 'Haircut Only', time: '45m · Rs 400' },
+            { id: 'BEARD_TRIM' as const, label: 'Beard Trim', time: '20m · Rs 300' },
+            { id: 'COMBO_EXPRESS' as const, label: 'Hair + Beard', time: '45m · Rs 800' },
           ].map((preset) => {
             const isSelected = selectedWalkInPreset === preset.id;
             return (
@@ -549,6 +623,112 @@ export const ChairColumn: React.FC<ChairColumnProps> = ({
           <span>+ Custom Walk-in Registration</span>
         </button>
       </div>
+
+      {/* Barber Break Scheduler Modal */}
+      <Modal
+        isOpen={showBreakModal}
+        onClose={() => setShowBreakModal(false)}
+        title={`Schedule Break — Chair ${chair.chairNumber} (${chair.barberName})`}
+        subtitle="Select a 45-minute booking slot to allocate as your break. Customers will not be able to book this slot."
+        maxWidth="460px"
+      >
+        <form onSubmit={handleConfirmBreak} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div>
+            <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#0D1C2F', marginBottom: '6px' }}>
+              Select 45-Minute Break Slot
+            </label>
+            <select
+              value={selectedBreakSlot}
+              onChange={(e) => setSelectedBreakSlot(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '10px 14px',
+                borderRadius: '8px',
+                border: '1px solid #D5E3FD',
+                backgroundColor: '#EFF4FF',
+                fontSize: '14px',
+                fontFamily: "'JetBrains Mono', monospace",
+                fontWeight: 600,
+                color: '#0D1C2F',
+                outline: 'none',
+              }}
+            >
+              <option value="Current">Current Slot (Immediate 45-Min Break)</option>
+              {STANDARD_45M_SLOTS.map((t) => (
+                <option key={t} value={t}>
+                  {t} IST (45 Minutes)
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#0D1C2F', marginBottom: '6px' }}>
+              Break Reason
+            </label>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
+              {['Lunch Break', 'Tea Break', 'Prayer / Rest'].map((r) => {
+                const isSelected = breakReason === r;
+                return (
+                  <button
+                    key={r}
+                    type="button"
+                    onClick={() => setBreakReason(r)}
+                    style={{
+                      padding: '10px 8px',
+                      borderRadius: '8px',
+                      border: isSelected ? '2px solid #00685F' : '1px solid #D5E3FD',
+                      backgroundColor: isSelected ? '#EFF4FF' : '#FFFFFF',
+                      color: isSelected ? '#00685F' : '#3D4947',
+                      fontSize: '12px',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    {r}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', gap: '10px', marginTop: '8px' }}>
+            <button
+              type="button"
+              onClick={() => setShowBreakModal(false)}
+              style={{
+                flex: 1,
+                padding: '12px',
+                backgroundColor: '#EFF4FF',
+                border: '1px solid #D5E3FD',
+                borderRadius: '8px',
+                fontWeight: 600,
+                fontSize: '14px',
+                color: '#3D4947',
+                cursor: 'pointer',
+              }}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              style={{
+                flex: 2,
+                padding: '12px',
+                backgroundColor: '#B45309',
+                color: '#FFFFFF',
+                border: 'none',
+                borderRadius: '8px',
+                fontWeight: 700,
+                fontSize: '14px',
+                cursor: 'pointer',
+              }}
+            >
+              Block Slot & Take Break
+            </button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 };

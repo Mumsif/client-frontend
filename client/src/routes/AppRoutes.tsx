@@ -20,13 +20,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { ServiceBookingView } from '../views/customer/ServiceBookingView';
 import { PassStatusView } from '../views/customer/PassStatusView';
+import { OtpSentView } from '../views/customer/OtpSentView';
 import { SalonSelectView } from '../views/customer/SalonSelectView';
 import { BarberLoginView } from '../views/barber/BarberLoginView';
 import { WorkstationDashboardView } from '../views/barber/WorkstationDashboardView';
 import type { AppointmentResponseDTO } from '../api/bookingApi';
 import { useAuth } from '../hooks/useAuth';
 
-export type AppViewMode = 'customer_booking' | 'customer_pass' | 'salon_select' | 'barber_login' | 'barber_station';
+export type AppViewMode = 'customer_booking' | 'customer_pass' | 'otp_sent' | 'salon_select' | 'barber_login' | 'barber_station';
 
 export const AppRoutes: React.FC = () => {
   const { isAuthenticated, logout } = useAuth();
@@ -58,6 +59,30 @@ export const AppRoutes: React.FC = () => {
     }
   });
 
+  // OTP Sent screen - holds last submitted customer details
+  const [otpCustomerName, setOtpCustomerName] = useState<string>('');
+  const [otpCustomerPhone, setOtpCustomerPhone] = useState<string>('');
+  const [otpSalonName, setOtpSalonName] = useState<string>('Western Cutters');
+
+  // Selected salon ID (defaults to 'salon_1' Western Cutters)
+  const [selectedSalonId, setSelectedSalonId] = useState<string>(() => {
+    try {
+      return localStorage.getItem('trimly_selected_salon_id') || 'salon_1';
+    } catch {
+      return 'salon_1';
+    }
+  });
+
+  const handleSelectSalon = (salonId: string) => {
+    setSelectedSalonId(salonId);
+    try {
+      localStorage.setItem('trimly_selected_salon_id', salonId);
+    } catch {
+      // Storage fallback
+    }
+    navigateTo('customer_booking');
+  };
+
   // Check if developer preview mode is explicitly requested via URL param (?dev=true)
   const isDevMode = typeof window !== 'undefined' && window.location.search.includes('dev=true');
 
@@ -65,7 +90,7 @@ export const AppRoutes: React.FC = () => {
   const navigateTo = useCallback((view: AppViewMode) => {
     switch (view) {
       case 'customer_booking':
-        window.location.hash = '';
+        window.location.hash = '#/';
         break;
       case 'customer_pass':
         window.location.hash = '#/pass';
@@ -91,15 +116,24 @@ export const AppRoutes: React.FC = () => {
     return () => window.removeEventListener('hashchange', handleLocationChange);
   }, [getViewFromUrl]);
 
-  // Handle successful customer booking
-  const handleBookingConfirmed = (pass: AppointmentResponseDTO) => {
+  // Handle successful customer booking -> show OTP sent screen
+  const handleBookingConfirmed = (
+    pass: AppointmentResponseDTO,
+    customerName?: string,
+    customerPhone?: string,
+    salonName?: string,
+  ) => {
     setActivePass(pass);
     try {
       localStorage.setItem('glowslot_active_pass', JSON.stringify(pass));
     } catch {
       // Storage fallback
     }
-    navigateTo('customer_pass');
+    // Store customer info for OTP sent screen
+    if (customerName) setOtpCustomerName(customerName);
+    if (customerPhone) setOtpCustomerPhone(customerPhone);
+    if (salonName) setOtpSalonName(salonName);
+    navigateTo('otp_sent');
   };
 
   // Render view with security guards
@@ -108,11 +142,24 @@ export const AppRoutes: React.FC = () => {
       case 'customer_booking':
         return (
           <ServiceBookingView
+            salonId={selectedSalonId}
             hasActivePass={Boolean(activePass)}
             onBookingConfirmed={handleBookingConfirmed}
             onNavigateToPassStatus={() => navigateTo('customer_pass')}
             onNavigateToSalons={() => navigateTo('salon_select')}
             onNavigateToBarberStation={() => navigateTo(isAuthenticated ? 'barber_station' : 'barber_login')}
+          />
+        );
+
+      case 'otp_sent':
+        return (
+          <OtpSentView
+            customerName={otpCustomerName}
+            customerPhone={otpCustomerPhone}
+            salonName={otpSalonName}
+            onCorrectPhone={() => navigateTo('customer_booking')}
+            onCheckQueue={() => navigateTo('customer_pass')}
+            onBackToHome={() => navigateTo('customer_booking')}
           />
         );
 
@@ -127,7 +174,7 @@ export const AppRoutes: React.FC = () => {
       case 'salon_select':
         return (
           <SalonSelectView
-            onSelectSalon={() => navigateTo('customer_booking')}
+            onSelectSalon={handleSelectSalon}
             onBackToBooking={() => navigateTo('customer_booking')}
           />
         );

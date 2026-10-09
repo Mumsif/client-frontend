@@ -5,8 +5,8 @@
  * Connects with Spring Boot Slot Calculation Service:
  * -> com.glowslot.service.SlotCalculationService.java
  *
- * Implements buffer calculation (5-10 min intervals between cuts) and
- * checks availability dynamically against existing appointments.
+ * Implements 45-minute booking slots and checks real availability
+ * against actual customer appointments and barber breaks.
  * ============================================================================
  */
 
@@ -33,6 +33,15 @@ export const useAvailableSlots = (date: string, stylistId?: string) => {
 
   useEffect(() => {
     fetchSlots();
+  }, [fetchSlots]);
+
+  // Listen for real-time barber break or booking changes
+  useEffect(() => {
+    const handleUpdate = () => {
+      fetchSlots();
+    };
+    window.addEventListener('trimly_store_updated', handleUpdate);
+    return () => window.removeEventListener('trimly_store_updated', handleUpdate);
   }, [fetchSlots]);
 
   return { slots, isLoading, error, refreshSlots: fetchSlots };

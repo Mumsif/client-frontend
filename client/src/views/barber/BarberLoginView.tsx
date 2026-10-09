@@ -10,6 +10,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { Button } from '../../components/common/Button';
+import westernCuttersImg from '../../assets/salon_hero.jpg';
 
 export interface BarberLoginViewProps {
   onLoginSuccess: () => void;
@@ -82,29 +83,48 @@ export const BarberLoginView: React.FC<BarberLoginViewProps> = ({
         <div style={{ textAlign: 'center' }}>
           <div
             style={{
-              width: '52px',
-              height: '52px',
-              backgroundColor: '#00685F',
+              position: 'relative',
+              height: '120px',
               borderRadius: '14px',
-              margin: '0 auto 12px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#FFFFFF',
-              boxShadow: '0 4px 12px rgba(0, 104, 95, 0.3)',
+              overflow: 'hidden',
+              marginBottom: '16px',
+              boxShadow: '0 4px 14px rgba(0, 0, 0, 0.08)',
             }}
           >
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-              <rect x="2" y="3" width="20" height="14" rx="2" />
-              <line x1="8" y1="21" x2="16" y2="21" />
-              <line x1="12" y1="17" x2="12" y2="21" />
-            </svg>
+            <img
+              src={westernCuttersImg}
+              alt="Western Cutters Barbershop"
+              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+            />
+            <div
+              style={{
+                position: 'absolute',
+                inset: 0,
+                background: 'linear-gradient(180deg, rgba(13, 28, 47, 0.1) 0%, rgba(0, 104, 95, 0.88) 100%)',
+                display: 'flex',
+                alignItems: 'flex-end',
+                justifyContent: 'center',
+                padding: '10px 14px',
+              }}
+            >
+              <span
+                style={{
+                  color: '#FFFFFF',
+                  fontWeight: 700,
+                  fontSize: '11px',
+                  fontFamily: "'JetBrains Mono', monospace",
+                  letterSpacing: '0.6px',
+                }}
+              >
+                STATION TERMINAL · WESTERN CUTTERS
+              </span>
+            </div>
           </div>
           <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '22px', fontWeight: 700, margin: 0, color: '#0D1C2F' }}>
             Barber Station Login
           </h2>
           <p style={{ margin: '6px 0 0', fontSize: '13px', color: '#5C647A' }}>
-            Classic Cuts Grooming Lab · Akkaraipattu Hub
+            Main Street, Akkaraipattu
           </p>
         </div>
 
@@ -127,7 +147,7 @@ export const BarberLoginView: React.FC<BarberLoginViewProps> = ({
                 cursor: 'pointer',
               }}
             >
-              <span style={{ fontWeight: 700, fontSize: '14px', color: '#0D1C2F' }}>Chair 1: Rifas</span>
+              <span style={{ fontWeight: 700, fontSize: '14px', color: '#0D1C2F' }}>Chair 1: Dhanu</span>
               <span style={{ fontSize: '11px', color: '#00685F' }}>Master Barber</span>
             </button>
 
@@ -146,7 +166,7 @@ export const BarberLoginView: React.FC<BarberLoginViewProps> = ({
                 cursor: 'pointer',
               }}
             >
-              <span style={{ fontWeight: 700, fontSize: '14px', color: '#0D1C2F' }}>Chair 2: Kannan</span>
+              <span style={{ fontWeight: 700, fontSize: '14px', color: '#0D1C2F' }}>Chair 2: Thambi</span>
               <span style={{ fontSize: '11px', color: '#00685F' }}>Senior Stylist</span>
             </button>
           </div>
@@ -192,10 +212,10 @@ export const BarberLoginView: React.FC<BarberLoginViewProps> = ({
           <span style={{ fontSize: '11px', color: '#5C647A' }}>Instant Preview Access:</span>
           <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
             <Button variant="secondary" size="sm" fullWidth onClick={() => handleQuickDemoLogin('chair_1')}>
-              Launch as Rifas
+              Launch as Dhanu
             </Button>
             <Button variant="secondary" size="sm" fullWidth onClick={() => handleQuickDemoLogin('chair_2')}>
-              Launch as Kannan
+              Launch as Thambi
             </Button>
           </div>
         </div>

@@ -40,43 +40,7 @@ export const PassStatusView: React.FC<PassStatusViewProps> = ({
         setPass(null);
       }
     } else {
-      // Demo fallback pass
-      setPass({
-        appointmentId: 'demo_pass_1042',
-        ticketNumber: 'GS-1042',
-        salonName: 'Classic Cuts Grooming Lab',
-        salonAddress: 'Main Street, Akkaraipattu, Eastern Province',
-        chairId: 'chair_1',
-        chairName: 'Chair 1: Rifas',
-        services: [
-          {
-            id: 'srv_1',
-            name: 'Standard Fade Cut & Wash',
-            category: 'haircut',
-            durationMinutes: 30,
-            priceLkr: 1800,
-            description: 'Skin or taper fade sculpted with clipper-over-comb precision.',
-          },
-          {
-            id: 'srv_2',
-            name: 'Beard Sculpt & Herbal Steam',
-            category: 'beard',
-            durationMinutes: 25,
-            priceLkr: 1200,
-            description: 'Razor cheek alignment and deep conditioning argan butter infusion.',
-          },
-        ],
-        customerName: 'Kasun Perera',
-        customerPhone: '077 123 4567',
-        scheduledTime: '15:15',
-        estimatedChairTime: '15:15',
-        totalDurationMinutes: 55,
-        totalPriceLkr: 3000,
-        otp: '8492',
-        queuePosition: 2,
-        status: 'PENDING',
-        createdAt: new Date().toISOString(),
-      });
+      setPass(null);
     }
     setIsLoading(false);
   };

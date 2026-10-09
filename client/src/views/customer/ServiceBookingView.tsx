@@ -31,17 +31,24 @@ import { ServiceCard } from '../../components/customer/ServiceCard';
 import { StylistSelector } from '../../components/customer/StylistSelector';
 import { SlotGrid } from '../../components/customer/SlotGrid';
 import { Badge } from '../../components/common/Badge';
+import { Modal } from '../../components/common/Modal';
 import { useAvailableSlots } from '../../hooks/useAvailableSlots';
+import { getLocalDateString } from '../../utils/salonStore';
+import westernCuttersImg from '../../assets/salon_hero.jpg';
+import royalBladeImg from '../../assets/royal_blade.jpg';
+import easternGlowImg from '../../assets/eastern_glow.webp';
 
 export interface ServiceBookingViewProps {
+  salonId?: string;
   hasActivePass?: boolean;
-  onBookingConfirmed: (pass: AppointmentResponseDTO) => void;
+  onBookingConfirmed: (pass: AppointmentResponseDTO, customerName: string, customerPhone: string, salonName?: string) => void;
   onNavigateToBarberStation?: () => void;
   onNavigateToPassStatus?: () => void;
   onNavigateToSalons?: () => void;
 }
 
 export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
+  salonId = 'salon_1',
   hasActivePass,
   onBookingConfirmed,
   onNavigateToBarberStation,
@@ -52,24 +59,50 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
   const [salon, setSalon] = useState<SalonDetails | null>(null);
   const [services, setServices] = useState<ServiceItem[]>([]);
   const [stylists, setStylists] = useState<StylistChair[]>([]);
-  const [selectedServiceIds, setSelectedServiceIds] = useState<string[]>(['srv_1', 'srv_2']); // Default Cards 1 & 2 selected in Figma
+  const [selectedServiceIds, setSelectedServiceIds] = useState<string[]>(['srv_haircut_beard']); // Default to 800.00
   const [selectedChairId, setSelectedChairId] = useState<string>('ANY');
-  const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
-  const [selectedSlot, setSelectedSlot] = useState<string>('15:15');
+  const [selectedDate, setSelectedDate] = useState<string>(getLocalDateString());
+  const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [customerName, setCustomerName] = useState<string>('');
   const [customerPhone, setCustomerPhone] = useState<string>('');
   const [isBooking, setIsBooking] = useState<boolean>(false);
-  const [showSlotPickerModal, setShowSlotPickerModal] = useState<boolean>(false);
+  const [showCustomerModal, setShowCustomerModal] = useState<boolean>(false);
+
+  // Resolved hero image with robust fallback
+  const heroImg =
+    salon?.heroImageUrl ||
+    (salonId === 'salon_2'
+      ? royalBladeImg
+      : salonId === 'salon_3'
+      ? easternGlowImg
+      : westernCuttersImg);
 
   // Slots Hook
   const { slots, isLoading: isSlotsLoading } = useAvailableSlots(selectedDate, selectedChairId === 'ANY' ? undefined : selectedChairId);
+
+  // Auto-select first available upcoming slot when slots load or date changes
+  useEffect(() => {
+    if (slots && slots.length > 0) {
+      const isCurrentSlotValid = slots.some((s) => s.time === selectedSlot && s.isAvailable && s.statusText !== 'Passed');
+      if (!isCurrentSlotValid) {
+        const firstAvailable = slots.find((s) => s.isAvailable && s.statusText !== 'Passed');
+        if (firstAvailable) {
+          setSelectedSlot(firstAvailable.time);
+        } else {
+          setSelectedSlot(null);
+        }
+      }
+    } else {
+      setSelectedSlot(null);
+    }
+  }, [slots, selectedDate]);
 
   // Load Initial Catalog
   useEffect(() => {
     const loadCatalog = async () => {
       const [salonData, srvData, stylistData] = await Promise.all([
-        bookingApi.getSalonDetails(),
+        bookingApi.getSalonDetails(salonId),
         bookingApi.getServices(),
         bookingApi.getStylists(),
       ]);
@@ -78,7 +111,7 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
       setStylists(stylistData);
     };
     loadCatalog();
-  }, []);
+  }, [salonId]);
 
   // Toggle Services
   const handleToggleService = (serviceId: string) => {
@@ -104,14 +137,37 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
   });
 
   // Booking Flow Trigger
-  const handleProceedBooking = async () => {
+  const handleProceedBooking = () => {
     if (selectedServiceIds.length === 0) {
       alert('Please select at least one grooming service.');
       return;
     }
+    if (!selectedSlot) {
+      alert('Please select an available upcoming 45-minute booking time slot.');
+      return;
+    }
+    // Validate that selected slot is not in the past for today
+    const todayStr = getLocalDateString();
+    if (selectedDate === todayStr) {
+      const now = new Date();
+      const currentMinutes = now.getHours() * 60 + now.getMinutes();
+      const [h, m] = selectedSlot.split(':').map(Number);
+      if (h * 60 + m <= currentMinutes) {
+        alert('The selected time slot has already passed. Please select an upcoming time slot.');
+        return;
+      }
+    }
+    setShowCustomerModal(true);
+  };
 
-    if (!showSlotPickerModal && !selectedSlot) {
-      setShowSlotPickerModal(true);
+  const handleFinalBookingSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!customerName.trim()) {
+      alert('Please enter your full name.');
+      return;
+    }
+    if (!customerPhone.trim()) {
+      alert('Please enter your mobile phone number.');
       return;
     }
 
@@ -119,12 +175,12 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
     try {
       const pass = await bookingApi.createBooking({
         salonId: salon?.id || 'salon_1',
-        customerName: customerName.trim() || 'Akkaraipattu Guest',
-        customerPhone: customerPhone.trim() || '077 123 4567',
+        customerName: customerName.trim(),
+        customerPhone: customerPhone.trim(),
         serviceIds: selectedServiceIds,
         preferredChairId: selectedChairId === 'ANY' ? undefined : selectedChairId,
         date: selectedDate,
-        timeSlot: selectedSlot || '15:15',
+        timeSlot: selectedSlot || '',
       });
 
       // Celebration confetti
@@ -139,7 +195,8 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
         // Confetti fallback
       }
 
-      onBookingConfirmed(pass);
+      setShowCustomerModal(false);
+      onBookingConfirmed(pass, customerName.trim(), customerPhone.trim(), salon?.name);
     } catch (err) {
       console.error('Booking failed:', err);
       alert('Failed to reserve booking. Please try again.');
@@ -336,21 +393,20 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <div
               style={{
-                width: '40px',
-                height: '40px',
-                backgroundColor: '#008378',
+                width: '42px',
+                height: '42px',
                 borderRadius: '12px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#F4FFFC',
-                boxShadow: 'inset 0px 2px 4px rgba(0, 0, 0, 0.05)',
+                overflow: 'hidden',
+                boxShadow: '0 2px 6px rgba(0, 0, 0, 0.1)',
+                border: '1.5px solid #D5E3FD',
+                flexShrink: 0,
               }}
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-                <polyline points="9 22 9 12 15 12 15 22" />
-              </svg>
+              <img
+                src={heroImg}
+                alt={salon?.name || 'Salon'}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+              />
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -364,11 +420,11 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
                     letterSpacing: '-0.4px',
                   }}
                 >
-                  Classic Cuts
+                  {salon?.name || 'Western Cutters'}
                 </span>
-                <span style={{ color: '#00685F' }}>★ 4.9</span>
+                <span style={{ color: '#00685F', fontWeight: 600 }}>★ {salon?.rating || 4.9}</span>
                 <Badge variant="soft" isMono>
-                  342 Reviews
+                  {salon?.reviewsCount || 342} Reviews
                 </Badge>
               </div>
               <span
@@ -378,7 +434,7 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
                   color: '#3D4947',
                 }}
               >
-                Main Street, Akkaraipattu · Eastern Province
+                {salon?.address || 'Main Street, Akkaraipattu'} · Eastern Province
               </span>
             </div>
           </div>
@@ -404,7 +460,7 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
                   color: '#00685F',
                 }}
               >
-                2 Chairs Active Now
+                {salon?.activeChairsCount || 2} Chairs Active Now
               </span>
             </div>
 
@@ -422,7 +478,7 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
               }}
             >
               <span>Turnaround:</span>
-              <strong style={{ color: '#00685F' }}>~12m Est. Wait</strong>
+              <strong style={{ color: '#00685F' }}>~{salon?.estWaitMinutes || 12}m Est. Wait</strong>
             </div>
           </div>
         </div>
@@ -462,8 +518,8 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
           >
             <div style={{ position: 'relative', height: '220px', width: '100%' }}>
               <img
-                src={salon?.heroImageUrl || '/src/assets/salon_hero.jpg'}
-                alt="Classic Cuts Grooming Lab"
+                src={heroImg}
+                alt={salon?.name || 'Western Cutters'}
                 style={{
                   width: '100%',
                   height: '100%',
@@ -491,7 +547,7 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
                 }}
               >
                 <Badge variant="mint" isMono>
-                  CLINICAL PRECISION LAB
+                  {salon?.id === 'salon_3' ? 'UNISEX LUXURY LOUNGE' : 'CLINICAL PRECISION LAB'}
                 </Badge>
                 <Badge variant="teal" isMono>
                   UV STERILIZED
@@ -517,7 +573,7 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
                     color: '#F4FFFC',
                   }}
                 >
-                  Classic Cuts Grooming Lab
+                  {salon?.name || 'Western Cutters'}
                 </h1>
               </div>
             </div>
@@ -557,7 +613,7 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
                       color: '#00685F',
                     }}
                   >
-                    4.9 ★
+                    {salon?.rating || 4.9} ★
                   </div>
                   <span style={{ fontSize: '11px', color: '#5C647A' }}>Quality Rating</span>
                 </div>
@@ -570,7 +626,7 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
                       color: '#0D1C2F',
                     }}
                   >
-                    12 Mins
+                    {salon?.estWaitMinutes || 12} Mins
                   </div>
                   <span style={{ fontSize: '11px', color: '#5C647A' }}>Avg. Turnaround</span>
                 </div>
@@ -583,7 +639,7 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
                       color: '#4648D4',
                     }}
                   >
-                    2 Chairs
+                    {salon?.activeChairsCount || 2} Chairs
                   </div>
                   <span style={{ fontSize: '11px', color: '#5C647A' }}>Active Stylists</span>
                 </div>
@@ -1060,7 +1116,7 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#5C647A' }}>
                 <span>Selected Slot:</span>
                 <strong style={{ color: '#0D1C2F' }}>{selectedSlot || 'Next available'} IST</strong>
-                <span>({selectedChairId === 'ANY' ? 'Any Available' : selectedChairId === 'chair_rifas' ? 'Chair 1 Rifas' : 'Chair 2 Kannan'})</span>
+                <span>({selectedChairId === 'ANY' ? 'Any Available' : selectedChairId === 'chair_rifas' ? 'Chair 1 Dhanu' : 'Chair 2 Thambi'})</span>
               </div>
             </div>
 
@@ -1108,6 +1164,144 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
           </button>
         </div>
       </aside>
+
+      {/* Real Customer Information Modal */}
+      <Modal
+        isOpen={showCustomerModal}
+        onClose={() => setShowCustomerModal(false)}
+        title="Confirm Your Appointment"
+        subtitle="Enter your name and phone number — we'll send an OTP to confirm your slot."
+        maxWidth="500px"
+      >
+        <form onSubmit={handleFinalBookingSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          {/* Booking Summary Box */}
+          <div
+            style={{
+              padding: '14px',
+              backgroundColor: '#EFF4FF',
+              borderRadius: '10px',
+              border: '1px solid #D5E3FD',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '6px',
+              fontSize: '12px',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', color: '#0D1C2F' }}>
+              <span><strong>Slot:</strong> {selectedDate} at {selectedSlot} IST (45m block)</span>
+              <span style={{ color: '#00685F', fontWeight: 700 }}>
+                {selectedChairId === 'ANY' ? 'Any Available' : selectedChairId === 'chair_rifas' ? 'Chair 1: Dhanu' : 'Chair 2: Thambi'}
+              </span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', color: '#3D4947' }}>
+              <span><strong>Services:</strong> {selectedServices.map((s) => s.name).join(', ')}</span>
+              <strong style={{ color: '#00685F', fontSize: '13px' }}>LKR {totalPriceLkr.toLocaleString()}</strong>
+            </div>
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#0D1C2F', marginBottom: '6px' }}>
+              Customer Full Name <span style={{ color: '#EF4444' }}>*</span>
+            </label>
+            <input
+              type="text"
+              required
+              placeholder="e.g. Farhan Mohamed"
+              value={customerName}
+              onChange={(e) => setCustomerName(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '12px 14px',
+                borderRadius: '8px',
+                border: '1px solid #D5E3FD',
+                backgroundColor: '#FFFFFF',
+                fontSize: '14px',
+                color: '#0D1C2F',
+                outline: 'none',
+              }}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#0D1C2F', marginBottom: '6px' }}>
+              Mobile Phone Number <span style={{ color: '#EF4444' }}>*</span>
+            </label>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <div
+                style={{
+                  padding: '12px 14px',
+                  backgroundColor: '#EFF4FF',
+                  border: '1px solid #D5E3FD',
+                  borderRadius: '8px',
+                  fontSize: '14px',
+                  fontWeight: 600,
+                  color: '#0D1C2F',
+                }}
+              >
+                +94
+              </div>
+              <input
+                type="tel"
+                required
+                placeholder="77 123 4567"
+                value={customerPhone}
+                onChange={(e) => setCustomerPhone(e.target.value)}
+                style={{
+                  flex: 1,
+                  padding: '12px 14px',
+                  borderRadius: '8px',
+                  border: '1px solid #D5E3FD',
+                  backgroundColor: '#FFFFFF',
+                  fontSize: '14px',
+                  color: '#0D1C2F',
+                  outline: 'none',
+                }}
+              />
+            </div>
+            <span style={{ fontSize: '11px', color: '#5C647A', marginTop: '4px', display: 'block' }}>
+              We'll send an OTP to this number to confirm your booking.
+            </span>
+          </div>
+
+          <div style={{ display: 'flex', gap: '10px', marginTop: '8px' }}>
+            <button
+              type="button"
+              onClick={() => setShowCustomerModal(false)}
+              style={{
+                flex: 1,
+                padding: '12px',
+                backgroundColor: '#EFF4FF',
+                border: '1px solid #D5E3FD',
+                borderRadius: '8px',
+                fontWeight: 600,
+                fontSize: '14px',
+                color: '#3D4947',
+                cursor: 'pointer',
+              }}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={isBooking}
+              style={{
+                flex: 2,
+                padding: '12px',
+                backgroundColor: '#00685F',
+                border: 'none',
+                borderRadius: '8px',
+                fontWeight: 700,
+                fontSize: '14px',
+                color: '#FFFFFF',
+                cursor: isBooking ? 'not-allowed' : 'pointer',
+                opacity: isBooking ? 0.7 : 1,
+              }}
+            >
+              {isBooking ? 'Securing Slot...' : 'Book Now →'}
+            </button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 };

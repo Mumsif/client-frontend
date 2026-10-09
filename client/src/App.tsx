@@ -2,7 +2,7 @@
  * ============================================================================
  * TRIMLY / GLOWSLOT - MAIN APP ROOT
  * ============================================================================
- * Hosts the global AuthProvider and AppRoutes
+ * Hosts the global AuthProvider, AppRoutes, and global ambient animations
  * ============================================================================
  */
 
@@ -14,9 +14,15 @@ import './App.css';
 function App() {
   return (
     <AuthProvider>
+      {/* Global Ambient Aurora Orbs - rendered behind all content */}
+      <div className="aurora-orb-1" aria-hidden="true" />
+      <div className="aurora-orb-2" aria-hidden="true" />
+      <div className="aurora-orb-3" aria-hidden="true" />
+
       <AppRoutes />
     </AuthProvider>
   );
 }
 
 export default App;
+

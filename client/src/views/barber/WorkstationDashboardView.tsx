@@ -22,6 +22,7 @@ import { DelaySyncButton } from '../../components/barber/DelaySyncButton';
 import { OtpVerifyModal } from '../../components/barber/OtpVerifyModal';
 import { WalkInModal } from '../../components/barber/WalkInModal';
 import { Badge } from '../../components/common/Badge';
+import westernCuttersImg from '../../assets/salon_hero.jpg';
 
 export interface WorkstationDashboardViewProps {
   onNavigateToCustomerBooking?: () => void;
@@ -43,6 +44,8 @@ export const WorkstationDashboardView: React.FC<WorkstationDashboardViewProps> =
     applyDelayShift,
     registerWalkIn,
     toggleChairStatus,
+    scheduleBreak,
+    endBreak,
   } = useFirestoreQueue('salon_1');
 
   // Live Digital Clock state (IST format)
@@ -194,21 +197,20 @@ export const WorkstationDashboardView: React.FC<WorkstationDashboardViewProps> =
           <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
             <div
               style={{
-                width: '38px',
-                height: '38px',
-                backgroundColor: '#00685F',
+                width: '42px',
+                height: '42px',
                 borderRadius: '10px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#FFFFFF',
+                overflow: 'hidden',
+                border: '1.5px solid #D5E3FD',
+                boxShadow: '0 2px 6px rgba(0, 0, 0, 0.08)',
+                flexShrink: 0,
               }}
             >
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-                <rect x="2" y="3" width="20" height="14" rx="2" />
-                <line x1="8" y1="21" x2="16" y2="21" />
-                <line x1="12" y1="17" x2="12" y2="21" />
-              </svg>
+              <img
+                src={westernCuttersImg}
+                alt="Western Cutters Barbershop"
+                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+              />
             </div>
             <div>
               <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: '18px', color: '#0D1C2F' }}>
@@ -217,7 +219,7 @@ export const WorkstationDashboardView: React.FC<WorkstationDashboardViewProps> =
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <span className="live-pulse-dot" />
                 <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: '#00685F' }}>
-                  Real-Time Chair Board · Classic Cuts Akkaraipattu
+                  Real-Time Chair Board · Western Cutters Akkaraipattu
                 </span>
               </div>
             </div>
@@ -469,6 +471,8 @@ export const WorkstationDashboardView: React.FC<WorkstationDashboardViewProps> =
               onRegisterWalkIn={registerWalkIn}
               onToggleStatus={toggleChairStatus}
               onOpenWalkInModal={handleOpenWalkIn}
+              onScheduleBreak={scheduleBreak}
+              onEndBreak={endBreak}
             />
           ))
         )}

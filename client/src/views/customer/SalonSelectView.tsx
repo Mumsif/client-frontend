@@ -10,6 +10,9 @@
 
 import React, { useState } from 'react';
 import { Badge } from '../../components/common/Badge';
+import westernCuttersImg from '../../assets/salon_hero.jpg';
+import royalBladeImg from '../../assets/royal_blade.jpg';
+import easternGlowImg from '../../assets/eastern_glow.webp';
 
 export interface SalonSelectViewProps {
   onSelectSalon: (salonId: string) => void;
@@ -26,7 +29,7 @@ export const SalonSelectView: React.FC<SalonSelectViewProps> = ({
   const salons = [
     {
       id: 'salon_1',
-      name: 'Classic Cuts Grooming Lab',
+      name: 'Western Cutters',
       tagline: 'Clinical precision hair sculpting & hot-steam beard tailoring',
       address: 'Main Street, Akkaraipattu',
       rating: 4.9,
@@ -35,7 +38,7 @@ export const SalonSelectView: React.FC<SalonSelectViewProps> = ({
       activeChairs: 2,
       type: 'men',
       isFeatured: true,
-      image: '/src/assets/salon_hero.jpg',
+      image: westernCuttersImg,
     },
     {
       id: 'salon_2',
@@ -48,7 +51,7 @@ export const SalonSelectView: React.FC<SalonSelectViewProps> = ({
       activeChairs: 3,
       type: 'men',
       isFeatured: false,
-      image: '/src/assets/salon_hero.jpg',
+      image: royalBladeImg,
     },
     {
       id: 'salon_3',
@@ -61,7 +64,7 @@ export const SalonSelectView: React.FC<SalonSelectViewProps> = ({
       activeChairs: 4,
       type: 'unisex',
       isFeatured: false,
-      image: '/src/assets/salon_hero.jpg',
+      image: easternGlowImg,
     },
   ];
 
