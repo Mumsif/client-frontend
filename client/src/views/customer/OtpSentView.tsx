@@ -1,3 +1,5 @@
+import { Icon } from '../../components/common/Icon';
+
 /**
  * ============================================================================
  * TRIMLY / GLOWSLOT - OTP SENT CONFIRMATION VIEW
@@ -22,6 +24,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 export interface OtpSentViewProps {
   customerName: string;
   customerPhone: string;
+  customerOtp?: string;
   salonName?: string;
   onCorrectPhone: () => void;
   onCheckQueue: () => void;
@@ -33,6 +36,7 @@ const RESEND_COOLDOWN = 60;
 export const OtpSentView: React.FC<OtpSentViewProps> = ({
   customerName,
   customerPhone,
+  customerOtp,
   salonName = 'Western Cutters',
   onCorrectPhone,
   onCheckQueue,
@@ -74,11 +78,6 @@ export const OtpSentView: React.FC<OtpSentViewProps> = ({
   const maskedPhone = displayPhone.length > 6
     ? displayPhone.slice(0, displayPhone.length - 4).replace(/\d/g, '•') + displayPhone.slice(-4)
     : displayPhone;
-
-  const iconStyle: React.CSSProperties = {
-    flexShrink: 0,
-    marginTop: '1px',
-  };
 
   return (
     <div
@@ -134,24 +133,63 @@ export const OtpSentView: React.FC<OtpSentViewProps> = ({
           {/* Title */}
           <div style={{ textAlign: 'center', marginBottom: '8px' }}>
             <h1 style={{ fontSize: '22px', fontWeight: 800, color: '#0D1C2F', margin: '0 0 8px', letterSpacing: '-0.4px' }}>
-              OTP Sent! 🎉
+              Booking Confirmed
             </h1>
             <p style={{ fontSize: '14px', color: '#5C647A', margin: 0, lineHeight: 1.6 }}>
-              Hi <strong style={{ color: '#0D1C2F' }}>{customerName}</strong>, a verification code
-              has been dispatched to your mobile number.
+              Hi <strong style={{ color: '#0D1C2F' }}>{customerName}</strong>, your booking pass
+              has been sent to your mobile number.
             </p>
           </div>
 
+          {/* Booking pass info */}
+          {customerOtp && (
+            <div
+              style={{
+                margin: '20px 0 16px',
+                padding: '14px 16px',
+                backgroundColor: '#F4FFFC',
+                borderRadius: '12px',
+                border: '1.5px solid #B2DDD9',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+              }}
+            >
+              <div
+                style={{
+                  width: '40px',
+                  height: '40px',
+                  borderRadius: '10px',
+                  backgroundColor: '#00685F',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                }}
+              >
+                <Icon name="check" size={20} color="#FFFFFF" />
+              </div>
+              <div>
+                <div style={{ fontSize: '13px', fontWeight: 700, color: '#0D1C2F', marginBottom: '2px' }}>
+                  Verification code sent via SMS
+                </div>
+                <p style={{ margin: 0, fontSize: '12px', color: '#3D4947', lineHeight: 1.4 }}>
+                  Show the code to your barber when you arrive at the salon.
+                </p>
+              </div>
+            </div>
+          )}
+
           {/* Phone pill */}
-          <div style={{ margin: '20px 0', padding: '14px 16px', backgroundColor: '#F0F4FF', borderRadius: '14px', border: '1.5px solid #D5E3FD', display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ margin: customerOtp ? '10px 0 18px' : '20px 0', padding: '14px 16px', backgroundColor: '#F0F4FF', borderRadius: '14px', border: '1.5px solid #D5E3FD', display: 'flex', alignItems: 'center', gap: '12px' }}>
             <div style={{ width: '38px', height: '38px', borderRadius: '10px', backgroundColor: '#E8EDFF', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4648D4" strokeWidth="2.5" strokeLinecap="round">
                 <rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/>
               </svg>
             </div>
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: '10px', color: '#5C647A', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '2px' }}>OTP sent to</div>
-              <div style={{ fontSize: '17px', fontWeight: 700, color: '#0D1C2F', fontFamily: "'Courier New', monospace", letterSpacing: '1.5px' }}>{maskedPhone}</div>
+              <div style={{ fontSize: '10px', color: '#5C647A', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '2px' }}>Customer Phone</div>
+              <div style={{ fontSize: '15px', fontWeight: 700, color: '#0D1C2F', fontFamily: "'Courier New', monospace", letterSpacing: '1px' }}>{maskedPhone}</div>
             </div>
             <div style={{ fontSize: '10px', fontWeight: 700, color: '#00685F', backgroundColor: '#E6F4F3', padding: '4px 10px', borderRadius: '20px', border: '1px solid #B2DDD9', flexShrink: 0 }}>
               {salonName}
@@ -159,91 +197,119 @@ export const OtpSentView: React.FC<OtpSentViewProps> = ({
           </div>
 
           {/* Info banner */}
-          <div style={{ padding: '10px 14px', backgroundColor: '#FFFBEB', borderRadius: '10px', border: '1px solid #FDE68A', fontSize: '12px', color: '#78350F', display: 'flex', gap: '8px', alignItems: 'flex-start', marginBottom: '24px', lineHeight: 1.5 }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#D97706" strokeWidth="2.5" style={iconStyle}>
-              <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-            </svg>
+          <div style={{ padding: '12px 14px', backgroundColor: '#F0FBF9', borderRadius: '12px', border: '1px solid #B2DDD9', fontSize: '12px', color: '#00685F', display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '20px', lineHeight: 1.5 }}>
+            <Icon name="check-circle" size={16} color="#00685F" />
             <span>
-              Show the OTP code to your barber upon arrival. Valid for <strong>5 minutes</strong>.
-              {resendCount > 0 && <> · Resent <strong>{resendCount}×</strong></>}
+              Your digital booking pass and appointment PIN are ready.
+              {resendCount > 0 && <> · SMS resent <strong>{resendCount}×</strong></>}
             </span>
           </div>
 
           {/* Buttons */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
 
-            {/* 1. Resend */}
+            {/* 1. Primary: View Booking Pass */}
+            <button
+              id="btn-check-queue"
+              type="button"
+              onClick={onCheckQueue}
+              style={{
+                width: '100%',
+                padding: '14px 20px',
+                backgroundColor: '#00685F',
+                color: '#FFFFFF',
+                borderRadius: '12px',
+                border: 'none',
+                fontWeight: 700,
+                fontSize: '14px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                boxShadow: '0px 4px 16px rgba(0, 104, 95, 0.3)',
+                transition: 'all 0.2s ease',
+                fontFamily: 'inherit',
+              }}
+            >
+              <Icon name="ticket" size={16} color="#FFFFFF" />
+              <span>View Booking Pass & Live Queue</span>
+            </button>
+
+            {/* 2. Resend SMS */}
             <button
               id="btn-resend-otp"
               type="button"
               onClick={handleResend}
               disabled={!canResend}
               style={{
-                width: '100%', padding: '14px 20px',
-                backgroundColor: canResend ? '#00685F' : '#F0F4FF',
-                color: canResend ? '#FFFFFF' : '#5C647A',
-                border: canResend ? 'none' : '1.5px solid #D5E3FD',
-                borderRadius: '12px', fontWeight: 700, fontSize: '14px',
+                width: '100%',
+                padding: '12px 20px',
+                backgroundColor: canResend ? '#EFF4FF' : '#F8FAFC',
+                color: canResend ? '#00685F' : '#94A3B8',
+                border: '1px solid #E2E8F0',
+                borderRadius: '12px',
+                fontWeight: 600,
+                fontSize: '13px',
                 cursor: canResend ? 'pointer' : 'not-allowed',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
                 transition: 'all 0.2s ease',
-                boxShadow: canResend ? '0px 4px 16px rgba(0,104,95,0.28)' : 'none',
                 fontFamily: 'inherit',
               }}
             >
               {justResent ? (
-                <><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>OTP Resent!</>
+                <>
+                  <Icon name="check" size={14} color="#00685F" />
+                  <span>SMS Resent Successfully</span>
+                </>
               ) : canResend ? (
-                <><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.49"/></svg>Resend OTP Now</>
+                <>
+                  <Icon name="send" size={14} color="#00685F" />
+                  <span>Resend Confirmation SMS</span>
+                </>
               ) : (
-                <><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Didn't receive OTP? Resend in {resendCountdown}s</>
+                <>
+                  <Icon name="clock" size={14} color="#94A3B8" />
+                  <span>Resend available in {resendCountdown}s</span>
+                </>
               )}
             </button>
 
-            {/* 2. Correct phone */}
+            {/* 3. Correct phone */}
             <button
               id="btn-correct-phone"
               type="button"
               onClick={onCorrectPhone}
               style={{
-                width: '100%', padding: '13px 20px',
-                backgroundColor: '#FFFFFF', color: '#4648D4',
-                border: '1.5px solid #C7C8F5', borderRadius: '12px',
-                fontWeight: 600, fontSize: '14px', cursor: 'pointer',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                transition: 'all 0.2s ease', fontFamily: 'inherit',
+                width: '100%',
+                padding: '11px 20px',
+                backgroundColor: '#FFFFFF',
+                color: '#5C647A',
+                border: '1px solid #E2E8F0',
+                borderRadius: '12px',
+                fontWeight: 600,
+                fontSize: '13px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                transition: 'all 0.2s ease',
+                fontFamily: 'inherit',
               }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#F0F0FF'; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#FFFFFF'; }}
-            >
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-              </svg>
-              Correct the Phone Number
-            </button>
-
-            {/* 3. Check Queue */}
-            <button
-              id="btn-check-queue"
-              type="button"
-              onClick={onCheckQueue}
-              style={{
-                width: '100%', padding: '13px 20px',
-                backgroundColor: '#FFFFFF', color: '#0D1C2F',
-                border: '1.5px solid #E2E8F0', borderRadius: '12px',
-                fontWeight: 600, fontSize: '14px', cursor: 'pointer',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                transition: 'all 0.2s ease', fontFamily: 'inherit',
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#F8F9FF';
+                e.currentTarget.style.color = '#0D1C2F';
               }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#F8F9FF'; (e.currentTarget as HTMLButtonElement).style.borderColor = '#C3CCD8'; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#FFFFFF'; (e.currentTarget as HTMLButtonElement).style.borderColor = '#E2E8F0'; }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#FFFFFF';
+                e.currentTarget.style.color = '#5C647A';
+              }}
             >
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/>
-                <line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/>
-                <line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>
-              </svg>
-              Check the Queue
+              <span>Edit Contact Number</span>
             </button>
 
             {/* Divider */}

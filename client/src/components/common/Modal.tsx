@@ -7,6 +7,7 @@
  */
 
 import React, { type ReactNode, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 
 export interface ModalProps {
   isOpen: boolean;
@@ -28,18 +29,28 @@ export const Modal: React.FC<ModalProps> = ({
   maxWidth = '480px',
 }) => {
   useEffect(() => {
+    if (!isOpen) return;
+
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
+      if (e.key === 'Escape') {
         onClose();
       }
     };
+
+    // Lock background page scroll while modal is active
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = originalOverflow;
+    };
   }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
-  return (
+  return createPortal(
     <div
       style={{
         position: 'fixed',
@@ -47,14 +58,17 @@ export const Modal: React.FC<ModalProps> = ({
         left: 0,
         right: 0,
         bottom: 0,
+        width: '100vw',
+        height: '100vh',
         backgroundColor: 'rgba(13, 28, 47, 0.65)',
         backdropFilter: 'blur(8px)',
         WebkitBackdropFilter: 'blur(8px)',
-        zIndex: 9999,
+        zIndex: 99999,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         padding: '16px',
+        boxSizing: 'border-box',
         animation: 'fadeIn 0.2s ease-out',
       }}
       onClick={(e) => {
@@ -65,9 +79,10 @@ export const Modal: React.FC<ModalProps> = ({
         style={{
           width: '100%',
           maxWidth,
+          maxHeight: 'calc(100vh - 48px)',
           backgroundColor: '#FFFFFF',
           borderRadius: '16px',
-          boxShadow: '0 20px 40px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 104, 95, 0.1)',
+          boxShadow: '0 20px 40px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 104, 95, 0.1)',
           overflow: 'hidden',
           display: 'flex',
           flexDirection: 'column',
@@ -84,6 +99,7 @@ export const Modal: React.FC<ModalProps> = ({
             alignItems: 'flex-start',
             justifyContent: 'space-between',
             gap: '12px',
+            flexShrink: 0,
           }}
         >
           <div>
@@ -135,7 +151,7 @@ export const Modal: React.FC<ModalProps> = ({
         </div>
 
         {/* Content Body */}
-        <div style={{ padding: '24px' }}>{children}</div>
+        <div style={{ padding: '24px', overflowY: 'auto', flex: '1 1 auto' }}>{children}</div>
 
         {/* Optional Footer */}
         {footer && (
@@ -147,12 +163,14 @@ export const Modal: React.FC<ModalProps> = ({
               display: 'flex',
               justifyContent: 'flex-end',
               gap: '12px',
+              flexShrink: 0,
             }}
           >
             {footer}
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };

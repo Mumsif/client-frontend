@@ -289,7 +289,7 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
                     letterSpacing: '0.2px',
                   }}
                 >
-                  Akkaraipattu Pilot Hub
+                  Smart Booking Hub
                 </span>
               </div>
             </div>
@@ -335,7 +335,7 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
                   transition: 'all 0.15s ease',
                 }}
               >
-                <span>📍 Salons</span>
+                <span>Salons</span>
               </button>
             )}
 
@@ -359,7 +359,7 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
                   boxShadow: hasActivePass ? '0 2px 8px rgba(0, 104, 95, 0.25)' : 'none',
                 }}
               >
-                <span>🎫 {hasActivePass ? 'Active Pass' : 'My Pass'}</span>
+                <span>{hasActivePass ? 'Active Pass' : 'My Pass'}</span>
               </button>
             )}
           </div>
@@ -422,7 +422,7 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
                 >
                   {salon?.name || 'Western Cutters'}
                 </span>
-                <span style={{ color: '#00685F', fontWeight: 600 }}>★ {salon?.rating || 4.9}</span>
+                <span style={{ color: '#00685F', fontWeight: 600 }}>{salon?.rating || 4.9} / 5.0</span>
                 <Badge variant="soft" isMono>
                   {salon?.reviewsCount || 342} Reviews
                 </Badge>
@@ -613,7 +613,7 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
                       color: '#00685F',
                     }}
                   >
-                    {salon?.rating || 4.9} ★
+                    {salon?.rating || 4.9} / 5.0
                   </div>
                   <span style={{ fontSize: '11px', color: '#5C647A' }}>Quality Rating</span>
                 </div>
@@ -973,7 +973,7 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#00685F', fontSize: '13px', fontWeight: 600 }}>
-            <span>🔒 Verified Akkaraipattu Hub</span>
+            <span>Verified Salon</span>
           </div>
         </section>
 
@@ -1002,9 +1002,9 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
             }}
           >
             <div>
-              <strong style={{ color: '#0D1C2F', fontSize: '13px' }}>Trimly GlowSlot</strong> · Akkaraipattu Pilot Network
+              <strong style={{ color: '#0D1C2F', fontSize: '13px' }}>Trimly</strong> · Smart Salon Network
               <p style={{ margin: '3px 0 0', color: '#8893A4', fontSize: '11px' }}>
-                Zero-wait salon queue management, real-time OTP tracking & barber telemetry.
+                Zero-wait salon queue management, real-time chair tracking & digital pass verification.
               </p>
             </div>
 
@@ -1045,7 +1045,7 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
                     gap: '4px',
                   }}
                 >
-                  <span>🔒 Staff Portal</span>
+                  <span>Staff Portal</span>
                 </button>
               )}
             </div>

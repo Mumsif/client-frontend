@@ -14,6 +14,7 @@
 import React, { useState, useMemo } from 'react';
 import type { AvailableSlot } from '../../api/bookingApi';
 import { Badge } from '../common/Badge';
+import { Icon } from '../common/Icon';
 import { getLocalDateString } from '../../utils/salonStore';
 
 export interface SlotGridProps {
@@ -222,7 +223,19 @@ export const SlotGrid: React.FC<SlotGridProps> = ({
             gap: '10px',
           }}
         >
-          <span style={{ fontSize: '24px' }}>🌙</span>
+          <div
+            style={{
+              width: '44px',
+              height: '44px',
+              borderRadius: '50%',
+              backgroundColor: '#E6F4F3',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Icon name="moon" size={22} color="#00685F" />
+          </div>
           <div style={{ fontWeight: 700, fontSize: '15px', color: '#0D1C2F' }}>
             All booking time slots for today have ended
           </div>
@@ -243,9 +256,13 @@ export const SlotGrid: React.FC<SlotGridProps> = ({
               fontSize: '13px',
               cursor: 'pointer',
               boxShadow: '0 2px 8px rgba(0, 104, 95, 0.25)',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
             }}
           >
-            Book For Tomorrow ➜
+            <span>Book For Tomorrow</span>
+            <Icon name="arrow-right" size={14} color="#FFFFFF" />
           </button>
         </div>
       ) : (

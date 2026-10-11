@@ -109,11 +109,11 @@ export const SalonSelectView: React.FC<SalonSelectViewProps> = ({
                   margin: 0,
                 }}
               >
-                Salons & Barbershops in Akkaraipattu
+                Salons & Barbershops
               </h1>
             </div>
             <p style={{ margin: '6px 0 0', color: '#5C647A', fontSize: '14px' }}>
-              Skip the salon wait. Check live queue velocity and lock your cut with digital OTP.
+              Skip the bench queues. Check live chair availability and reserve your appointment with a verified pass.
             </p>
           </div>
 
@@ -196,7 +196,7 @@ export const SalonSelectView: React.FC<SalonSelectViewProps> = ({
                   }}
                 >
                   {s.isFeatured && <Badge variant="teal">FEATURED PILOT HUB</Badge>}
-                  <Badge variant="mint" isMono>★ {s.rating}</Badge>
+                  <Badge variant="mint" isMono>{s.rating} / 5</Badge>
                 </div>
               </div>
 
@@ -205,7 +205,7 @@ export const SalonSelectView: React.FC<SalonSelectViewProps> = ({
                   {s.name}
                 </h3>
                 <p style={{ margin: 0, fontSize: '13px', color: '#5C647A' }}>{s.tagline}</p>
-                <div style={{ fontSize: '12px', color: '#3D4947' }}>📍 {s.address}</div>
+                <div style={{ fontSize: '12px', color: '#3D4947' }}>{s.address}</div>
 
                 <div
                   style={{

@@ -21,7 +21,9 @@ import { ChairColumn } from '../../components/barber/ChairColumn';
 import { DelaySyncButton } from '../../components/barber/DelaySyncButton';
 import { OtpVerifyModal } from '../../components/barber/OtpVerifyModal';
 import { WalkInModal } from '../../components/barber/WalkInModal';
+import { PaymentModal } from '../../components/barber/PaymentModal';
 import { Badge } from '../../components/common/Badge';
+import { Icon } from '../../components/common/Icon';
 import westernCuttersImg from '../../assets/salon_hero.jpg';
 
 export interface WorkstationDashboardViewProps {
@@ -78,6 +80,61 @@ export const WorkstationDashboardView: React.FC<WorkstationDashboardViewProps> =
     chairId: '',
     chairName: '',
   });
+
+  const [paymentModalState, setPaymentModalState] = useState<{
+    isOpen: boolean;
+    chairId: string;
+    chairNumber: number;
+    barberName: string;
+    customerData: {
+      appointmentId: string;
+      ticketNumber: string;
+      customerName: string;
+      serviceNames: string;
+      totalAmountLkr?: number;
+    };
+  }>({
+    isOpen: false,
+    chairId: '',
+    chairNumber: 1,
+    barberName: '',
+    customerData: {
+      appointmentId: '',
+      ticketNumber: '',
+      customerName: '',
+      serviceNames: '',
+    },
+  });
+
+  const handleOpenPaymentModal = (chairId: string, appointmentId: string) => {
+    const chair = chairs.find((c) => c.chairId === chairId);
+    if (!chair || !chair.activeInChair) {
+      completeService(chairId, appointmentId);
+      return;
+    }
+    setPaymentModalState({
+      isOpen: true,
+      chairId,
+      chairNumber: chair.chairNumber,
+      barberName: chair.barberName,
+      customerData: {
+        appointmentId,
+        ticketNumber: chair.activeInChair.ticketNumber,
+        customerName: chair.activeInChair.customerName,
+        serviceNames: chair.activeInChair.serviceNames,
+        totalAmountLkr: chair.activeInChair.serviceNames.toLowerCase().includes('beard') ? 800 : 400,
+      },
+    });
+  };
+
+  const handleConfirmPayment = async (
+    chairId: string,
+    appointmentId: string,
+    _paymentMethod: string,
+    _amount: number
+  ) => {
+    await completeService(chairId, appointmentId);
+  };
 
   // Wallet Top-up state simulation
   const [walletBalance, setWalletBalance] = useState<number>(wallet?.balanceLkr || 4250);
@@ -162,7 +219,7 @@ export const WorkstationDashboardView: React.FC<WorkstationDashboardViewProps> =
             animation: 'slideUpFade 0.3s ease-out',
           }}
         >
-          <span>✓</span>
+          <Icon name="check" size={14} color="#FFFFFF" />
           <span>{toastMessage.text}</span>
         </div>
       )}
@@ -219,7 +276,7 @@ export const WorkstationDashboardView: React.FC<WorkstationDashboardViewProps> =
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <span className="live-pulse-dot" />
                 <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: '#00685F' }}>
-                  Real-Time Chair Board · Western Cutters Akkaraipattu
+                  Real-Time Chair Board · Western Cutters
                 </span>
               </div>
             </div>
@@ -467,7 +524,7 @@ export const WorkstationDashboardView: React.FC<WorkstationDashboardViewProps> =
               key={chair.chairId}
               chair={chair}
               onVerifyOtp={verifyOtp}
-              onCompleteService={completeService}
+              onCompleteService={handleOpenPaymentModal}
               onRegisterWalkIn={registerWalkIn}
               onToggleStatus={toggleChairStatus}
               onOpenWalkInModal={handleOpenWalkIn}
@@ -593,6 +650,17 @@ export const WorkstationDashboardView: React.FC<WorkstationDashboardViewProps> =
         chairId={walkInModalState.chairId}
         chairName={walkInModalState.chairName}
         onConfirmWalkIn={registerWalkIn}
+      />
+
+      {/* Haircut Finished & Payment Settlement Modal */}
+      <PaymentModal
+        isOpen={paymentModalState.isOpen}
+        onClose={() => setPaymentModalState((s) => ({ ...s, isOpen: false }))}
+        chairId={paymentModalState.chairId}
+        chairNumber={paymentModalState.chairNumber}
+        barberName={paymentModalState.barberName}
+        customerData={paymentModalState.customerData}
+        onConfirmPayment={handleConfirmPayment}
       />
     </div>
   );

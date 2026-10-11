@@ -15,6 +15,7 @@ import React, { useState, useEffect } from 'react';
 import { bookingApi, type AppointmentResponseDTO } from '../../api/bookingApi';
 import { BookingPass } from '../../components/customer/BookingPass';
 import { Button } from '../../components/common/Button';
+import { Icon } from '../../components/common/Icon';
 
 export interface PassStatusViewProps {
   pass?: AppointmentResponseDTO | null;
@@ -119,7 +120,11 @@ export const PassStatusView: React.FC<PassStatusViewProps> = ({
         </div>
       ) : pass ? (
         <div style={{ maxWidth: '480px', width: '100%' }}>
-          <BookingPass pass={pass} onCancel={handleCancelBooking} onRefresh={loadPass} />
+          <BookingPass
+            pass={pass}
+            onCancel={handleCancelBooking}
+            onRefresh={loadPass}
+          />
         </div>
       ) : (
         <div
@@ -146,14 +151,13 @@ export const PassStatusView: React.FC<PassStatusViewProps> = ({
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: '#00685F',
             }}
           >
-            🎫
+            <Icon name="ticket" size={26} color="#00685F" />
           </div>
           <h3 style={{ margin: 0, color: '#0D1C2F' }}>No Active Booking Pass Found</h3>
           <p style={{ margin: 0, fontSize: '13px', color: '#5C647A' }}>
-            Book your haircut or grooming package from the Service Menu to generate your digital OTP pass.
+            Book your haircut or grooming package from the Service Menu to generate your digital booking pass.
           </p>
           {onBackToBooking && (
             <Button variant="primary" size="md" onClick={onBackToBooking}>

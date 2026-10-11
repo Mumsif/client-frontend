@@ -16,6 +16,7 @@ import type { BarberStationChair, OtpVerifyRequestDTO, WalkInRequestDTO } from '
 import { ActiveInChairCard } from './ActiveInChairCard';
 import { Badge } from '../common/Badge';
 import { Modal } from '../common/Modal';
+import { Icon } from '../common/Icon';
 import { STANDARD_45M_SLOTS } from '../../utils/salonStore';
 
 export interface ChairColumnProps {
@@ -271,7 +272,7 @@ export const ChairColumn: React.FC<ChairColumnProps> = ({
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#B45309', fontSize: '13px', fontWeight: 600 }}>
-            <span>☕</span>
+            <Icon name="coffee" size={16} color="#B45309" />
             <span>Chair {chair.chairNumber} ({chair.barberName}) is ON BREAK. Customers cannot book this slot.</span>
           </div>
           <button

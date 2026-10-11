@@ -13,6 +13,7 @@ import React from 'react';
 import type { AppointmentResponseDTO } from '../../api/bookingApi';
 import { Badge } from '../common/Badge';
 import { Button } from '../common/Button';
+import { Icon } from '../common/Icon';
 import westernCuttersImg from '../../assets/salon_hero.jpg';
 import royalBladeImg from '../../assets/royal_blade.jpg';
 import easternGlowImg from '../../assets/eastern_glow.webp';
@@ -23,7 +24,11 @@ export interface BookingPassProps {
   onRefresh?: () => void;
 }
 
-export const BookingPass: React.FC<BookingPassProps> = ({ pass, onCancel, onRefresh }) => {
+export const BookingPass: React.FC<BookingPassProps> = ({
+  pass,
+  onCancel,
+  onRefresh,
+}) => {
   const getSalonImage = () => {
     if (pass.salonImageUrl) return pass.salonImageUrl;
     const nameLower = (pass.salonName || '').toLowerCase();
@@ -104,8 +109,9 @@ export const BookingPass: React.FC<BookingPassProps> = ({ pass, onCancel, onRefr
           >
             {pass.salonName}
           </h3>
-          <span style={{ fontSize: '11px', opacity: 0.85, display: 'block', marginTop: '2px' }}>
-            📍 {pass.salonAddress}
+          <span style={{ fontSize: '11px', opacity: 0.85, display: 'inline-flex', alignItems: 'center', gap: '4px', marginTop: '2px' }}>
+            <Icon name="map-pin" size={12} color="#B2EBF2" />
+            <span>{pass.salonAddress}</span>
           </span>
         </div>
       </div>
@@ -203,77 +209,8 @@ export const BookingPass: React.FC<BookingPassProps> = ({ pass, onCancel, onRefr
         />
       </div>
 
-      {/* Main Pass Body with 4-Digit OTP Box */}
+      {/* Main Pass Body */}
       <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-        {/* OTP High-Contrast Verification Card */}
-        <div
-          style={{
-            backgroundColor: '#EFF4FF',
-            border: '2px dashed #00685F',
-            borderRadius: '16px',
-            padding: '20px',
-            textAlign: 'center',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: '8px',
-          }}
-        >
-          <span
-            style={{
-              fontFamily: "'Plus Jakarta Sans', sans-serif",
-              fontSize: '12px',
-              fontWeight: 600,
-              color: '#3D4947',
-              letterSpacing: '0.5px',
-              textTransform: 'uppercase',
-            }}
-          >
-            Show this 4-Digit OTP to your Barber
-          </span>
-          <div
-            style={{
-              display: 'flex',
-              gap: '12px',
-              justifyContent: 'center',
-              marginTop: '4px',
-            }}
-          >
-            {pass.otp.split('').map((digit, idx) => (
-              <div
-                key={idx}
-                style={{
-                  width: '52px',
-                  height: '60px',
-                  backgroundColor: '#FFFFFF',
-                  borderRadius: '12px',
-                  boxShadow: '0 2px 6px rgba(0, 104, 95, 0.15)',
-                  border: '1.5px solid #00685F',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontFamily: "'JetBrains Mono', monospace",
-                  fontWeight: 700,
-                  fontSize: '28px',
-                  color: '#00685F',
-                }}
-              >
-                {digit}
-              </div>
-            ))}
-          </div>
-          <span
-            style={{
-              fontFamily: "'JetBrains Mono', monospace",
-              fontSize: '11px',
-              color: '#5C647A',
-              marginTop: '4px',
-            }}
-          >
-            Tamper-resistant validation protects fair commission
-          </span>
-        </div>
-
         {/* Live Queue Metrics */}
         <div
           style={{
@@ -281,19 +218,20 @@ export const BookingPass: React.FC<BookingPassProps> = ({ pass, onCancel, onRefr
             gridTemplateColumns: '1fr 1fr',
             gap: '12px',
             backgroundColor: '#F8F9FF',
-            padding: '16px',
-            borderRadius: '12px',
+            padding: '16px 20px',
+            borderRadius: '14px',
+            border: '1px solid #D5E3FD',
           }}
         >
           <div>
-            <span style={{ fontSize: '11px', color: '#5C647A' }}>Your Queue Position</span>
+            <span style={{ fontSize: '11px', color: '#5C647A', fontWeight: 600 }}>Your Queue Position</span>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
               <span className="live-pulse-dot" />
               <span
                 style={{
                   fontFamily: "'JetBrains Mono', monospace",
                   fontWeight: 700,
-                  fontSize: '18px',
+                  fontSize: '20px',
                   color: '#0D1C2F',
                 }}
               >
@@ -302,18 +240,83 @@ export const BookingPass: React.FC<BookingPassProps> = ({ pass, onCancel, onRefr
             </div>
           </div>
           <div>
-            <span style={{ fontSize: '11px', color: '#5C647A' }}>Estimated Chair Time</span>
+            <span style={{ fontSize: '11px', color: '#5C647A', fontWeight: 600 }}>Estimated Chair Time</span>
             <p
               style={{
                 fontFamily: "'JetBrains Mono', monospace",
                 fontWeight: 700,
-                fontSize: '18px',
+                fontSize: '20px',
                 color: '#00685F',
                 margin: '4px 0 0',
               }}
             >
               {pass.estimatedChairTime} IST
             </p>
+          </div>
+        </div>
+
+        {/* Check-in Security Verification PIN */}
+        <div
+          style={{
+            backgroundColor: '#F4FFFC',
+            borderRadius: '14px',
+            padding: '16px 20px',
+            border: '1.5px solid #B2DDD9',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '14px',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div
+              style={{
+                width: '38px',
+                height: '38px',
+                borderRadius: '10px',
+                backgroundColor: '#E0F2F1',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+              }}
+            >
+              <Icon name="shield" size={18} color="#00685F" />
+            </div>
+            <div>
+              <span
+                style={{
+                  display: 'block',
+                  fontSize: '11px',
+                  fontWeight: 700,
+                  color: '#5C647A',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.6px',
+                }}
+              >
+                Check-in Verification PIN
+              </span>
+              <span style={{ fontSize: '12px', color: '#3D4947' }}>
+                Present to barber upon arrival to start timer
+              </span>
+            </div>
+          </div>
+
+          <div
+            style={{
+              padding: '6px 14px',
+              backgroundColor: '#00685F',
+              color: '#FFFFFF',
+              borderRadius: '8px',
+              fontFamily: "'JetBrains Mono', monospace",
+              fontWeight: 800,
+              fontSize: '16px',
+              letterSpacing: '2px',
+              boxShadow: '0 2px 8px rgba(0, 104, 95, 0.25)',
+              flexShrink: 0,
+            }}
+          >
+            {pass.otp || '8492'}
           </div>
         </div>
 
