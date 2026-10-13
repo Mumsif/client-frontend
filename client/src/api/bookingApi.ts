@@ -64,6 +64,7 @@ export interface AvailableSlot {
   time: string;
   formattedTime: string;
   isAvailable: boolean;
+  available?: boolean;
   statusText?: 'Open' | 'Booked' | 'Break' | 'Passed';
   chairId?: string;
 }
@@ -102,6 +103,7 @@ export interface AppointmentResponseDTO {
   otp: string;               // 4-digit verification code (tamper-resistant)
   queuePosition: number;
   status: 'PENDING' | 'SEATED' | 'IN_SERVICE' | 'COMPLETED' | 'CANCELLED' | 'NO_SHOW';
+  date?: string;
   createdAt: string;
 }
 
@@ -222,7 +224,19 @@ export const bookingApi = {
   async getAvailableSlots(date: string, stylistId?: string): Promise<AvailableSlot[]> {
     try {
       const url = `/api/v1/public/salons/salon_1/slots?date=${date}${stylistId ? `&stylistId=${stylistId}` : ''}`;
-      return await apiClient.get<AvailableSlot[]>(url);
+      const rawSlots = await apiClient.get<any[]>(url);
+      return (rawSlots || []).map((s) => {
+        const isAvail = s.isAvailable ?? s.available ?? (s.statusText === 'Open');
+        const status = s.statusText || (isAvail ? 'Open' : 'Booked');
+        return {
+          time: s.time,
+          formattedTime: s.formattedTime || s.time,
+          isAvailable: Boolean(isAvail),
+          available: Boolean(isAvail),
+          statusText: status,
+          chairId: s.chairId,
+        };
+      });
     } catch {
       return salonStore.calculateSlots(date, stylistId);
     }
@@ -235,32 +249,65 @@ export const bookingApi = {
    * com.glowslot.service.BookingService.java
    */
   async createBooking(request: BookingRequestDTO): Promise<AppointmentResponseDTO> {
+    const services = await this.getServices();
+    const selected = services.filter((s) => request.serviceIds.includes(s.id));
+    const totalMin = selected.reduce((acc, curr) => acc + curr.durationMinutes, 0) || 45;
+    const totalCost = selected.reduce((acc, curr) => acc + curr.priceLkr, 0);
+
+    // Resolve chair assignment: chair_dhanu/chair_1 -> chair_1, chair_thambi/chair_2 -> chair_2
+    let resolvedChairId = 'chair_1';
+    let resolvedChairName = 'Chair 1: Dhanu';
+    if (request.preferredChairId === 'chair_thambi' || request.preferredChairId === 'chair_2' || request.preferredChairId === 'chair_kannan') {
+      resolvedChairId = 'chair_2';
+      resolvedChairName = 'Chair 2: Thambi';
+    } else if (request.preferredChairId === 'chair_dhanu' || request.preferredChairId === 'chair_1' || request.preferredChairId === 'chair_rifas') {
+      resolvedChairId = 'chair_1';
+      resolvedChairName = 'Chair 1: Dhanu';
+    } else {
+      // Automatic load balancing for "ANY": assign to chair with smaller pending queue
+      const existingAppts = salonStore.getAppointments();
+      const c1Count = existingAppts.filter((a) => (a.chairId === 'chair_1' || a.chairId === 'chair_dhanu') && a.status === 'PENDING').length;
+      const c2Count = existingAppts.filter((a) => (a.chairId === 'chair_2' || a.chairId === 'chair_thambi') && a.status === 'PENDING').length;
+      if (c2Count < c1Count) {
+        resolvedChairId = 'chair_2';
+        resolvedChairName = 'Chair 2: Thambi';
+      }
+    }
+
+    const salonInfo = SALON_DIRECTORY[request.salonId || 'salon_1'] || SALON_DIRECTORY['salon_1'];
+    let pass: AppointmentResponseDTO;
+
     try {
-      return await apiClient.post<AppointmentResponseDTO>('/api/v1/public/bookings', request);
+      const serverResponse = await apiClient.post<AppointmentResponseDTO>('/api/v1/public/bookings', {
+        ...request,
+        preferredChairId: resolvedChairId,
+      });
+
+      pass = {
+        ...serverResponse,
+        chairId: serverResponse.chairId === 'chair_2' || serverResponse.chairId === 'chair_thambi' ? 'chair_2' : 'chair_1',
+        chairName: serverResponse.chairName || resolvedChairName,
+        date: request.date,
+        scheduledTime: request.timeSlot || serverResponse.scheduledTime,
+        estimatedChairTime: request.timeSlot || serverResponse.estimatedChairTime || 'Upcoming',
+        services: serverResponse.services && serverResponse.services.length > 0 ? serverResponse.services : selected,
+      };
     } catch {
       const generatedOtp = Math.floor(1000 + Math.random() * 9000).toString();
       const randomTicket = `GS-${Math.floor(1000 + Math.random() * 9000)}`;
 
-      const services = await this.getServices();
-      const selected = services.filter((s) => request.serviceIds.includes(s.id));
-      const totalMin = selected.reduce((acc, curr) => acc + curr.durationMinutes, 0) || 45;
-      const totalCost = selected.reduce((acc, curr) => acc + curr.priceLkr, 0);
-
-      const chairId = request.preferredChairId || 'chair_rifas';
-      const chairName = chairId === 'chair_kannan' || chairId === 'chair_2' ? 'Chair 2: Thambi' : 'Chair 1: Dhanu';
-      const salonInfo = SALON_DIRECTORY[request.salonId || 'salon_1'] || SALON_DIRECTORY['salon_1'];
-
-      const pass: AppointmentResponseDTO = {
+      pass = {
         appointmentId: `app_${Date.now()}`,
         ticketNumber: randomTicket,
         salonName: salonInfo.name,
         salonAddress: salonInfo.address,
         salonImageUrl: salonInfo.heroImageUrl,
-        chairId,
-        chairName,
+        chairId: resolvedChairId,
+        chairName: resolvedChairName,
         services: selected.length > 0 ? selected : [SALON_SERVICES[0]],
         customerName: request.customerName,
         customerPhone: request.customerPhone,
+        date: request.date,
         scheduledTime: request.timeSlot || 'Upcoming',
         estimatedChairTime: request.timeSlot || 'Upcoming',
         totalDurationMinutes: totalMin,
@@ -270,11 +317,11 @@ export const bookingApi = {
         status: 'PENDING',
         createdAt: new Date().toISOString(),
       };
-
-      // Persist into salonStore so the Barber Workstation receives it in real-time
-      salonStore.saveAppointment(pass);
-      return pass;
     }
+
+    // ALWAYS persist into salonStore so the Barber Workstation receives it immediately in real-time
+    salonStore.saveAppointment(pass);
+    return pass;
   },
 
   /**

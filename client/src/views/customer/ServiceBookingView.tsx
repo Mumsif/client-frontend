@@ -27,6 +27,7 @@ import {
   type StylistChair,
   type SalonDetails,
   type AppointmentResponseDTO,
+  type AvailableSlot,
 } from '../../api/bookingApi';
 import { ServiceCard } from '../../components/customer/ServiceCard';
 import { StylistSelector } from '../../components/customer/StylistSelector';
@@ -118,9 +119,14 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
   // Auto-select first available upcoming slot when slots load or date changes
   useEffect(() => {
     if (slots && slots.length > 0) {
-      const isCurrentSlotValid = slots.some((s) => s.time === selectedSlot && s.isAvailable && s.statusText !== 'Passed');
+      const isSlotUsable = (s: AvailableSlot) => {
+        const avail = s.isAvailable ?? s.available ?? (s.statusText === 'Open');
+        return Boolean(avail) && s.statusText !== 'Passed' && s.statusText !== 'Break';
+      };
+
+      const isCurrentSlotValid = slots.some((s) => s.time === selectedSlot && isSlotUsable(s));
       if (!isCurrentSlotValid) {
-        const firstAvailable = slots.find((s) => s.isAvailable && s.statusText !== 'Passed');
+        const firstAvailable = slots.find(isSlotUsable);
         if (firstAvailable) {
           setSelectedSlot(firstAvailable.time);
         } else {

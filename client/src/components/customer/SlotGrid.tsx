@@ -281,7 +281,8 @@ export const SlotGrid: React.FC<SlotGridProps> = ({
             const isSelected = selectedSlot === slot.time;
             const isPassed = slot.statusText === 'Passed';
             const isBreak = slot.statusText === 'Break';
-            const isAvailable = slot.isAvailable && !isPassed;
+            const rawAvail = slot.isAvailable ?? slot.available ?? (slot.statusText === 'Open');
+            const isAvailable = Boolean(rawAvail) && !isPassed && !isBreak;
 
             return (
               <button

@@ -162,7 +162,11 @@ class SalonStore {
       const data = localStorage.getItem(this.appointmentsKey);
       const list: AppointmentResponseDTO[] = data ? JSON.parse(data) : [];
       if (date) {
-        return list.filter((a) => a.scheduledTime?.startsWith(date) || (a as any).date === date);
+        return list.filter((a) => {
+          const apptDate = a.date || (a.createdAt ? a.createdAt.split('T')[0] : undefined);
+          if (apptDate) return apptDate === date;
+          return a.scheduledTime?.startsWith(date) || (a as any).date === date;
+        });
       }
       return list;
     } catch {
@@ -172,10 +176,19 @@ class SalonStore {
 
   public saveAppointment(appointment: AppointmentResponseDTO): void {
     const list = this.getAppointments();
-    list.push(appointment);
+    const normalized: AppointmentResponseDTO = {
+      ...appointment,
+      date: appointment.date || (appointment.createdAt ? appointment.createdAt.split('T')[0] : getLocalDateString()),
+    };
+    const existingIndex = list.findIndex((a) => a.appointmentId === appointment.appointmentId);
+    if (existingIndex >= 0) {
+      list[existingIndex] = normalized;
+    } else {
+      list.push(normalized);
+    }
     try {
       localStorage.setItem(this.appointmentsKey, JSON.stringify(list));
-      localStorage.setItem('glowslot_active_pass', JSON.stringify(appointment));
+      localStorage.setItem('glowslot_active_pass', JSON.stringify(normalized));
     } catch {
       // storage quota fallback
     }
@@ -274,6 +287,7 @@ class SalonStore {
           time: slotTime,
           formattedTime: slotTime,
           isAvailable: false,
+          available: false,
           statusText: 'Passed',
           chairId,
         };
@@ -281,20 +295,20 @@ class SalonStore {
 
       // Check if Chair 1 is occupied / break
       const chair1Booked = appointments.some(
-        (a) => (a.chairId === 'chair_1' || a.chairId === 'chair_rifas') && a.scheduledTime === slotTime
+        (a) => (a.chairId === 'chair_1' || a.chairId === 'chair_rifas' || a.chairId === 'chair_dhanu') && a.scheduledTime === slotTime
       );
-      const chair1Break = breaks.some((b) => b.chairId === 'chair_1' && b.timeSlot === slotTime);
+      const chair1Break = breaks.some((b) => (b.chairId === 'chair_1' || b.chairId === 'chair_dhanu') && b.timeSlot === slotTime);
 
       // Check if Chair 2 is occupied / break
       const chair2Booked = appointments.some(
-        (a) => (a.chairId === 'chair_2' || a.chairId === 'chair_kannan') && a.scheduledTime === slotTime
+        (a) => (a.chairId === 'chair_2' || a.chairId === 'chair_kannan' || a.chairId === 'chair_thambi') && a.scheduledTime === slotTime
       );
-      const chair2Break = breaks.some((b) => b.chairId === 'chair_2' && b.timeSlot === slotTime);
+      const chair2Break = breaks.some((b) => (b.chairId === 'chair_2' || b.chairId === 'chair_thambi') && b.timeSlot === slotTime);
 
       let isAvailable = true;
       let statusText: 'Open' | 'Booked' | 'Break' | 'Passed' = 'Open';
 
-      if (chairId === 'chair_rifas' || chairId === 'chair_1') {
+      if (chairId === 'chair_rifas' || chairId === 'chair_1' || chairId === 'chair_dhanu') {
         if (chair1Booked) {
           isAvailable = false;
           statusText = 'Booked';
@@ -302,7 +316,7 @@ class SalonStore {
           isAvailable = false;
           statusText = 'Break';
         }
-      } else if (chairId === 'chair_kannan' || chairId === 'chair_2') {
+      } else if (chairId === 'chair_kannan' || chairId === 'chair_2' || chairId === 'chair_thambi') {
         if (chair2Booked) {
           isAvailable = false;
           statusText = 'Booked';
@@ -325,6 +339,7 @@ class SalonStore {
         time: slotTime,
         formattedTime: slotTime,
         isAvailable,
+        available: isAvailable,
         statusText,
         chairId,
       };
@@ -333,21 +348,28 @@ class SalonStore {
 
   // --- WORKSTATION QUEUE BUILDER (NO FAKE NAMES) ---
   public getWorkstationChairs(targetDate?: string): BarberStationChair[] {
-    const today = targetDate || new Date().toISOString().split('T')[0];
-    const appointments = this.getAppointments(today).filter((a) => a.status !== 'CANCELLED');
+    const allAppointments = this.getAppointments().filter((a) => a.status !== 'CANCELLED');
+    const appointments = targetDate
+      ? this.getAppointments(targetDate).filter((a) => a.status !== 'CANCELLED')
+      : allAppointments;
+    const today = targetDate || getLocalDateString();
     const breaks = this.getBarberBreaks(today);
 
     // Chair 1: Dhanu
-    const chair1Appts = appointments.filter((a) => a.chairId === 'chair_1' || a.chairId === 'chair_rifas');
+    const chair1Appts = appointments.filter((a) =>
+      a.chairId === 'chair_1' || a.chairId === 'chair_rifas' || a.chairId === 'chair_dhanu'
+    );
     const chair1ActiveAppt = chair1Appts.find((a) => a.status === 'SEATED' || a.status === 'IN_SERVICE');
     const chair1Upcoming = chair1Appts.filter((a) => a.status === 'PENDING');
-    const chair1HasActiveBreak = breaks.some((b) => b.chairId === 'chair_1');
+    const chair1HasActiveBreak = breaks.some((b) => b.chairId === 'chair_1' || b.chairId === 'chair_dhanu');
 
     // Chair 2: Thambi
-    const chair2Appts = appointments.filter((a) => a.chairId === 'chair_2' || a.chairId === 'chair_kannan');
+    const chair2Appts = appointments.filter((a) =>
+      a.chairId === 'chair_2' || a.chairId === 'chair_kannan' || a.chairId === 'chair_thambi'
+    );
     const chair2ActiveAppt = chair2Appts.find((a) => a.status === 'SEATED' || a.status === 'IN_SERVICE');
     const chair2Upcoming = chair2Appts.filter((a) => a.status === 'PENDING');
-    const chair2HasActiveBreak = breaks.some((b) => b.chairId === 'chair_2');
+    const chair2HasActiveBreak = breaks.some((b) => b.chairId === 'chair_2' || b.chairId === 'chair_thambi');
 
     return [
       {
@@ -362,7 +384,7 @@ class SalonStore {
               appointmentId: chair1ActiveAppt.appointmentId,
               ticketNumber: chair1ActiveAppt.ticketNumber,
               customerName: chair1ActiveAppt.customerName,
-              serviceNames: chair1ActiveAppt.services.map((s) => s.name).join(', '),
+              serviceNames: chair1ActiveAppt.services ? chair1ActiveAppt.services.map((s) => s.name).join(', ') : 'Grooming Service',
               startedAt: chair1ActiveAppt.scheduledTime,
               totalDurationMinutes: chair1ActiveAppt.totalDurationMinutes || 45,
               remainingMinutes: 35,
@@ -373,8 +395,8 @@ class SalonStore {
           appointmentId: a.appointmentId,
           ticketNumber: a.ticketNumber,
           customerName: a.customerName,
-          serviceNames: a.services.map((s) => s.name).join(', '),
-          scheduledTime: a.scheduledTime,
+          serviceNames: a.services ? a.services.map((s) => s.name).join(', ') : 'Grooming Service',
+          scheduledTime: a.date && a.date !== getLocalDateString() ? `${a.date.slice(5)} ${a.scheduledTime}` : a.scheduledTime,
           status: idx === 0 ? 'NEXT_IN_LINE' : 'RESERVED_WINDOW',
           otp: a.otp,
         })),
@@ -391,7 +413,7 @@ class SalonStore {
               appointmentId: chair2ActiveAppt.appointmentId,
               ticketNumber: chair2ActiveAppt.ticketNumber,
               customerName: chair2ActiveAppt.customerName,
-              serviceNames: chair2ActiveAppt.services.map((s) => s.name).join(', '),
+              serviceNames: chair2ActiveAppt.services ? chair2ActiveAppt.services.map((s) => s.name).join(', ') : 'Grooming Service',
               startedAt: chair2ActiveAppt.scheduledTime,
               totalDurationMinutes: chair2ActiveAppt.totalDurationMinutes || 45,
               remainingMinutes: 28,
@@ -402,8 +424,8 @@ class SalonStore {
           appointmentId: a.appointmentId,
           ticketNumber: a.ticketNumber,
           customerName: a.customerName,
-          serviceNames: a.services.map((s) => s.name).join(', '),
-          scheduledTime: a.scheduledTime,
+          serviceNames: a.services ? a.services.map((s) => s.name).join(', ') : 'Grooming Service',
+          scheduledTime: a.date && a.date !== getLocalDateString() ? `${a.date.slice(5)} ${a.scheduledTime}` : a.scheduledTime,
           status: idx === 0 ? 'NEXT_IN_LINE' : 'RESERVED_WINDOW',
           otp: a.otp,
         })),
