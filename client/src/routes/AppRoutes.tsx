@@ -27,8 +27,8 @@ import { ServiceBookingView } from '../views/customer/ServiceBookingView';
 import { PassStatusView } from '../views/customer/PassStatusView';
 import { OtpSentView } from '../views/customer/OtpSentView';
 import { SalonSelectView } from '../views/customer/SalonSelectView';
-import { BarberLoginView } from '../views/barber/BarberLoginView';
 import { WorkstationDashboardView } from '../views/barber/WorkstationDashboardView';
+import { AuthView } from '../views/auth/AuthView';
 import type { AppointmentResponseDTO } from '../api/bookingApi';
 import { useAuth } from '../hooks/useAuth';
 
@@ -39,7 +39,8 @@ export type AppViewMode =
   | 'otp_sent'
   | 'salon_select'
   | 'barber_login'
-  | 'barber_station';
+  | 'barber_station'
+  | 'auth';
 
 export const AppRoutes: React.FC = () => {
   const { isAuthenticated, logout } = useAuth();
@@ -48,7 +49,10 @@ export const AppRoutes: React.FC = () => {
   const getViewFromUrl = useCallback((): AppViewMode => {
     const hash = window.location.hash.toLowerCase();
     if (hash === '#/barber' || hash === '#barber') {
-      return isAuthenticated ? 'barber_station' : 'barber_login';
+      return isAuthenticated ? 'barber_station' : 'auth';
+    }
+    if (hash === '#/login' || hash === '#login' || hash === '#/auth' || hash === '#auth') {
+      return 'auth';
     }
     if (hash === '#/pass' || hash === '#pass') {
       return 'customer_pass';
@@ -122,9 +126,12 @@ export const AppRoutes: React.FC = () => {
       case 'salon_select':
         window.location.hash = '#/salons';
         break;
-      case 'barber_login':
       case 'barber_station':
         window.location.hash = '#/barber';
+        break;
+      case 'auth':
+      case 'barber_login':
+        window.location.hash = '#/login';
         break;
     }
     setCurrentView(view);
@@ -171,7 +178,8 @@ export const AppRoutes: React.FC = () => {
             onNavigateToBooking={() => navigateTo('customer_booking')}
             onNavigateToSalons={() => navigateTo('salon_select')}
             onNavigateToPass={() => navigateTo('customer_pass')}
-            onNavigateToBarber={() => navigateTo(isAuthenticated ? 'barber_station' : 'barber_login')}
+            onNavigateToBarber={() => navigateTo(isAuthenticated ? 'barber_station' : 'auth')}
+            onNavigateToLogin={() => navigateTo('auth')}
           />
         );
 
@@ -183,7 +191,9 @@ export const AppRoutes: React.FC = () => {
             onBookingConfirmed={handleBookingConfirmed}
             onNavigateToPassStatus={() => navigateTo('customer_pass')}
             onNavigateToSalons={() => navigateTo('salon_select')}
-            onNavigateToBarberStation={() => navigateTo(isAuthenticated ? 'barber_station' : 'barber_login')}
+            onNavigateToBarberStation={() => navigateTo(isAuthenticated ? 'barber_station' : 'auth')}
+            onNavigateToHome={() => navigateTo('home')}
+            onNavigateToLogin={() => navigateTo('auth')}
           />
         );
 
@@ -192,7 +202,6 @@ export const AppRoutes: React.FC = () => {
           <OtpSentView
             customerName={otpCustomerName}
             customerPhone={otpCustomerPhone}
-            customerOtp={activePass?.otp}
             salonName={otpSalonName}
             onCorrectPhone={() => navigateTo('customer_booking')}
             onCheckQueue={() => navigateTo('customer_pass')}
@@ -213,30 +222,67 @@ export const AppRoutes: React.FC = () => {
           <SalonSelectView
             onSelectSalon={handleSelectSalon}
             onBackToBooking={() => navigateTo('home')}
+            onNavigateToHome={() => navigateTo('home')}
           />
         );
 
-      case 'barber_login':
+      case 'auth':
+      case 'barber_login': {
         return (
-          <BarberLoginView
-            onLoginSuccess={() => navigateTo('barber_station')}
-            onBackToCustomer={() => navigateTo('home')}
-          />
+          <div
+            style={{
+              minHeight: '100vh',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: '#111113',
+              padding: '24px 16px',
+            }}
+          >
+            <AuthView
+              onSuccess={(role) => {
+                if (role === 'staff') {
+                  navigateTo('barber_station');
+                } else {
+                  navigateTo('customer_booking');
+                }
+              }}
+              onBack={() => navigateTo('home')}
+            />
+          </div>
         );
+      }
 
       case 'barber_station':
-        // Protected Route Guard
+        // Protected Route Guard: If not authenticated, show unified AuthView!
         if (!isAuthenticated) {
           return (
-            <BarberLoginView
-              onLoginSuccess={() => navigateTo('barber_station')}
-              onBackToCustomer={() => navigateTo('home')}
-            />
+            <div
+              style={{
+                minHeight: '100vh',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: '#111113',
+                padding: '24px 16px',
+              }}
+            >
+              <AuthView
+                onSuccess={(role) => {
+                  if (role === 'staff') {
+                    navigateTo('barber_station');
+                  } else {
+                    navigateTo('home');
+                  }
+                }}
+                onBack={() => navigateTo('home')}
+              />
+            </div>
           );
         }
         return (
           <WorkstationDashboardView
-            onNavigateToCustomerBooking={() => navigateTo('customer_booking')}
+            onNavigateToHome={() => navigateTo('home')}
             onLogout={() => {
               logout();
               navigateTo('home');
@@ -251,7 +297,8 @@ export const AppRoutes: React.FC = () => {
             onNavigateToBooking={() => navigateTo('customer_booking')}
             onNavigateToSalons={() => navigateTo('salon_select')}
             onNavigateToPass={() => navigateTo('customer_pass')}
-            onNavigateToBarber={() => navigateTo(isAuthenticated ? 'barber_station' : 'barber_login')}
+            onNavigateToBarber={() => navigateTo(isAuthenticated ? 'barber_station' : 'auth')}
+            onNavigateToLogin={() => navigateTo('auth')}
           />
         );
     }

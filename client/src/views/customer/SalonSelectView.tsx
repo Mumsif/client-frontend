@@ -10,6 +10,7 @@
 
 import React, { useState } from 'react';
 import { Badge } from '../../components/common/Badge';
+import { Icon } from '../../components/common/Icon';
 import westernCuttersImg from '../../assets/salon_hero.jpg';
 import royalBladeImg from '../../assets/royal_blade.jpg';
 import easternGlowImg from '../../assets/eastern_glow.webp';
@@ -18,11 +19,13 @@ export interface SalonSelectViewProps {
   onSelectSalon: (salonId: string) => void;
   onBackToBooking?: () => void;
   onNavigateToBarberStation?: () => void;
+  onNavigateToHome?: () => void;
 }
 
 export const SalonSelectView: React.FC<SalonSelectViewProps> = ({
   onSelectSalon,
   onBackToBooking,
+  onNavigateToHome,
 }) => {
   const [filterGender, setFilterGender] = useState<'all' | 'men' | 'unisex'>('all');
 
@@ -77,7 +80,7 @@ export const SalonSelectView: React.FC<SalonSelectViewProps> = ({
     <div
       style={{
         minHeight: '100vh',
-        backgroundColor: '#F8F9FF',
+        backgroundColor: '#111113',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -86,6 +89,51 @@ export const SalonSelectView: React.FC<SalonSelectViewProps> = ({
       className="salon-select-view"
     >
       <div style={{ maxWidth: '1000px', width: '100%' }}>
+        {/* Top Trimly Brand Navigation */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
+          <div
+            className="trimly-logo-link"
+            role="button"
+            tabIndex={0}
+            onClick={() => {
+              if (onNavigateToHome) onNavigateToHome();
+              else window.location.hash = '#/';
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                if (onNavigateToHome) onNavigateToHome();
+                else window.location.hash = '#/';
+              }
+            }}
+            style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}
+            title="Return to Trimly Home"
+          >
+            <div
+              style={{
+                width: '36px',
+                height: '36px',
+                borderRadius: '10px',
+                background: 'linear-gradient(135deg, #C5A880 0%, #D4AF37 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#111113',
+                boxShadow: '0 2px 10px rgba(212, 175, 55, 0.25)',
+              }}
+            >
+              <Icon name="scissors" size={17} color="#111113" />
+            </div>
+            <div>
+              <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: '18px', color: '#F8F6F0' }}>
+                Trimly
+              </span>
+              <span className="trimly-header-tagline" style={{ display: 'block', fontFamily: "'JetBrains Mono', monospace", fontSize: '10px', color: '#8E8A85' }}>
+                Smart Salon Booking
+              </span>
+            </div>
+          </div>
+        </div>
+
         {/* Header */}
         <div
           style={{
@@ -99,20 +147,20 @@ export const SalonSelectView: React.FC<SalonSelectViewProps> = ({
         >
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <div style={{ width: '6px', height: '24px', backgroundColor: '#00685F', borderRadius: '9999px' }} />
+              <div style={{ width: '6px', height: '24px', backgroundColor: '#D4AF37', borderRadius: '9999px' }} />
               <h1
                 style={{
                   fontFamily: "'Plus Jakarta Sans', sans-serif",
                   fontWeight: 800,
                   fontSize: '26px',
-                  color: '#0D1C2F',
+                  color: '#F8F6F0',
                   margin: 0,
                 }}
               >
                 Salons & Barbershops
               </h1>
             </div>
-            <p style={{ margin: '6px 0 0', color: '#5C647A', fontSize: '14px' }}>
+            <p style={{ margin: '6px 0 0', color: '#8E8A85', fontSize: '14px' }}>
               Skip the bench queues. Check live chair availability and reserve your appointment with a verified pass.
             </p>
           </div>
@@ -123,13 +171,14 @@ export const SalonSelectView: React.FC<SalonSelectViewProps> = ({
               onClick={onBackToBooking}
               style={{
                 padding: '8px 16px',
-                backgroundColor: '#EFF4FF',
-                color: '#00685F',
+                backgroundColor: '#1A1A1E',
+                color: '#D4AF37',
                 borderRadius: '8px',
-                border: '1px solid #D5E3FD',
+                border: '1px solid #2E2C2A',
                 fontWeight: 600,
                 fontSize: '13px',
                 cursor: 'pointer',
+                transition: 'all 0.2s ease',
               }}
             >
               ← Back to Booking
@@ -151,12 +200,13 @@ export const SalonSelectView: React.FC<SalonSelectViewProps> = ({
               style={{
                 padding: '8px 16px',
                 borderRadius: '12px',
-                border: filterGender === tab.id ? '1.5px solid #00685F' : '1px solid #D5E3FD',
-                backgroundColor: filterGender === tab.id ? '#EFF4FF' : '#FFFFFF',
-                color: filterGender === tab.id ? '#00685F' : '#3D4947',
+                border: filterGender === tab.id ? '1.5px solid #D4AF37' : '1px solid #2E2C2A',
+                backgroundColor: filterGender === tab.id ? '#26241F' : '#1A1A1E',
+                color: filterGender === tab.id ? '#D4AF37' : '#8E8A85',
                 fontWeight: 600,
                 fontSize: '13px',
                 cursor: 'pointer',
+                transition: 'all 0.2s ease',
               }}
             >
               {tab.label}
@@ -171,10 +221,11 @@ export const SalonSelectView: React.FC<SalonSelectViewProps> = ({
               key={s.id}
               onClick={() => onSelectSalon(s.id)}
               style={{
-                backgroundColor: '#FFFFFF',
+                backgroundColor: '#1A1A1E',
                 borderRadius: '16px',
                 overflow: 'hidden',
-                boxShadow: s.isFeatured ? '0px 0px 0px 2px #00685F, 0px 8px 24px rgba(0, 104, 95, 0.12)' : '0px 2px 8px rgba(0,0,0,0.06)',
+                border: s.isFeatured ? '1px solid #D4AF37' : '1px solid #2E2C2A',
+                boxShadow: s.isFeatured ? '0px 0px 0px 1px #D4AF37, 0px 8px 32px rgba(212, 175, 55, 0.15)' : '0px 4px 20px rgba(0,0,0,0.4)',
                 cursor: 'pointer',
                 transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
               }}
@@ -195,17 +246,17 @@ export const SalonSelectView: React.FC<SalonSelectViewProps> = ({
                     gap: '6px',
                   }}
                 >
-                  {s.isFeatured && <Badge variant="teal">FEATURED PILOT HUB</Badge>}
-                  <Badge variant="mint" isMono>{s.rating} / 5</Badge>
+                  {s.isFeatured && <Badge variant="gold">FEATURED PILOT HUB</Badge>}
+                  <Badge variant="slate" isMono>{s.rating} / 5</Badge>
                 </div>
               </div>
 
               <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 700, color: '#0D1C2F' }}>
+                <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 700, color: '#F8F6F0' }}>
                   {s.name}
                 </h3>
-                <p style={{ margin: 0, fontSize: '13px', color: '#5C647A' }}>{s.tagline}</p>
-                <div style={{ fontSize: '12px', color: '#3D4947' }}>{s.address}</div>
+                <p style={{ margin: 0, fontSize: '13px', color: '#8E8A85' }}>{s.tagline}</p>
+                <div style={{ fontSize: '12px', color: '#8E8A85' }}>{s.address}</div>
 
                 <div
                   style={{
@@ -213,17 +264,17 @@ export const SalonSelectView: React.FC<SalonSelectViewProps> = ({
                     justifyContent: 'space-between',
                     alignItems: 'center',
                     paddingTop: '12px',
-                    borderTop: '1px solid #EFF4FF',
+                    borderTop: '1px solid #2E2C2A',
                     marginTop: '8px',
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <span className="live-pulse-dot" />
-                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '12px', color: '#00685F', fontWeight: 600 }}>
-                      ~{s.estWait}m wait
+                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '12px', color: '#D4AF37', fontWeight: 600 }}>
+                      {s.estWait}m wait
                     </span>
                   </div>
-                  <span style={{ fontSize: '13px', fontWeight: 600, color: '#00685F' }}>
+                  <span style={{ fontSize: '13px', fontWeight: 600, color: '#D4AF37' }}>
                     View Services →
                   </span>
                 </div>

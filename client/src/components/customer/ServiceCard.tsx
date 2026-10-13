@@ -45,13 +45,14 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
         flexDirection: 'column',
         justifyContent: 'space-between',
         padding: '20px',
-        backgroundColor: '#FFFFFF',
+        backgroundColor: isSelected ? '#1E1E24' : '#1A1A1E',
         borderRadius: '16px',
         cursor: 'pointer',
         gridColumn: spansFullWidth ? '1 / -1' : undefined,
+        border: isSelected ? '1.5px solid #D4AF37' : '1px solid #2E2C2A',
         boxShadow: isSelected
-          ? '0px 0px 0px 2px #00685F, 0px 4px 12px rgba(0, 104, 95, 0.12)'
-          : '0px 1px 2px rgba(0, 0, 0, 0.05)',
+          ? '0px 0px 0px 1px #D4AF37, 0px 8px 24px rgba(212, 175, 55, 0.22)'
+          : '0px 4px 16px rgba(0, 0, 0, 0.4)',
         transition: 'all 0.22s cubic-bezier(0.16, 1, 0.3, 1)',
         minHeight: '171px',
         userSelect: 'none',
@@ -76,7 +77,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
                 fontWeight: 700,
                 fontSize: '16px',
                 lineHeight: '24px',
-                color: '#0D1C2F',
+                color: '#F8F6F0',
                 margin: 0,
               }}
             >
@@ -104,7 +105,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
               fontWeight: 400,
               fontSize: '12px',
               lineHeight: '20px',
-              color: '#3D4947',
+              color: '#8E8A85',
               margin: 0,
             }}
           >
@@ -128,14 +129,14 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
               width: '24px',
               height: '24px',
               borderRadius: '6px',
-              backgroundColor: isSelected ? '#00685F' : '#FFFFFF',
-              border: isSelected ? '2px solid #00685F' : '2px solid #C4D3EA',
+              backgroundColor: isSelected ? '#D4AF37' : '#141417',
+              border: isSelected ? '2px solid #D4AF37' : '2px solid #2E2C2A',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               transition: 'all 0.18s ease-in-out',
               transform: isSelected ? 'scale(1.05)' : 'scale(1)',
-              boxShadow: isSelected ? '0 2px 6px rgba(0, 104, 95, 0.3)' : 'none',
+              boxShadow: isSelected ? '0 2px 10px rgba(212, 175, 55, 0.4)' : 'none',
             }}
           >
             {isSelected && (
@@ -148,8 +149,8 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
               >
                 <path
                   d="M1.5 5L5 8.5L12.5 1"
-                  stroke="#FFFFFF"
-                  strokeWidth="2.2"
+                  stroke="#111113"
+                  strokeWidth="2.4"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 />
@@ -167,9 +168,9 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
           justifyContent: 'space-between',
           alignItems: 'center',
           padding: '10px 14px',
-          backgroundColor: isSelected ? 'rgba(0, 104, 95, 0.05)' : 'rgba(239, 244, 255, 0.65)',
+          backgroundColor: isSelected ? 'rgba(212, 175, 55, 0.08)' : '#161619',
           borderRadius: '12px',
-          border: isSelected ? '1px solid rgba(0, 104, 95, 0.12)' : '1px solid transparent',
+          border: isSelected ? '1px solid rgba(212, 175, 55, 0.28)' : '1px solid #2E2C2A',
         }}
       >
         {/* Duration */}
@@ -179,7 +180,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
             height="14"
             viewBox="0 0 24 24"
             fill="none"
-            stroke="#00685F"
+            stroke="#D4AF37"
             strokeWidth="2.2"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -192,7 +193,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
               fontFamily: "'JetBrains Mono', monospace",
               fontWeight: 600,
               fontSize: '11px',
-              color: '#0D1C2F',
+              color: '#F8F6F0',
               letterSpacing: '0.22px',
             }}
           >
@@ -207,7 +208,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
               fontFamily: "'JetBrains Mono', monospace",
               fontWeight: 500,
               fontSize: '11px',
-              color: '#3D4947',
+              color: '#8E8A85',
               letterSpacing: '0.22px',
             }}
           >
@@ -218,7 +219,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
               fontFamily: "'JetBrains Mono', monospace",
               fontWeight: 700,
               fontSize: '18px',
-              color: '#0D1C2F',
+              color: '#F8F6F0',
               letterSpacing: '-0.4px',
             }}
           >

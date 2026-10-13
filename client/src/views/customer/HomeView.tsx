@@ -17,13 +17,15 @@ import royalBladeImg from '../../assets/royal_blade.jpg';
 import easternGlowImg from '../../assets/eastern_glow.webp';
 import barberRifasImg from '../../assets/barber_rifas.jpg';
 import barberKannanImg from '../../assets/barber_kannan.jpg';
+import { useAuth } from '../../hooks/useAuth';
 
 export interface HomeViewProps {
   onSelectSalon: (salonId: string) => void;
   onNavigateToBooking: () => void;
   onNavigateToSalons: () => void;
   onNavigateToPass: () => void;
-  onNavigateToBarber: () => void;
+  onNavigateToBarber?: () => void;
+  onNavigateToLogin?: () => void;
 }
 
 export const HomeView: React.FC<HomeViewProps> = ({
@@ -31,14 +33,25 @@ export const HomeView: React.FC<HomeViewProps> = ({
   onNavigateToBooking,
   onNavigateToSalons,
   onNavigateToPass,
-  onNavigateToBarber,
+  onNavigateToBarber: _onNavigateToBarber,
+  onNavigateToLogin,
 }) => {
+  const { customer, isCustomerAuthenticated, logoutCustomer } = useAuth();
   const [isVideoPlaying, setIsVideoPlaying] = useState<boolean>(true);
   const [isMuted, setIsMuted] = useState<boolean>(true);
   const [filterGender, setFilterGender] = useState<'all' | 'men' | 'unisex'>('all');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const salonsSectionRef = useRef<HTMLDivElement>(null);
+
+  const navigateToHome = () => {
+    setIsMobileMenuOpen(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (window.location.hash !== '#/' && window.location.hash !== '') {
+      window.location.hash = '#/';
+    }
+  };
 
   const handleTogglePlay = () => {
     if (videoRef.current) {
@@ -172,17 +185,17 @@ export const HomeView: React.FC<HomeViewProps> = ({
   ];
 
   return (
-    <div style={{ width: '100%', minHeight: '100vh', backgroundColor: '#F8F9FF', color: '#0D1C2F' }}>
+    <div style={{ width: '100%', minHeight: '100vh', backgroundColor: '#111113', color: '#F8F6F0' }}>
       {/* ───────── Navigation Bar ───────── */}
       <header
+        className="trimly-header-padding"
         style={{
           position: 'sticky',
           top: 0,
           zIndex: 50,
-          backgroundColor: 'rgba(13, 28, 47, 0.95)',
+          backgroundColor: 'rgba(17, 17, 19, 0.95)',
           backdropFilter: 'blur(12px)',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-          padding: '0 24px',
+          borderBottom: '1px solid #2E2C2A',
           height: '68px',
           display: 'flex',
           justifyContent: 'center',
@@ -196,42 +209,62 @@ export const HomeView: React.FC<HomeViewProps> = ({
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
+            gap: '12px',
           }}
         >
-          {/* Logo */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          {/* Logo (Clicking navigates to Home page) */}
+          <div
+            className="trimly-logo-link"
+            role="button"
+            tabIndex={0}
+            onClick={navigateToHome}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') navigateToHome();
+            }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              flexShrink: 0,
+            }}
+            title="Trimly Home"
+          >
             <div
               style={{
                 width: '38px',
                 height: '38px',
                 borderRadius: '10px',
-                background: 'linear-gradient(135deg, #00685F 0%, #008378 100%)',
+                background: 'linear-gradient(135deg, #C5A880 0%, #D4AF37 100%)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                boxShadow: '0 2px 10px rgba(0, 104, 95, 0.4)',
+                boxShadow: '0 2px 10px rgba(212, 175, 55, 0.3)',
+                flexShrink: 0,
               }}
             >
-              <Icon name="scissors" size={18} color="#FFFFFF" />
+              <Icon name="scissors" size={18} color="#111113" />
             </div>
-            <div>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
               <span
                 style={{
                   fontFamily: "'Plus Jakarta Sans', sans-serif",
                   fontWeight: 800,
                   fontSize: '19px',
-                  color: '#FFFFFF',
+                  color: '#F8F6F0',
                   letterSpacing: '-0.3px',
+                  lineHeight: 1.2,
+                  whiteSpace: 'nowrap',
                 }}
               >
                 Trimly
               </span>
               <span
+                className="trimly-header-tagline"
                 style={{
-                  display: 'block',
                   fontFamily: "'JetBrains Mono', monospace",
                   fontSize: '11px',
-                  color: '#94A3B8',
+                  color: '#8E8A85',
+                  whiteSpace: 'nowrap',
                 }}
               >
                 Smart Salon Booking
@@ -239,14 +272,14 @@ export const HomeView: React.FC<HomeViewProps> = ({
             </div>
           </div>
 
-          {/* Nav Items */}
-          <nav style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          {/* Desktop Nav Items */}
+          <nav className="desktop-nav" style={{ alignItems: 'center', gap: '8px' }}>
             <button
               type="button"
               onClick={scrollToSalons}
               style={{
                 backgroundColor: 'transparent',
-                color: '#CBD5E1',
+                color: '#8E8A85',
                 border: 'none',
                 fontWeight: 600,
                 fontSize: '13px',
@@ -259,11 +292,11 @@ export const HomeView: React.FC<HomeViewProps> = ({
                 gap: '6px',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.color = '#FFFFFF';
-                e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
+                e.currentTarget.style.color = '#F8F6F0';
+                e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.color = '#CBD5E1';
+                e.currentTarget.style.color = '#8E8A85';
                 e.currentTarget.style.backgroundColor = 'transparent';
               }}
             >
@@ -276,7 +309,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
               onClick={onNavigateToBooking}
               style={{
                 backgroundColor: 'transparent',
-                color: '#CBD5E1',
+                color: '#8E8A85',
                 border: 'none',
                 fontWeight: 600,
                 fontSize: '13px',
@@ -289,11 +322,11 @@ export const HomeView: React.FC<HomeViewProps> = ({
                 gap: '6px',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.color = '#FFFFFF';
-                e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
+                e.currentTarget.style.color = '#F8F6F0';
+                e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.color = '#CBD5E1';
+                e.currentTarget.style.color = '#8E8A85';
                 e.currentTarget.style.backgroundColor = 'transparent';
               }}
             >
@@ -305,9 +338,9 @@ export const HomeView: React.FC<HomeViewProps> = ({
               type="button"
               onClick={onNavigateToPass}
               style={{
-                backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                color: '#FFFFFF',
-                border: '1px solid rgba(255, 255, 255, 0.15)',
+                backgroundColor: '#1A1A1E',
+                color: '#D4AF37',
+                border: '1px solid #2E2C2A',
                 fontWeight: 600,
                 fontSize: '13px',
                 cursor: 'pointer',
@@ -316,35 +349,394 @@ export const HomeView: React.FC<HomeViewProps> = ({
                 display: 'flex',
                 alignItems: 'center',
                 gap: '6px',
+                transition: 'all 0.15s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = '#D4AF37';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = '#2E2C2A';
               }}
             >
-              <Icon name="ticket" size={14} color="#FFFFFF" />
+              <Icon name="ticket" size={14} color="#D4AF37" />
               My Booking
+            </button>
+
+            {isCustomerAuthenticated && customer ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span
+                  style={{
+                    padding: '7px 12px',
+                    backgroundColor: '#26241F',
+                    border: '1px solid #3E3A32',
+                    borderRadius: '8px',
+                    color: '#D4AF37',
+                    fontSize: '13px',
+                    fontWeight: 600,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                  }}
+                  title={customer.phone}
+                >
+                  <Icon name="user" size={14} color="#D4AF37" />
+                  <span>{customer.name.split(' ')[0]}</span>
+                </span>
+                <button
+                  type="button"
+                  onClick={logoutCustomer}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: '#8E8A85',
+                    fontSize: '12px',
+                    cursor: 'pointer',
+                    fontWeight: 500,
+                    padding: '4px',
+                    transition: 'color 0.15s ease',
+                  }}
+                  title="Sign Out"
+                >
+                  Sign Out
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  if (onNavigateToLogin) onNavigateToLogin();
+                  else window.location.hash = '#/login';
+                }}
+                style={{
+                  backgroundColor: '#D4AF37',
+                  color: '#111113',
+                  border: 'none',
+                  fontWeight: 700,
+                  fontSize: '13px',
+                  cursor: 'pointer',
+                  padding: '8px 16px',
+                  borderRadius: '8px',
+                  boxShadow: '0 2px 8px rgba(212, 175, 55, 0.3)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  transition: 'background-color 0.15s ease',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#B8976C';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = '#D4AF37';
+                }}
+              >
+                <Icon name="user" size={14} color="#111113" />
+                Sign In
+              </button>
+            )}
+          </nav>
+
+          {/* Mobile Right Quick Action & Hamburger Button */}
+          <div className="mobile-menu-btn" style={{ alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+            <button
+              type="button"
+              onClick={() => {
+                setIsMobileMenuOpen(false);
+                onNavigateToPass();
+              }}
+              style={{
+                backgroundColor: '#1A1A1E',
+                color: '#D4AF37',
+                border: '1px solid #2E2C2A',
+                fontWeight: 600,
+                fontSize: '12px',
+                cursor: 'pointer',
+                padding: '6px 10px',
+                borderRadius: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '5px',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              <Icon name="ticket" size={13} color="#D4AF37" />
+              <span>Pass</span>
             </button>
 
             <button
               type="button"
-              onClick={onNavigateToBarber}
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              aria-label="Toggle navigation menu"
+              aria-expanded={isMobileMenuOpen}
               style={{
-                backgroundColor: '#00685F',
-                color: '#FFFFFF',
-                border: 'none',
-                fontWeight: 700,
-                fontSize: '13px',
-                cursor: 'pointer',
-                padding: '8px 16px',
+                width: '38px',
+                height: '38px',
+                backgroundColor: isMobileMenuOpen ? '#26241F' : '#1A1A1E',
+                border: '1px solid #2E2C2A',
                 borderRadius: '8px',
-                boxShadow: '0 2px 8px rgba(0, 104, 95, 0.3)',
+                color: '#F8F6F0',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '6px',
+                justifyContent: 'center',
+                cursor: 'pointer',
               }}
             >
-              <Icon name="briefcase" size={14} color="#FFFFFF" />
-              For Barbers
+              <Icon name={isMobileMenuOpen ? 'x' : 'menu'} size={18} color="#F8F6F0" />
             </button>
-          </nav>
+          </div>
         </div>
+
+        {/* Mobile Dropdown Navigation Drawer */}
+        {isMobileMenuOpen && (
+          <div
+            style={{
+              position: 'absolute',
+              top: '68px',
+              left: 0,
+              right: 0,
+              backgroundColor: 'rgba(26, 26, 30, 0.98)',
+              backdropFilter: 'blur(16px)',
+              borderBottom: '1px solid #2E2C2A',
+              boxShadow: '0 16px 36px rgba(0, 0, 0, 0.8)',
+              padding: '16px 18px 20px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '10px',
+              zIndex: 100,
+            }}
+          >
+            <button
+              type="button"
+              onClick={() => {
+                setIsMobileMenuOpen(false);
+                scrollToSalons();
+              }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                padding: '12px 14px',
+                backgroundColor: '#161619',
+                border: '1px solid #2E2C2A',
+                borderRadius: '10px',
+                color: '#F8F6F0',
+                fontSize: '14px',
+                fontWeight: 600,
+                textAlign: 'left',
+                cursor: 'pointer',
+                width: '100%',
+              }}
+            >
+              <div
+                style={{
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '8px',
+                  backgroundColor: '#26241F',
+                  border: '1px solid #3E3A32',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#D4AF37',
+                  flexShrink: 0,
+                }}
+              >
+                <Icon name="map-pin" size={16} />
+              </div>
+              <div>
+                <div style={{ color: '#F8F6F0', fontWeight: 600 }}>Explore Salons</div>
+                <div style={{ fontSize: '11px', color: '#8E8A85' }}>3 verified locations & real-time queues</div>
+              </div>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setIsMobileMenuOpen(false);
+                onNavigateToBooking();
+              }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                padding: '12px 14px',
+                backgroundColor: '#161619',
+                border: '1px solid #2E2C2A',
+                borderRadius: '10px',
+                color: '#F8F6F0',
+                fontSize: '14px',
+                fontWeight: 600,
+                textAlign: 'left',
+                cursor: 'pointer',
+                width: '100%',
+              }}
+            >
+              <div
+                style={{
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '8px',
+                  backgroundColor: '#26241F',
+                  border: '1px solid #3E3A32',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#D4AF37',
+                  flexShrink: 0,
+                }}
+              >
+                <Icon name="calendar" size={16} />
+              </div>
+              <div>
+                <div style={{ color: '#F8F6F0', fontWeight: 600 }}>Services & Booking</div>
+                <div style={{ fontSize: '11px', color: '#8E8A85' }}>Select stylist, chair and grooming package</div>
+              </div>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setIsMobileMenuOpen(false);
+                onNavigateToPass();
+              }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                padding: '12px 14px',
+                backgroundColor: '#161619',
+                border: '1px solid #2E2C2A',
+                borderRadius: '10px',
+                color: '#F8F6F0',
+                fontSize: '14px',
+                fontWeight: 600,
+                textAlign: 'left',
+                cursor: 'pointer',
+                width: '100%',
+              }}
+            >
+              <div
+                style={{
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '8px',
+                  backgroundColor: '#26241F',
+                  border: '1px solid #3E3A32',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#D4AF37',
+                  flexShrink: 0,
+                }}
+              >
+                <Icon name="ticket" size={16} />
+              </div>
+              <div>
+                <div style={{ color: '#F8F6F0', fontWeight: 600 }}>My Booking Pass</div>
+                <div style={{ fontSize: '11px', color: '#8E8A85' }}>Live queue tracker & verified pass status</div>
+              </div>
+            </button>
+
+            {isCustomerAuthenticated && customer ? (
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  padding: '12px 14px',
+                  backgroundColor: '#22201C',
+                  border: '1px solid #3E3A32',
+                  borderRadius: '10px',
+                  width: '100%',
+                  marginTop: '4px',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <div
+                    style={{
+                      width: '32px',
+                      height: '32px',
+                      borderRadius: '8px',
+                      backgroundColor: '#26241F',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: '#D4AF37',
+                      flexShrink: 0,
+                    }}
+                  >
+                    <Icon name="user" size={16} />
+                  </div>
+                  <div>
+                    <div style={{ color: '#F8F6F0', fontWeight: 600, fontSize: '13px' }}>{customer.name}</div>
+                    <div style={{ fontSize: '11px', color: '#8E8A85' }}>{customer.phone}</div>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    logoutCustomer();
+                    setIsMobileMenuOpen(false);
+                  }}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: '#E05252',
+                    fontSize: '12px',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                  }}
+                >
+                  Sign Out
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  if (onNavigateToLogin) onNavigateToLogin();
+                  else window.location.hash = '#/login';
+                }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  padding: '12px 14px',
+                  backgroundColor: '#D4AF37',
+                  border: 'none',
+                  borderRadius: '10px',
+                  color: '#111113',
+                  fontSize: '14px',
+                  fontWeight: 700,
+                  textAlign: 'left',
+                  cursor: 'pointer',
+                  width: '100%',
+                  marginTop: '4px',
+                }}
+              >
+                <div
+                  style={{
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: '8px',
+                    backgroundColor: 'rgba(17, 17, 19, 0.15)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#111113',
+                    flexShrink: 0,
+                  }}
+                >
+                  <Icon name="user" size={16} />
+                </div>
+                <div>
+                  <div style={{ color: '#111113', fontWeight: 700 }}>Sign In / Register</div>
+                  <div style={{ fontSize: '11px', color: '#2E2C2A' }}>Customer booking & staff login access</div>
+                </div>
+              </button>
+            )}
+          </div>
+        )}
       </header>
 
       {/* ───────── Hero Section with Background Video ───────── */}
@@ -357,7 +749,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
           alignItems: 'center',
           justifyContent: 'center',
           overflow: 'hidden',
-          backgroundColor: '#0D1C2F',
+          backgroundColor: '#111113',
         }}
       >
         {/* Background Video */}
@@ -382,7 +774,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
               width: '100%',
               height: '100%',
               objectFit: 'cover',
-              filter: 'brightness(0.55) contrast(1.1) saturate(1.1)',
+              filter: 'brightness(0.45) contrast(1.15) saturate(0.9)',
               transform: 'scale(1.02)',
             }}
           >
@@ -396,7 +788,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
               position: 'absolute',
               inset: 0,
               background:
-                'linear-gradient(180deg, rgba(13, 28, 47, 0.55) 0%, rgba(13, 28, 47, 0.75) 55%, rgba(13, 28, 47, 0.97) 100%)',
+                'linear-gradient(180deg, rgba(17, 17, 19, 0.6) 0%, rgba(17, 17, 19, 0.78) 55%, #111113 100%)',
               pointerEvents: 'none',
             }}
           />
@@ -412,11 +804,11 @@ export const HomeView: React.FC<HomeViewProps> = ({
             display: 'flex',
             alignItems: 'center',
             gap: '4px',
-            backgroundColor: 'rgba(13, 28, 47, 0.75)',
+            backgroundColor: 'rgba(26, 26, 30, 0.85)',
             padding: '4px 8px',
             borderRadius: '9999px',
             backdropFilter: 'blur(8px)',
-            border: '1px solid rgba(255, 255, 255, 0.12)',
+            border: '1px solid #2E2C2A',
           }}
         >
           <button
@@ -425,7 +817,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
             style={{
               background: 'none',
               border: 'none',
-              color: '#FFFFFF',
+              color: '#D4AF37',
               cursor: 'pointer',
               padding: '6px',
               display: 'flex',
@@ -434,16 +826,16 @@ export const HomeView: React.FC<HomeViewProps> = ({
             }}
             title={isVideoPlaying ? 'Pause Video' : 'Play Video'}
           >
-            <Icon name={isVideoPlaying ? 'pause' : 'play'} size={14} color="#FFFFFF" />
+            <Icon name={isVideoPlaying ? 'pause' : 'play'} size={14} color="#D4AF37" />
           </button>
-          <div style={{ width: '1px', height: '14px', backgroundColor: 'rgba(255, 255, 255, 0.2)' }} />
+          <div style={{ width: '1px', height: '14px', backgroundColor: '#2E2C2A' }} />
           <button
             type="button"
             onClick={handleToggleMute}
             style={{
               background: 'none',
               border: 'none',
-              color: '#FFFFFF',
+              color: '#D4AF37',
               cursor: 'pointer',
               padding: '6px',
               display: 'flex',
@@ -452,7 +844,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
             }}
             title={isMuted ? 'Unmute Sound' : 'Mute Sound'}
           >
-            <Icon name={isMuted ? 'volume-off' : 'volume-on'} size={14} color="#FFFFFF" />
+            <Icon name={isMuted ? 'volume-off' : 'volume-on'} size={14} color="#D4AF37" />
           </button>
         </div>
 
@@ -476,8 +868,8 @@ export const HomeView: React.FC<HomeViewProps> = ({
               display: 'inline-flex',
               alignItems: 'center',
               gap: '8px',
-              backgroundColor: 'rgba(0, 104, 95, 0.25)',
-              border: '1px solid rgba(0, 209, 178, 0.35)',
+              backgroundColor: '#26241F',
+              border: '1px solid #3E3A32',
               padding: '6px 16px',
               borderRadius: '9999px',
               backdropFilter: 'blur(8px)',
@@ -490,7 +882,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
                 fontFamily: "'JetBrains Mono', monospace",
                 fontSize: '11px',
                 fontWeight: 600,
-                color: '#E0F7F4',
+                color: '#D4AF37',
                 letterSpacing: '0.4px',
               }}
             >
@@ -505,17 +897,17 @@ export const HomeView: React.FC<HomeViewProps> = ({
               fontWeight: 800,
               fontSize: 'clamp(32px, 5vw, 58px)',
               lineHeight: 1.15,
-              color: '#FFFFFF',
+              color: '#F8F6F0',
               margin: '0 0 20px',
               maxWidth: '820px',
               letterSpacing: '-1.5px',
-              textShadow: '0 4px 20px rgba(0, 0, 0, 0.4)',
+              textShadow: '0 4px 20px rgba(0, 0, 0, 0.6)',
             }}
           >
             Skip the Queue.{' '}
             <span
               style={{
-                background: 'linear-gradient(135deg, #00D1B2 0%, #008378 100%)',
+                background: 'linear-gradient(135deg, #F8F6F0 0%, #D4AF37 50%, #C5A880 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
               }}
@@ -530,7 +922,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
             style={{
               fontSize: 'clamp(15px, 1.6vw, 18px)',
               lineHeight: 1.65,
-              color: '#CBD5E1',
+              color: '#8E8A85',
               maxWidth: '640px',
               margin: '0 0 36px',
               fontWeight: 400,
@@ -555,31 +947,31 @@ export const HomeView: React.FC<HomeViewProps> = ({
               onClick={scrollToSalons}
               style={{
                 padding: '15px 28px',
-                backgroundColor: '#00685F',
-                color: '#FFFFFF',
+                backgroundColor: '#D4AF37',
+                color: '#111113',
                 borderRadius: '12px',
                 border: 'none',
                 fontFamily: "'Plus Jakarta Sans', sans-serif",
                 fontWeight: 700,
                 fontSize: '15px',
                 cursor: 'pointer',
-                boxShadow: '0 6px 20px rgba(0, 104, 95, 0.4)',
+                boxShadow: '0 6px 20px rgba(212, 175, 55, 0.35)',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
                 transition: 'all 0.2s ease',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#008378';
+                e.currentTarget.style.backgroundColor = '#B8976C';
                 e.currentTarget.style.transform = 'translateY(-2px)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = '#00685F';
+                e.currentTarget.style.backgroundColor = '#D4AF37';
                 e.currentTarget.style.transform = 'translateY(0)';
               }}
             >
               Explore Salons
-              <Icon name="arrow-down" size={16} color="#FFFFFF" />
+              <Icon name="arrow-down" size={16} color="#111113" />
             </button>
 
             <button
@@ -587,10 +979,10 @@ export const HomeView: React.FC<HomeViewProps> = ({
               onClick={onNavigateToBooking}
               style={{
                 padding: '15px 24px',
-                backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                color: '#FFFFFF',
+                backgroundColor: '#1A1A1E',
+                color: '#D4AF37',
                 borderRadius: '12px',
-                border: '1px solid rgba(255, 255, 255, 0.22)',
+                border: '1px solid #2E2C2A',
                 fontFamily: "'Plus Jakarta Sans', sans-serif",
                 fontWeight: 600,
                 fontSize: '15px',
@@ -602,14 +994,16 @@ export const HomeView: React.FC<HomeViewProps> = ({
                 transition: 'all 0.2s ease',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.18)';
+                e.currentTarget.style.backgroundColor = '#26241F';
+                e.currentTarget.style.borderColor = '#3E3A32';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                e.currentTarget.style.backgroundColor = '#1A1A1E';
+                e.currentTarget.style.borderColor = '#2E2C2A';
               }}
             >
               Book a Slot
-              <Icon name="arrow-right" size={16} color="#FFFFFF" />
+              <Icon name="arrow-right" size={16} color="#D4AF37" />
             </button>
           </div>
 
@@ -619,42 +1013,41 @@ export const HomeView: React.FC<HomeViewProps> = ({
               display: 'grid',
               gridTemplateColumns: 'repeat(3, auto)',
               gap: '32px',
-              backgroundColor: 'rgba(13, 28, 47, 0.6)',
+              backgroundColor: 'rgba(26, 26, 30, 0.85)',
               padding: '18px 36px',
               borderRadius: '16px',
               backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
+              border: '1px solid #2E2C2A',
             }}
           >
             <div style={{ textAlign: 'center' }}>
-              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '24px', fontWeight: 800, color: '#00D1B2' }}>
+              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '24px', fontWeight: 800, color: '#D4AF37' }}>
                 3
               </div>
-              <span style={{ fontSize: '12px', color: '#94A3B8' }}>Salons</span>
+              <span style={{ fontSize: '12px', color: '#8E8A85' }}>Salons</span>
             </div>
             <div style={{ textAlign: 'center' }}>
-              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '24px', fontWeight: 800, color: '#FFFFFF' }}>
-                ~12 min
+              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '24px', fontWeight: 800, color: '#F8F6F0' }}>
+                12 min
               </div>
-              <span style={{ fontSize: '12px', color: '#94A3B8' }}>Avg. Wait</span>
+              <span style={{ fontSize: '12px', color: '#8E8A85' }}>Avg. Wait</span>
             </div>
             <div style={{ textAlign: 'center' }}>
-              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '24px', fontWeight: 800, color: '#FFFFFF' }}>
+              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '24px', fontWeight: 800, color: '#D4AF37' }}>
                 4.8
               </div>
-              <span style={{ fontSize: '12px', color: '#94A3B8' }}>Avg. Rating</span>
+              <span style={{ fontSize: '12px', color: '#8E8A85' }}>Avg. Rating</span>
             </div>
           </div>
         </div>
       </section>
-
       {/* ───────── How It Works ───────── */}
       <section
         style={{
           width: '100%',
           padding: '80px 24px',
-          backgroundColor: '#FFFFFF',
-          borderBottom: '1px solid #E2E8F0',
+          backgroundColor: '#161619',
+          borderBottom: '1px solid #2E2C2A',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -667,7 +1060,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
                 fontFamily: "'JetBrains Mono', monospace",
                 fontSize: '11px',
                 fontWeight: 700,
-                color: '#00685F',
+                color: '#D4AF37',
                 letterSpacing: '1px',
                 textTransform: 'uppercase',
               }}
@@ -679,14 +1072,14 @@ export const HomeView: React.FC<HomeViewProps> = ({
                 fontFamily: "'Plus Jakarta Sans', sans-serif",
                 fontWeight: 800,
                 fontSize: '32px',
-                color: '#0D1C2F',
+                color: '#F8F6F0',
                 margin: '8px 0 12px',
                 letterSpacing: '-0.5px',
               }}
             >
               Book in 5 Simple Steps
             </h2>
-            <p style={{ color: '#5C647A', fontSize: '15px', maxWidth: '560px', margin: '0 auto' }}>
+            <p style={{ color: '#8E8A85', fontSize: '15px', maxWidth: '560px', margin: '0 auto' }}>
               From finding a salon to paying for your cut — all digital, all seamless.
             </p>
           </div>
@@ -703,8 +1096,8 @@ export const HomeView: React.FC<HomeViewProps> = ({
               <div
                 key={s.step}
                 style={{
-                  backgroundColor: '#F8F9FF',
-                  border: '1.5px solid #E2E8F0',
+                  backgroundColor: '#1A1A1E',
+                  border: '1.5px solid #2E2C2A',
                   borderRadius: '16px',
                   padding: '24px 20px',
                   display: 'flex',
@@ -714,14 +1107,14 @@ export const HomeView: React.FC<HomeViewProps> = ({
                   cursor: 'default',
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = '#00685F';
-                  e.currentTarget.style.backgroundColor = '#F4FFFC';
+                  e.currentTarget.style.borderColor = '#D4AF37';
+                  e.currentTarget.style.backgroundColor = '#202025';
                   e.currentTarget.style.transform = 'translateY(-3px)';
-                  e.currentTarget.style.boxShadow = '0 8px 24px rgba(0, 104, 95, 0.1)';
+                  e.currentTarget.style.boxShadow = '0 8px 24px rgba(212, 175, 55, 0.12)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = '#E2E8F0';
-                  e.currentTarget.style.backgroundColor = '#F8F9FF';
+                  e.currentTarget.style.borderColor = '#2E2C2A';
+                  e.currentTarget.style.backgroundColor = '#1A1A1E';
                   e.currentTarget.style.transform = 'translateY(0)';
                   e.currentTarget.style.boxShadow = 'none';
                 }}
@@ -732,20 +1125,21 @@ export const HomeView: React.FC<HomeViewProps> = ({
                       width: '40px',
                       height: '40px',
                       borderRadius: '12px',
-                      backgroundColor: '#EFF4FF',
+                      backgroundColor: '#26241F',
+                      border: '1px solid #3E3A32',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                     }}
                   >
-                    <Icon name={s.iconName} size={20} color="#00685F" />
+                    <Icon name={s.iconName} size={20} color="#D4AF37" />
                   </div>
                   <span
                     style={{
                       fontFamily: "'JetBrains Mono', monospace",
                       fontSize: '11px',
                       fontWeight: 700,
-                      color: '#94A3B8',
+                      color: '#8E8A85',
                     }}
                   >
                     {String(s.step).padStart(2, '0')}
@@ -757,14 +1151,14 @@ export const HomeView: React.FC<HomeViewProps> = ({
                     fontFamily: "'Plus Jakarta Sans', sans-serif",
                     fontWeight: 700,
                     fontSize: '16px',
-                    color: '#0D1C2F',
+                    color: '#F8F6F0',
                     margin: 0,
                   }}
                 >
                   {s.title}
                 </h3>
 
-                <p style={{ fontSize: '13px', color: '#5C647A', lineHeight: 1.55, margin: 0 }}>
+                <p style={{ fontSize: '13px', color: '#8E8A85', lineHeight: 1.55, margin: 0 }}>
                   {s.desc}
                 </p>
               </div>
@@ -783,7 +1177,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          backgroundColor: '#F8F9FF',
+          backgroundColor: '#111113',
         }}
       >
         <div style={{ maxWidth: '1200px', width: '100%' }}>
@@ -800,13 +1194,13 @@ export const HomeView: React.FC<HomeViewProps> = ({
           >
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                <span style={{ width: '4px', height: '22px', backgroundColor: '#00685F', borderRadius: '2px' }} />
+                <span style={{ width: '4px', height: '22px', backgroundColor: '#D4AF37', borderRadius: '2px' }} />
                 <span
                   style={{
                     fontFamily: "'JetBrains Mono', monospace",
                     fontSize: '11px',
                     fontWeight: 700,
-                    color: '#00685F',
+                    color: '#D4AF37',
                     letterSpacing: '0.6px',
                     textTransform: 'uppercase',
                   }}
@@ -819,20 +1213,20 @@ export const HomeView: React.FC<HomeViewProps> = ({
                   fontFamily: "'Plus Jakarta Sans', sans-serif",
                   fontWeight: 800,
                   fontSize: '30px',
-                  color: '#0D1C2F',
+                  color: '#F8F6F0',
                   margin: 0,
                   letterSpacing: '-0.5px',
                 }}
               >
                 Available Salons
               </h2>
-              <p style={{ margin: '6px 0 0', color: '#5C647A', fontSize: '14px' }}>
+              <p style={{ margin: '6px 0 0', color: '#8E8A85', fontSize: '14px' }}>
                 Browse real-time availability, stylists, and pricing.
               </p>
             </div>
 
             {/* Filter Pills */}
-            <div style={{ display: 'flex', gap: '6px', backgroundColor: '#EFF4FF', padding: '4px', borderRadius: '10px' }}>
+            <div style={{ display: 'flex', gap: '6px', backgroundColor: '#1A1A1E', border: '1px solid #2E2C2A', padding: '4px', borderRadius: '10px' }}>
               {[
                 { id: 'all' as const, label: 'All' },
                 { id: 'men' as const, label: "Men's" },
@@ -848,9 +1242,9 @@ export const HomeView: React.FC<HomeViewProps> = ({
                       padding: '7px 16px',
                       borderRadius: '8px',
                       border: 'none',
-                      backgroundColor: isSelected ? '#00685F' : 'transparent',
-                      color: isSelected ? '#FFFFFF' : '#0D1C2F',
-                      fontWeight: 600,
+                      backgroundColor: isSelected ? '#D4AF37' : 'transparent',
+                      color: isSelected ? '#111113' : '#8E8A85',
+                      fontWeight: isSelected ? 700 : 600,
                       fontSize: '13px',
                       cursor: 'pointer',
                       transition: 'all 0.15s ease',
@@ -875,22 +1269,22 @@ export const HomeView: React.FC<HomeViewProps> = ({
               <div
                 key={salon.id}
                 style={{
-                  backgroundColor: '#FFFFFF',
+                  backgroundColor: '#1A1A1E',
                   borderRadius: '20px',
                   overflow: 'hidden',
-                  boxShadow: '0 2px 12px rgba(0, 0, 0, 0.05)',
-                  border: salon.isFeatured ? '2px solid #00685F' : '1px solid #E2E8F0',
+                  boxShadow: salon.isFeatured ? '0 0 0 1px #D4AF37, 0 8px 30px rgba(212, 175, 55, 0.15)' : '0 4px 20px rgba(0, 0, 0, 0.5)',
+                  border: salon.isFeatured ? '1px solid #D4AF37' : '1px solid #2E2C2A',
                   display: 'flex',
                   flexDirection: 'column',
                   transition: 'all 0.25s ease',
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = 'translateY(-4px)';
-                  e.currentTarget.style.boxShadow = '0 12px 32px rgba(0, 104, 95, 0.12)';
+                  e.currentTarget.style.boxShadow = salon.isFeatured ? '0 0 0 1px #D4AF37, 0 12px 36px rgba(212, 175, 55, 0.25)' : '0 8px 30px rgba(0, 0, 0, 0.7)';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = '0 2px 12px rgba(0, 0, 0, 0.05)';
+                  e.currentTarget.style.boxShadow = salon.isFeatured ? '0 0 0 1px #D4AF37, 0 8px 30px rgba(212, 175, 55, 0.15)' : '0 4px 20px rgba(0, 0, 0, 0.5)';
                 }}
               >
                 {/* Salon Image */}
@@ -904,7 +1298,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
                     style={{
                       position: 'absolute',
                       inset: 0,
-                      background: 'linear-gradient(180deg, rgba(13, 28, 47, 0.05) 0%, rgba(13, 28, 47, 0.7) 100%)',
+                      background: 'linear-gradient(180deg, rgba(17, 17, 19, 0.05) 0%, rgba(17, 17, 19, 0.85) 100%)',
                     }}
                   />
 
@@ -922,8 +1316,9 @@ export const HomeView: React.FC<HomeViewProps> = ({
                   >
                     <span
                       style={{
-                        backgroundColor: salon.type === 'men' ? '#00685F' : '#4648D4',
-                        color: '#FFFFFF',
+                        backgroundColor: '#26241F',
+                        border: '1px solid #3E3A32',
+                        color: '#D4AF37',
                         fontSize: '11px',
                         fontWeight: 700,
                         padding: '4px 10px',
@@ -938,8 +1333,8 @@ export const HomeView: React.FC<HomeViewProps> = ({
                     {salon.isFeatured && (
                       <span
                         style={{
-                          backgroundColor: 'rgba(245, 158, 11, 0.9)',
-                          color: '#FFFFFF',
+                          backgroundColor: '#D4AF37',
+                          color: '#111113',
                           fontSize: '11px',
                           fontWeight: 700,
                           padding: '4px 10px',
@@ -949,7 +1344,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
                           gap: '4px',
                         }}
                       >
-                        <Icon name="star" size={12} color="#FFFFFF" />
+                        <Icon name="star" size={12} color="#111113" />
                         Featured
                       </span>
                     )}
@@ -965,31 +1360,33 @@ export const HomeView: React.FC<HomeViewProps> = ({
                       display: 'flex',
                       justifyContent: 'space-between',
                       alignItems: 'flex-end',
-                      color: '#FFFFFF',
+                      color: '#F8F6F0',
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <Icon name="star" size={14} color="#FBBF24" />
+                      <Icon name="star" size={14} color="#D4AF37" />
                       <strong style={{ fontSize: '15px' }}>{salon.rating}</strong>
-                      <span style={{ fontSize: '12px', opacity: 0.85 }}>({salon.reviewsCount})</span>
+                      <span style={{ fontSize: '12px', opacity: 0.85, color: '#8E8A85' }}>({salon.reviewsCount})</span>
                     </div>
 
                     <div
                       style={{
-                        backgroundColor: 'rgba(0, 104, 95, 0.85)',
+                        backgroundColor: 'rgba(26, 26, 30, 0.9)',
+                        border: '1px solid #2E2C2A',
                         backdropFilter: 'blur(4px)',
                         padding: '4px 10px',
                         borderRadius: '6px',
                         fontSize: '11px',
                         fontWeight: 700,
+                        color: '#D4AF37',
                         fontFamily: "'JetBrains Mono', monospace",
                         display: 'flex',
                         alignItems: 'center',
                         gap: '4px',
                       }}
                     >
-                      <Icon name="clock" size={11} color="#FFFFFF" />
-                      ~{salon.estWaitMinutes}m wait
+                      <Icon name="clock" size={11} color="#D4AF37" />
+                      {salon.estWaitMinutes}m wait
                     </div>
                   </div>
                 </div>
@@ -1002,7 +1399,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
                         fontFamily: "'Plus Jakarta Sans', sans-serif",
                         fontWeight: 800,
                         fontSize: '20px',
-                        color: '#0D1C2F',
+                        color: '#F8F6F0',
                         margin: '0 0 6px',
                       }}
                     >
@@ -1015,21 +1412,21 @@ export const HomeView: React.FC<HomeViewProps> = ({
                         alignItems: 'center',
                         gap: '6px',
                         fontSize: '13px',
-                        color: '#5C647A',
+                        color: '#8E8A85',
                         marginBottom: '10px',
                       }}
                     >
-                      <Icon name="map-pin" size={13} color="#5C647A" />
+                      <Icon name="map-pin" size={13} color="#8E8A85" />
                       <span>{salon.address}</span>
-                      <span style={{ color: '#CBD5E1' }}>·</span>
-                      <span style={{ color: '#00685F', fontWeight: 600 }}>{salon.hours}</span>
+                      <span style={{ color: '#2E2C2A' }}>·</span>
+                      <span style={{ color: '#D4AF37', fontWeight: 600 }}>{salon.hours}</span>
                     </div>
 
                     <p
                       style={{
                         fontSize: '13px',
                         lineHeight: 1.55,
-                        color: '#3D4947',
+                        color: '#8E8A85',
                         margin: '0 0 14px',
                       }}
                     >
@@ -1039,10 +1436,10 @@ export const HomeView: React.FC<HomeViewProps> = ({
                     {/* Details */}
                     <div
                       style={{
-                        backgroundColor: '#F8F9FF',
+                        backgroundColor: '#161619',
                         borderRadius: '12px',
                         padding: '12px 14px',
-                        border: '1px solid #E8ECF5',
+                        border: '1px solid #2E2C2A',
                         display: 'flex',
                         flexDirection: 'column',
                         gap: '7px',
@@ -1050,16 +1447,16 @@ export const HomeView: React.FC<HomeViewProps> = ({
                       }}
                     >
                       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <span style={{ color: '#5C647A' }}>Active Chairs:</span>
-                        <strong style={{ color: '#0D1C2F' }}>{salon.activeChairs} of {salon.totalChairs}</strong>
+                        <span style={{ color: '#8E8A85' }}>Active Chairs:</span>
+                        <strong style={{ color: '#F8F6F0' }}>{salon.activeChairs} of {salon.totalChairs}</strong>
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <span style={{ color: '#5C647A' }}>Popular Service:</span>
-                        <span style={{ color: '#00685F', fontWeight: 600 }}>{salon.popularService}</span>
+                        <span style={{ color: '#8E8A85' }}>Popular Service:</span>
+                        <span style={{ color: '#D4AF37', fontWeight: 600 }}>{salon.popularService}</span>
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <span style={{ color: '#5C647A' }}>Phone:</span>
-                        <span style={{ fontFamily: "'JetBrains Mono', monospace", color: '#0D1C2F', fontSize: '11px' }}>{salon.phone}</span>
+                        <span style={{ color: '#8E8A85' }}>Phone:</span>
+                        <span style={{ fontFamily: "'JetBrains Mono', monospace", color: '#F8F6F0', fontSize: '11px' }}>{salon.phone}</span>
                       </div>
                     </div>
                   </div>
@@ -1072,15 +1469,15 @@ export const HomeView: React.FC<HomeViewProps> = ({
                       style={{
                         flex: 1,
                         padding: '12px 16px',
-                        backgroundColor: '#00685F',
-                        color: '#FFFFFF',
+                        backgroundColor: '#D4AF37',
+                        color: '#111113',
                         border: 'none',
                         borderRadius: '10px',
                         fontFamily: "'Plus Jakarta Sans', sans-serif",
                         fontWeight: 700,
                         fontSize: '14px',
                         cursor: 'pointer',
-                        boxShadow: '0 2px 8px rgba(0, 104, 95, 0.2)',
+                        boxShadow: '0 2px 8px rgba(212, 175, 55, 0.25)',
                         transition: 'all 0.15s ease',
                         display: 'flex',
                         alignItems: 'center',
@@ -1088,14 +1485,14 @@ export const HomeView: React.FC<HomeViewProps> = ({
                         gap: '6px',
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = '#008378';
+                        e.currentTarget.style.backgroundColor = '#B8976C';
                       }}
                       onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = '#00685F';
+                        e.currentTarget.style.backgroundColor = '#D4AF37';
                       }}
                     >
                       Book Now
-                      <Icon name="arrow-right" size={14} color="#FFFFFF" />
+                      <Icon name="arrow-right" size={14} color="#111113" />
                     </button>
 
                     <button
@@ -1106,13 +1503,20 @@ export const HomeView: React.FC<HomeViewProps> = ({
                       }}
                       style={{
                         padding: '12px 14px',
-                        backgroundColor: '#F0F4FF',
-                        color: '#00685F',
-                        border: '1px solid #D5E3FD',
+                        backgroundColor: '#1A1A1E',
+                        color: '#D4AF37',
+                        border: '1px solid #2E2C2A',
                         borderRadius: '10px',
                         fontSize: '13px',
                         fontWeight: 600,
                         cursor: 'pointer',
+                        transition: 'all 0.15s ease',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = '#26241F';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = '#1A1A1E';
                       }}
                     >
                       Menu
@@ -1130,8 +1534,10 @@ export const HomeView: React.FC<HomeViewProps> = ({
         style={{
           width: '100%',
           padding: '64px 24px',
-          backgroundColor: '#0D1C2F',
-          color: '#FFFFFF',
+          backgroundColor: '#161619',
+          borderTop: '1px solid #2E2C2A',
+          borderBottom: '1px solid #2E2C2A',
+          color: '#F8F6F0',
           display: 'flex',
           justifyContent: 'center',
         }}
@@ -1151,19 +1557,20 @@ export const HomeView: React.FC<HomeViewProps> = ({
                 width: '44px',
                 height: '44px',
                 borderRadius: '12px',
-                backgroundColor: 'rgba(0, 209, 178, 0.15)',
+                backgroundColor: '#26241F',
+                border: '1px solid #3E3A32',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 marginBottom: '14px',
               }}
             >
-              <Icon name="clock" size={22} color="#00D1B2" />
+              <Icon name="clock" size={22} color="#D4AF37" />
             </div>
-            <h4 style={{ margin: '0 0 8px', fontSize: '17px', fontWeight: 700, color: '#FFFFFF' }}>
+            <h4 style={{ margin: '0 0 8px', fontSize: '17px', fontWeight: 700, color: '#F8F6F0' }}>
               Zero-Wait Guarantee
             </h4>
-            <p style={{ margin: 0, fontSize: '13px', color: '#94A3B8', lineHeight: 1.65 }}>
+            <p style={{ margin: 0, fontSize: '13px', color: '#8E8A85', lineHeight: 1.65 }}>
               No more sitting on bench queues for 45 minutes. Your slot is digitally reserved and locked with your booking pass.
             </p>
           </div>
@@ -1174,19 +1581,20 @@ export const HomeView: React.FC<HomeViewProps> = ({
                 width: '44px',
                 height: '44px',
                 borderRadius: '12px',
-                backgroundColor: 'rgba(0, 209, 178, 0.15)',
+                backgroundColor: '#26241F',
+                border: '1px solid #3E3A32',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 marginBottom: '14px',
               }}
             >
-              <Icon name="shield" size={22} color="#00D1B2" />
+              <Icon name="shield" size={22} color="#D4AF37" />
             </div>
-            <h4 style={{ margin: '0 0 8px', fontSize: '17px', fontWeight: 700, color: '#FFFFFF' }}>
+            <h4 style={{ margin: '0 0 8px', fontSize: '17px', fontWeight: 700, color: '#F8F6F0' }}>
               Secure Booking System
             </h4>
-            <p style={{ margin: 0, fontSize: '13px', color: '#94A3B8', lineHeight: 1.65 }}>
+            <p style={{ margin: 0, fontSize: '13px', color: '#8E8A85', lineHeight: 1.65 }}>
               Your seat cannot be taken by walk-ins. The barber verifies your booking pass before starting the service.
             </p>
           </div>
@@ -1197,19 +1605,20 @@ export const HomeView: React.FC<HomeViewProps> = ({
                 width: '44px',
                 height: '44px',
                 borderRadius: '12px',
-                backgroundColor: 'rgba(0, 209, 178, 0.15)',
+                backgroundColor: '#26241F',
+                border: '1px solid #3E3A32',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 marginBottom: '14px',
               }}
             >
-              <Icon name="credit-card" size={22} color="#00D1B2" />
+              <Icon name="credit-card" size={22} color="#D4AF37" />
             </div>
-            <h4 style={{ margin: '0 0 8px', fontSize: '17px', fontWeight: 700, color: '#FFFFFF' }}>
+            <h4 style={{ margin: '0 0 8px', fontSize: '17px', fontWeight: 700, color: '#F8F6F0' }}>
               Transparent Pricing
             </h4>
-            <p style={{ margin: 0, fontSize: '13px', color: '#94A3B8', lineHeight: 1.65 }}>
+            <p style={{ margin: 0, fontSize: '13px', color: '#8E8A85', lineHeight: 1.65 }}>
               Standardized pricing: Normal Haircut at LKR 400, Haircut with Beard Cut at LKR 800. No hidden charges.
             </p>
           </div>
@@ -1220,10 +1629,10 @@ export const HomeView: React.FC<HomeViewProps> = ({
       <footer
         style={{
           width: '100%',
-          backgroundColor: '#091320',
-          borderTop: '1px solid rgba(255, 255, 255, 0.06)',
+          backgroundColor: '#111113',
+          borderTop: '1px solid #2E2C2A',
           padding: '40px 24px 30px',
-          color: '#94A3B8',
+          color: '#8E8A85',
           fontSize: '13px',
           display: 'flex',
           flexDirection: 'column',
@@ -1243,11 +1652,16 @@ export const HomeView: React.FC<HomeViewProps> = ({
           }}
         >
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Icon name="scissors" size={16} color="#00D1B2" />
-              <strong style={{ color: '#FFFFFF', fontSize: '15px' }}>Trimly</strong>
+            <div
+              className="trimly-logo-link"
+              onClick={navigateToHome}
+              title="Trimly Home"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}
+            >
+              <Icon name="scissors" size={16} color="#D4AF37" />
+              <strong style={{ color: '#F8F6F0', fontSize: '15px' }}>Trimly</strong>
             </div>
-            <p style={{ margin: '4px 0 0', color: '#64748B', fontSize: '12px' }}>
+            <p style={{ margin: '4px 0 0', color: '#8E8A85', fontSize: '12px' }}>
               Smart Salon Booking System
             </p>
           </div>
@@ -1256,35 +1670,46 @@ export const HomeView: React.FC<HomeViewProps> = ({
             <button
               type="button"
               onClick={scrollToSalons}
-              style={{ background: 'none', border: 'none', color: '#94A3B8', cursor: 'pointer', fontSize: '13px' }}
+              style={{ background: 'none', border: 'none', color: '#8E8A85', cursor: 'pointer', fontSize: '13px', transition: 'color 0.15s ease' }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = '#D4AF37'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = '#8E8A85'; }}
             >
               Salons
             </button>
             <button
               type="button"
               onClick={onNavigateToBooking}
-              style={{ background: 'none', border: 'none', color: '#94A3B8', cursor: 'pointer', fontSize: '13px' }}
+              style={{ background: 'none', border: 'none', color: '#8E8A85', cursor: 'pointer', fontSize: '13px', transition: 'color 0.15s ease' }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = '#D4AF37'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = '#8E8A85'; }}
             >
               Services
             </button>
             <button
               type="button"
               onClick={onNavigateToPass}
-              style={{ background: 'none', border: 'none', color: '#94A3B8', cursor: 'pointer', fontSize: '13px' }}
+              style={{ background: 'none', border: 'none', color: '#8E8A85', cursor: 'pointer', fontSize: '13px', transition: 'color 0.15s ease' }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = '#D4AF37'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = '#8E8A85'; }}
             >
               My Booking
             </button>
             <button
               type="button"
-              onClick={onNavigateToBarber}
-              style={{ background: 'none', border: 'none', color: '#00D1B2', cursor: 'pointer', fontSize: '13px', fontWeight: 600 }}
+              onClick={() => {
+                if (onNavigateToLogin) onNavigateToLogin();
+                else window.location.hash = '#/login';
+              }}
+              style={{ background: 'none', border: 'none', color: '#8E8A85', cursor: 'pointer', fontSize: '13px', transition: 'color 0.15s ease' }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = '#D4AF37'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = '#8E8A85'; }}
             >
-              Barber Portal
+              Sign In
             </button>
           </div>
         </div>
 
-        <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.05)', width: '100%', maxWidth: '1100px', paddingTop: '18px', textAlign: 'center' }}>
+        <div style={{ borderTop: '1px solid #2E2C2A', width: '100%', maxWidth: '1100px', paddingTop: '18px', textAlign: 'center', color: '#8E8A85' }}>
           <span>© {new Date().getFullYear()} Trimly. All rights reserved.</span>
         </div>
       </footer>

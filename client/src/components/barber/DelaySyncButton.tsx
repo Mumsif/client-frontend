@@ -47,16 +47,16 @@ export const DelaySyncButton: React.FC<DelaySyncButtonProps> = ({
         gap: '6px',
         padding: '12px 18px',
         minHeight: '48px',
-        backgroundColor: isConfirming ? '#FEF3C7' : '#DAE2FD',
-        border: isConfirming ? '1.5px solid #F59E0B' : '1px solid transparent',
+        backgroundColor: isConfirming ? '#281E12' : '#222227',
+        border: isConfirming ? '1.5px solid #E5A93C' : '1px solid #2E2C2A',
         borderRadius: '12px',
         cursor: 'pointer',
         fontFamily: "'Plus Jakarta Sans', sans-serif",
         fontWeight: 600,
         fontSize: '14px',
-        color: isConfirming ? '#B45309' : '#00685F',
+        color: isConfirming ? '#E5A93C' : '#D4AF37',
         transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
-        boxShadow: isConfirming ? '0 2px 8px rgba(245, 158, 11, 0.25)' : 'none',
+        boxShadow: isConfirming ? '0 2px 12px rgba(229, 169, 60, 0.25)' : 'none',
       }}
       className="btn-delay-shift"
     >

@@ -1,11 +1,11 @@
 /**
  * ============================================================================
- * TRIMLY / GLOWSLOT - ACTIVE IN-CHAIR CARD COMPONENT
+ * TRIMLY - ACTIVE IN-CHAIR CARD COMPONENT
  * ============================================================================
- * Direct extraction from Figma CSS:
- * - CURRENT IN-CHAIR (High-Contrast Emerald Card)
- * - background: #008378; border-radius: 12px
- * - Complete Service & Release Chair Button (48px Touch Target)
+ * Modern Noir & Champagne Gold Luxury Styling:
+ * - CURRENT IN-CHAIR (Editorial Noir & Champagne Gold Station Card)
+ * - background: #1A1A1E; border: 1.5px solid #D4AF37
+ * - Complete Service & Release Chair Button (48px Touch Target in Champagne Gold)
  * - Live Progress Countdown with second-by-second ticking
  * ============================================================================
  */
@@ -44,9 +44,9 @@ export const ActiveInChairCard: React.FC<ActiveInChairCardProps> = ({
         style={{
           width: '100%',
           minHeight: '220px',
-          backgroundColor: '#F8F9FF',
-          border: '2px dashed #008378',
-          borderRadius: '12px',
+          backgroundColor: '#161619',
+          border: '2px dashed #2E2C2A',
+          borderRadius: '16px',
           padding: '24px',
           display: 'flex',
           flexDirection: 'column',
@@ -61,11 +61,12 @@ export const ActiveInChairCard: React.FC<ActiveInChairCardProps> = ({
             width: '44px',
             height: '44px',
             borderRadius: '50%',
-            backgroundColor: '#EFF4FF',
+            backgroundColor: '#24221F',
+            border: '1px solid #2E2C2A',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: '#00685F',
+            color: '#D4AF37',
           }}
         >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -75,10 +76,10 @@ export const ActiveInChairCard: React.FC<ActiveInChairCardProps> = ({
           </svg>
         </div>
         <div>
-          <h4 style={{ margin: 0, fontSize: '16px', fontWeight: 700, color: '#0D1C2F' }}>
+          <h4 style={{ margin: 0, fontSize: '16px', fontWeight: 700, color: '#F8F6F0' }}>
             Chair Currently Vacant
           </h4>
-          <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#5C647A' }}>
+          <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#8E8A85' }}>
             Verify next OTP from queue below or seat immediate walk-in client.
           </p>
         </div>
@@ -112,10 +113,11 @@ export const ActiveInChairCard: React.FC<ActiveInChairCardProps> = ({
         padding: '24px',
         gap: '16px',
         width: '100%',
-        backgroundColor: '#008378',
-        borderRadius: '12px',
-        boxShadow: '0px 4px 6px -1px rgba(0, 0, 0, 0.1), 0px 2px 4px -2px rgba(0, 0, 0, 0.1)',
-        color: '#F4FFFC',
+        backgroundColor: '#1A1A1E',
+        borderRadius: '16px',
+        border: '1.5px solid #D4AF37',
+        boxShadow: '0px 8px 32px rgba(212, 175, 55, 0.2), 0 0 0 1px rgba(212, 175, 55, 0.35)',
+        color: '#F8F6F0',
         position: 'relative',
         transition: 'all 0.3s ease',
       }}
@@ -137,7 +139,7 @@ export const ActiveInChairCard: React.FC<ActiveInChairCardProps> = ({
             height="18"
             viewBox="0 0 24 24"
             fill="none"
-            stroke="#F4FFFC"
+            stroke="#D4AF37"
             strokeWidth="2.2"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -149,29 +151,29 @@ export const ActiveInChairCard: React.FC<ActiveInChairCardProps> = ({
           <span
             style={{
               fontFamily: "'Plus Jakarta Sans', sans-serif",
-              fontWeight: 600,
+              fontWeight: 700,
               fontSize: '13px',
               letterSpacing: '0.65px',
               textTransform: 'uppercase',
-              color: '#F4FFFC',
+              color: '#D4AF37',
             }}
           >
             CURRENT IN-CHAIR
           </span>
         </div>
 
-        {/* White Pill Badge with Ticket # */}
+        {/* Champagne Gold Pill Badge with Ticket # */}
         <div
           style={{
-            padding: '4px 10px',
-            backgroundColor: '#FFFFFF',
+            padding: '4px 12px',
+            backgroundColor: '#D4AF37',
             borderRadius: '9999px',
-            color: '#0D1C2F',
-            fontFamily: "'Plus Jakarta Sans', sans-serif",
+            color: '#111113',
+            fontFamily: "'JetBrains Mono', monospace",
             fontWeight: 700,
             fontSize: '13px',
             letterSpacing: '0.13px',
-            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+            boxShadow: '0 2px 8px rgba(212, 175, 55, 0.35)',
           }}
         >
           {ticketNumber}
@@ -195,10 +197,10 @@ export const ActiveInChairCard: React.FC<ActiveInChairCardProps> = ({
             style={{
               fontFamily: "'Plus Jakarta Sans', sans-serif",
               fontWeight: 700,
-              fontSize: '32px',
+              fontSize: '30px',
               lineHeight: '36px',
               letterSpacing: '-0.72px',
-              color: '#F4FFFC',
+              color: '#F8F6F0',
               margin: 0,
             }}
           >
@@ -210,7 +212,7 @@ export const ActiveInChairCard: React.FC<ActiveInChairCardProps> = ({
               fontFamily: "'Plus Jakarta Sans', sans-serif",
               fontSize: '14px',
               lineHeight: '20px',
-              color: 'rgba(244, 255, 252, 0.9)',
+              color: '#C5A880',
               margin: '2px 0 0',
             }}
           >
@@ -221,7 +223,7 @@ export const ActiveInChairCard: React.FC<ActiveInChairCardProps> = ({
             style={{
               fontFamily: "'JetBrains Mono', monospace",
               fontSize: '11px',
-              color: 'rgba(244, 255, 252, 0.8)',
+              color: '#8E8A85',
               marginTop: '4px',
             }}
           >
@@ -229,27 +231,25 @@ export const ActiveInChairCard: React.FC<ActiveInChairCardProps> = ({
           </span>
         </div>
 
-        {/* Live Progress Countdown Box (Glassmorphic) */}
+        {/* Live Progress Countdown Box */}
         <div
           style={{
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'flex-end',
-            padding: '8px 16px',
-            backgroundColor: 'rgba(255, 255, 255, 0.15)',
-            backdropFilter: 'blur(4px)',
-            WebkitBackdropFilter: 'blur(4px)',
+            padding: '10px 18px',
+            backgroundColor: '#141417',
             borderRadius: '12px',
-            border: '1px solid rgba(255, 255, 255, 0.25)',
+            border: '1px solid #2E2C2A',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <span
               style={{
                 width: '8px',
                 height: '8px',
                 borderRadius: '50%',
-                backgroundColor: '#F4FFFC',
+                backgroundColor: '#D4AF37',
                 animation: 'countdownBlink 1.5s infinite',
               }}
             />
@@ -257,9 +257,9 @@ export const ActiveInChairCard: React.FC<ActiveInChairCardProps> = ({
               style={{
                 fontFamily: "'Plus Jakarta Sans', sans-serif",
                 fontWeight: 600,
-                fontSize: '12px',
-                letterSpacing: '0.13px',
-                color: 'rgba(244, 255, 252, 0.85)',
+                fontSize: '11px',
+                letterSpacing: '0.5px',
+                color: '#8E8A85',
               }}
             >
               TIME LEFT
@@ -272,7 +272,7 @@ export const ActiveInChairCard: React.FC<ActiveInChairCardProps> = ({
               fontWeight: 700,
               fontSize: '24px',
               lineHeight: '30px',
-              color: '#F4FFFC',
+              color: '#D4AF37',
               letterSpacing: '-0.4px',
               margin: '2px 0',
             }}
@@ -284,10 +284,10 @@ export const ActiveInChairCard: React.FC<ActiveInChairCardProps> = ({
             style={{
               fontFamily: "'JetBrains Mono', monospace",
               fontSize: '11px',
-              color: 'rgba(244, 255, 252, 0.75)',
+              color: '#8E8A85',
             }}
           >
-            Est. Complete ~{remainingMinutes}m
+            Est. Complete {remainingMinutes}m
           </span>
         </div>
       </div>
@@ -299,19 +299,19 @@ export const ActiveInChairCard: React.FC<ActiveInChairCardProps> = ({
         style={{
           width: '100%',
           minHeight: '48px',
-          backgroundColor: '#FFFFFF',
+          backgroundColor: '#D4AF37',
           borderRadius: '12px',
           border: 'none',
-          boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
+          boxShadow: '0px 4px 16px rgba(212, 175, 55, 0.35)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           gap: '8px',
           cursor: 'pointer',
           fontFamily: "'Plus Jakarta Sans', sans-serif",
-          fontWeight: 600,
+          fontWeight: 700,
           fontSize: '16px',
-          color: '#00685F',
+          color: '#111113',
           transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
           outline: 'none',
           marginTop: '4px',
@@ -323,7 +323,7 @@ export const ActiveInChairCard: React.FC<ActiveInChairCardProps> = ({
           height="18"
           viewBox="0 0 24 24"
           fill="none"
-          stroke="#00685F"
+          stroke="#111113"
           strokeWidth="2.5"
           strokeLinecap="round"
           strokeLinejoin="round"

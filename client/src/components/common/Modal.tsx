@@ -60,9 +60,9 @@ export const Modal: React.FC<ModalProps> = ({
         bottom: 0,
         width: '100vw',
         height: '100vh',
-        backgroundColor: 'rgba(13, 28, 47, 0.65)',
-        backdropFilter: 'blur(8px)',
-        WebkitBackdropFilter: 'blur(8px)',
+        backgroundColor: 'rgba(0, 0, 0, 0.78)',
+        backdropFilter: 'blur(10px)',
+        WebkitBackdropFilter: 'blur(10px)',
         zIndex: 99999,
         display: 'flex',
         alignItems: 'center',
@@ -80,9 +80,10 @@ export const Modal: React.FC<ModalProps> = ({
           width: '100%',
           maxWidth,
           maxHeight: 'calc(100vh - 48px)',
-          backgroundColor: '#FFFFFF',
+          backgroundColor: '#1A1A1E',
           borderRadius: '16px',
-          boxShadow: '0 20px 40px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 104, 95, 0.1)',
+          boxShadow: '0 24px 60px rgba(0, 0, 0, 0.85), 0 0 0 1px #2E2C2A',
+          border: '1px solid #2E2C2A',
           overflow: 'hidden',
           display: 'flex',
           flexDirection: 'column',
@@ -94,7 +95,7 @@ export const Modal: React.FC<ModalProps> = ({
         <div
           style={{
             padding: '20px 24px',
-            borderBottom: '1px solid #EFF4FF',
+            borderBottom: '1px solid #2E2C2A',
             display: 'flex',
             alignItems: 'flex-start',
             justifyContent: 'space-between',
@@ -108,7 +109,7 @@ export const Modal: React.FC<ModalProps> = ({
                 fontFamily: "'Plus Jakarta Sans', sans-serif",
                 fontSize: '18px',
                 fontWeight: 700,
-                color: '#0D1C2F',
+                color: '#F8F6F0',
                 margin: 0,
               }}
             >
@@ -118,7 +119,7 @@ export const Modal: React.FC<ModalProps> = ({
               <p
                 style={{
                   fontSize: '13px',
-                  color: '#3D4947',
+                  color: '#8E8A85',
                   marginTop: '4px',
                   marginBottom: 0,
                 }}
@@ -130,8 +131,8 @@ export const Modal: React.FC<ModalProps> = ({
           <button
             onClick={onClose}
             style={{
-              background: '#EFF4FF',
-              border: 'none',
+              background: '#24242A',
+              border: '1px solid #2E2C2A',
               borderRadius: '8px',
               width: '32px',
               height: '32px',
@@ -139,10 +140,10 @@ export const Modal: React.FC<ModalProps> = ({
               alignItems: 'center',
               justifyContent: 'center',
               cursor: 'pointer',
-              color: '#3D4947',
+              color: '#8E8A85',
               fontSize: '16px',
               fontWeight: 700,
-              transition: 'background 0.15s ease',
+              transition: 'all 0.15s ease',
             }}
             aria-label="Close modal"
           >
@@ -151,15 +152,15 @@ export const Modal: React.FC<ModalProps> = ({
         </div>
 
         {/* Content Body */}
-        <div style={{ padding: '24px', overflowY: 'auto', flex: '1 1 auto' }}>{children}</div>
+        <div style={{ padding: '24px', overflowY: 'auto', flex: '1 1 auto', color: '#F8F6F0' }}>{children}</div>
 
         {/* Optional Footer */}
         {footer && (
           <div
             style={{
               padding: '16px 24px',
-              backgroundColor: '#F8F9FF',
-              borderTop: '1px solid #EFF4FF',
+              backgroundColor: '#141417',
+              borderTop: '1px solid #2E2C2A',
               display: 'flex',
               justifyContent: 'flex-end',
               gap: '12px',

@@ -1,7 +1,8 @@
 /**
  * ============================================================================
- * TRIMLY / GLOWSLOT - BARBER WORKSTATION LOGIN VIEW
+ * TRIMLY - BARBER WORKSTATION LOGIN VIEW
  * ============================================================================
+ * Modern Noir & Champagne Gold Luxury Styling:
  * Connects with Spring Boot Security:
  * -> com.glowslot.security.FirebaseAuthenticationFilter.java
  * ============================================================================
@@ -57,7 +58,7 @@ export const BarberLoginView: React.FC<BarberLoginViewProps> = ({
     <div
       style={{
         minHeight: '100vh',
-        backgroundColor: '#F8F9FF',
+        backgroundColor: '#111113',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -69,11 +70,11 @@ export const BarberLoginView: React.FC<BarberLoginViewProps> = ({
         style={{
           width: '100%',
           maxWidth: '440px',
-          backgroundColor: '#FFFFFF',
+          backgroundColor: '#1A1A1E',
           borderRadius: '20px',
           padding: '36px 32px',
-          boxShadow: '0 10px 30px rgba(0, 104, 95, 0.1)',
-          border: '1px solid #D5E3FD',
+          boxShadow: '0 24px 60px rgba(0, 0, 0, 0.85), 0 0 0 1px #2E2C2A',
+          border: '1px solid #2E2C2A',
           display: 'flex',
           flexDirection: 'column',
           gap: '24px',
@@ -88,7 +89,8 @@ export const BarberLoginView: React.FC<BarberLoginViewProps> = ({
               borderRadius: '14px',
               overflow: 'hidden',
               marginBottom: '16px',
-              boxShadow: '0 4px 14px rgba(0, 0, 0, 0.08)',
+              border: '1px solid #2E2C2A',
+              boxShadow: '0 4px 14px rgba(0, 0, 0, 0.4)',
             }}
           >
             <img
@@ -100,7 +102,7 @@ export const BarberLoginView: React.FC<BarberLoginViewProps> = ({
               style={{
                 position: 'absolute',
                 inset: 0,
-                background: 'linear-gradient(180deg, rgba(13, 28, 47, 0.1) 0%, rgba(0, 104, 95, 0.88) 100%)',
+                background: 'linear-gradient(180deg, rgba(17, 17, 19, 0.2) 0%, rgba(17, 17, 19, 0.95) 100%)',
                 display: 'flex',
                 alignItems: 'flex-end',
                 justifyContent: 'center',
@@ -109,7 +111,7 @@ export const BarberLoginView: React.FC<BarberLoginViewProps> = ({
             >
               <span
                 style={{
-                  color: '#FFFFFF',
+                  color: '#D4AF37',
                   fontWeight: 700,
                   fontSize: '11px',
                   fontFamily: "'JetBrains Mono', monospace",
@@ -120,17 +122,17 @@ export const BarberLoginView: React.FC<BarberLoginViewProps> = ({
               </span>
             </div>
           </div>
-          <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '22px', fontWeight: 700, margin: 0, color: '#0D1C2F' }}>
+          <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '22px', fontWeight: 700, margin: 0, color: '#F8F6F0' }}>
             Barber Station Login
           </h2>
-          <p style={{ margin: '6px 0 0', fontSize: '13px', color: '#5C647A' }}>
+          <p style={{ margin: '6px 0 0', fontSize: '13px', color: '#8E8A85' }}>
             Main Street, Akkaraipattu
           </p>
         </div>
 
         {/* Chair Selection Buttons */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <label style={{ fontSize: '12px', fontWeight: 600, color: '#3D4947' }}>Select Your Station Chair</label>
+          <label style={{ fontSize: '12px', fontWeight: 600, color: '#F8F6F0' }}>Select Your Station Chair</label>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
             <button
               type="button"
@@ -138,17 +140,18 @@ export const BarberLoginView: React.FC<BarberLoginViewProps> = ({
               style={{
                 padding: '12px',
                 borderRadius: '12px',
-                border: selectedChair === 'chair_1' ? '2px solid #00685F' : '1px solid #D5E3FD',
-                backgroundColor: selectedChair === 'chair_1' ? '#EFF4FF' : '#F8F9FF',
+                border: selectedChair === 'chair_1' ? '2px solid #D4AF37' : '1px solid #2E2C2A',
+                backgroundColor: selectedChair === 'chair_1' ? '#26241F' : '#161619',
+                cursor: 'pointer',
+                textAlign: 'left',
                 display: 'flex',
                 flexDirection: 'column',
-                alignItems: 'center',
                 gap: '4px',
-                cursor: 'pointer',
+                transition: 'all 0.15s ease',
               }}
             >
-              <span style={{ fontWeight: 700, fontSize: '14px', color: '#0D1C2F' }}>Chair 1: Dhanu</span>
-              <span style={{ fontSize: '11px', color: '#00685F' }}>Master Barber</span>
+              <span style={{ fontWeight: 700, fontSize: '14px', color: selectedChair === 'chair_1' ? '#F8F6F0' : '#8E8A85' }}>Chair 1: Dhanu</span>
+              <span style={{ fontSize: '11px', color: '#D4AF37' }}>Master Barber</span>
             </button>
 
             <button
@@ -157,17 +160,18 @@ export const BarberLoginView: React.FC<BarberLoginViewProps> = ({
               style={{
                 padding: '12px',
                 borderRadius: '12px',
-                border: selectedChair === 'chair_2' ? '2px solid #00685F' : '1px solid #D5E3FD',
-                backgroundColor: selectedChair === 'chair_2' ? '#EFF4FF' : '#F8F9FF',
+                border: selectedChair === 'chair_2' ? '2px solid #D4AF37' : '1px solid #2E2C2A',
+                backgroundColor: selectedChair === 'chair_2' ? '#26241F' : '#161619',
+                cursor: 'pointer',
+                textAlign: 'left',
                 display: 'flex',
                 flexDirection: 'column',
-                alignItems: 'center',
                 gap: '4px',
-                cursor: 'pointer',
+                transition: 'all 0.15s ease',
               }}
             >
-              <span style={{ fontWeight: 700, fontSize: '14px', color: '#0D1C2F' }}>Chair 2: Thambi</span>
-              <span style={{ fontSize: '11px', color: '#00685F' }}>Senior Stylist</span>
+              <span style={{ fontWeight: 700, fontSize: '14px', color: selectedChair === 'chair_2' ? '#F8F6F0' : '#8E8A85' }}>Chair 2: Thambi</span>
+              <span style={{ fontSize: '11px', color: '#D4AF37' }}>Senior Stylist</span>
             </button>
           </div>
         </div>
@@ -175,47 +179,58 @@ export const BarberLoginView: React.FC<BarberLoginViewProps> = ({
         {/* PIN Input Form */}
         <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div>
-            <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#3D4947', marginBottom: '6px' }}>
-              Station Security PIN
+            <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#F8F6F0', marginBottom: '6px' }}>
+              Enter 4-Digit Station PIN
             </label>
             <input
               type="password"
-              placeholder="Enter 4-Digit PIN (Demo: 1234)"
-              value={pin}
-              onChange={(e) => setPin(e.target.value.replace(/\D/g, '').slice(0, 4))}
               maxLength={4}
+              placeholder="••••"
+              value={pin}
+              onChange={(e) => setPin(e.target.value.replace(/\D/g, ''))}
               style={{
                 width: '100%',
-                padding: '12px 16px',
-                borderRadius: '10px',
-                border: '1px solid #D5E3FD',
-                backgroundColor: '#EFF4FF',
-                fontFamily: "'JetBrains Mono', monospace",
-                fontWeight: 700,
-                fontSize: '18px',
+                padding: '14px',
+                borderRadius: '12px',
+                border: '1px solid #2E2C2A',
+                backgroundColor: '#111113',
+                fontSize: '28px',
                 textAlign: 'center',
-                letterSpacing: '4px',
+                letterSpacing: '8px',
+                fontFamily: "'JetBrains Mono', monospace",
+                color: '#D4AF37',
                 outline: 'none',
+                boxSizing: 'border-box',
               }}
             />
           </div>
 
           {error && <span style={{ color: '#EF4444', fontSize: '12px', textAlign: 'center' }}>{error}</span>}
 
-          <Button variant="primary" size="lg" fullWidth isLoading={isLoading}>
-            Open Chair Workstation
+          <Button variant="primary" size="lg" fullWidth isLoading={isLoading} type="submit">
+            Unlock Station Workboard
           </Button>
         </form>
 
-        {/* Quick Demo Access Buttons */}
-        <div style={{ borderTop: '1px solid #EFF4FF', paddingTop: '16px', textAlign: 'center' }}>
-          <span style={{ fontSize: '11px', color: '#5C647A' }}>Instant Preview Access:</span>
+        {/* Demo Fast Logins */}
+        <div style={{ borderTop: '1px solid #2E2C2A', paddingTop: '16px', textAlign: 'center' }}>
+          <span style={{ fontSize: '11px', color: '#8E8A85' }}>Instant Preview Access:</span>
           <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
-            <Button variant="secondary" size="sm" fullWidth onClick={() => handleQuickDemoLogin('chair_1')}>
-              Launch as Dhanu
+            <Button
+              variant="secondary"
+              size="sm"
+              fullWidth
+              onClick={() => handleQuickDemoLogin('chair_1')}
+            >
+              Dhanu (Chair 1)
             </Button>
-            <Button variant="secondary" size="sm" fullWidth onClick={() => handleQuickDemoLogin('chair_2')}>
-              Launch as Thambi
+            <Button
+              variant="secondary"
+              size="sm"
+              fullWidth
+              onClick={() => handleQuickDemoLogin('chair_2')}
+            >
+              Thambi (Chair 2)
             </Button>
           </div>
         </div>
@@ -225,15 +240,16 @@ export const BarberLoginView: React.FC<BarberLoginViewProps> = ({
             type="button"
             onClick={onBackToCustomer}
             style={{
-              background: 'transparent',
+              background: 'none',
               border: 'none',
-              color: '#5C647A',
+              color: '#8E8A85',
               fontSize: '13px',
               cursor: 'pointer',
+              textDecoration: 'underline',
               textAlign: 'center',
             }}
           >
-            ← Back to Customer Menu
+            ← Back to Customer Booking
           </button>
         )}
       </div>

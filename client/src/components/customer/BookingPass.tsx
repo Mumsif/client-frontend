@@ -1,10 +1,11 @@
 /**
  * ============================================================================
- * TRIMLY / GLOWSLOT - DIGITAL BOOKING PASS (CUSTOMER PASS)
+ * TRIMLY - DIGITAL BOOKING PASS (CUSTOMER PASS)
  * ============================================================================
- * Documented in Business Plan & Spring Boot Specs:
- * - Monospace 4-digit OTP card for verification upon arrival
+ * Modern Noir & Champagne Gold Luxury Styling:
+ * - Documented in Business Plan & Spring Boot Specs
  * - Real-time queue counter & estimated chair arrival time
+ * - Private SMS OTP security notice
  * - Free cancellation up to 30 minutes before appointment
  * ============================================================================
  */
@@ -44,11 +45,11 @@ export const BookingPass: React.FC<BookingPassProps> = ({
         maxWidth: '480px',
         width: '100%',
         margin: '0 auto',
-        backgroundColor: '#FFFFFF',
+        backgroundColor: '#1A1A1E',
         borderRadius: '20px',
         overflow: 'hidden',
-        boxShadow: '0px 10px 30px rgba(0, 104, 95, 0.12), 0px 1px 3px rgba(0, 0, 0, 0.05)',
-        border: '1px solid #D5E3FD',
+        boxShadow: '0px 16px 48px rgba(0, 0, 0, 0.75), 0px 0px 0px 1px #2E2C2A',
+        border: '1px solid #2E2C2A',
         animation: 'slideUpFade 0.4s ease-out',
       }}
     >
@@ -63,7 +64,7 @@ export const BookingPass: React.FC<BookingPassProps> = ({
           style={{
             position: 'absolute',
             inset: 0,
-            background: 'linear-gradient(180deg, rgba(13, 28, 47, 0.25) 0%, rgba(0, 104, 95, 0.92) 100%)',
+            background: 'linear-gradient(180deg, rgba(17, 17, 19, 0.3) 0%, rgba(17, 17, 19, 0.95) 100%)',
           }}
         />
         <div
@@ -73,7 +74,7 @@ export const BookingPass: React.FC<BookingPassProps> = ({
             right: '14px',
           }}
         >
-          <Badge variant="mint" isMono>
+          <Badge variant="teal" isMono>
             {pass.status}
           </Badge>
         </div>
@@ -83,7 +84,7 @@ export const BookingPass: React.FC<BookingPassProps> = ({
             bottom: '12px',
             left: '18px',
             right: '18px',
-            color: '#FFFFFF',
+            color: '#F8F6F0',
           }}
         >
           <span
@@ -92,7 +93,7 @@ export const BookingPass: React.FC<BookingPassProps> = ({
               fontSize: '10px',
               letterSpacing: '0.6px',
               textTransform: 'uppercase',
-              color: '#B2EBF2',
+              color: '#D4AF37',
               display: 'block',
             }}
           >
@@ -104,13 +105,13 @@ export const BookingPass: React.FC<BookingPassProps> = ({
               fontSize: '18px',
               fontWeight: 800,
               margin: '2px 0 0',
-              color: '#F4FFFC',
+              color: '#F8F6F0',
             }}
           >
             {pass.salonName}
           </h3>
-          <span style={{ fontSize: '11px', opacity: 0.85, display: 'inline-flex', alignItems: 'center', gap: '4px', marginTop: '2px' }}>
-            <Icon name="map-pin" size={12} color="#B2EBF2" />
+          <span style={{ fontSize: '11px', color: '#8E8A85', display: 'inline-flex', alignItems: 'center', gap: '4px', marginTop: '2px' }}>
+            <Icon name="map-pin" size={12} color="#D4AF37" />
             <span>{pass.salonAddress}</span>
           </span>
         </div>
@@ -119,10 +120,11 @@ export const BookingPass: React.FC<BookingPassProps> = ({
       {/* Upper Ticket Header */}
       <div
         style={{
-          backgroundColor: '#008378',
+          backgroundColor: '#22201C',
           padding: '18px 24px 20px',
-          color: '#F4FFFC',
+          color: '#F8F6F0',
           position: 'relative',
+          borderBottom: '1px solid #2E2C2A',
         }}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -133,16 +135,17 @@ export const BookingPass: React.FC<BookingPassProps> = ({
                 fontSize: '11px',
                 letterSpacing: '0.5px',
                 textTransform: 'uppercase',
-                opacity: 0.85,
+                color: '#8E8A85',
               }}
             >
-              GlowSlot Digital Pass
+              Trimly Digital Pass
             </span>
             <h2
               style={{
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
+                fontFamily: "'JetBrains Mono', monospace",
                 fontSize: '22px',
                 fontWeight: 700,
+                color: '#D4AF37',
                 margin: '4px 0 0',
               }}
             >
@@ -151,19 +154,19 @@ export const BookingPass: React.FC<BookingPassProps> = ({
           </div>
 
           <div style={{ textAlign: 'right' }}>
-            <span style={{ fontSize: '11px', opacity: 0.75 }}>Assigned Chair</span>
-            <p style={{ fontWeight: 700, fontSize: '15px', margin: '2px 0 0' }}>{pass.chairName}</p>
+            <span style={{ fontSize: '11px', color: '#8E8A85' }}>Assigned Chair</span>
+            <p style={{ fontWeight: 700, fontSize: '15px', color: '#F8F6F0', margin: '2px 0 0' }}>{pass.chairName}</p>
           </div>
         </div>
 
-        <div style={{ marginTop: '12px', borderTop: '1px solid rgba(255, 255, 255, 0.2)', paddingTop: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ marginTop: '12px', borderTop: '1px solid #2E2C2A', paddingTop: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
-            <span style={{ fontSize: '11px', opacity: 0.75 }}>Guest / Client</span>
-            <p style={{ fontWeight: 700, fontSize: '15px', margin: '2px 0 0' }}>{pass.customerName}</p>
+            <span style={{ fontSize: '11px', color: '#8E8A85' }}>Guest / Client</span>
+            <p style={{ fontWeight: 700, fontSize: '15px', color: '#F8F6F0', margin: '2px 0 0' }}>{pass.customerName}</p>
           </div>
           <div style={{ textAlign: 'right' }}>
-            <span style={{ fontSize: '11px', opacity: 0.75 }}>Contact</span>
-            <p style={{ fontWeight: 600, fontSize: '13px', margin: '2px 0 0', fontFamily: "'JetBrains Mono', monospace" }}>
+            <span style={{ fontSize: '11px', color: '#8E8A85' }}>Contact</span>
+            <p style={{ fontWeight: 600, fontSize: '13px', margin: '2px 0 0', color: '#D4AF37', fontFamily: "'JetBrains Mono', monospace" }}>
               {pass.customerPhone}
             </p>
           </div>
@@ -175,7 +178,7 @@ export const BookingPass: React.FC<BookingPassProps> = ({
         style={{
           display: 'flex',
           alignItems: 'center',
-          backgroundColor: '#F8F9FF',
+          backgroundColor: '#1A1A1E',
           padding: '0 8px',
           position: 'relative',
         }}
@@ -184,16 +187,16 @@ export const BookingPass: React.FC<BookingPassProps> = ({
           style={{
             width: '16px',
             height: '24px',
-            backgroundColor: '#F8F9FF',
+            backgroundColor: '#111113',
             borderRadius: '0 12px 12px 0',
             marginLeft: '-8px',
-            borderRight: '1px solid #D5E3FD',
+            borderRight: '1px solid #2E2C2A',
           }}
         />
         <div
           style={{
             flex: 1,
-            borderBottom: '2px dashed #D5E3FD',
+            borderBottom: '2px dashed #2E2C2A',
             margin: '0 8px',
           }}
         />
@@ -201,10 +204,10 @@ export const BookingPass: React.FC<BookingPassProps> = ({
           style={{
             width: '16px',
             height: '24px',
-            backgroundColor: '#F8F9FF',
+            backgroundColor: '#111113',
             borderRadius: '12px 0 0 12px',
             marginRight: '-8px',
-            borderLeft: '1px solid #D5E3FD',
+            borderLeft: '1px solid #2E2C2A',
           }}
         />
       </div>
@@ -217,14 +220,14 @@ export const BookingPass: React.FC<BookingPassProps> = ({
             display: 'grid',
             gridTemplateColumns: '1fr 1fr',
             gap: '12px',
-            backgroundColor: '#F8F9FF',
+            backgroundColor: '#161619',
             padding: '16px 20px',
             borderRadius: '14px',
-            border: '1px solid #D5E3FD',
+            border: '1px solid #2E2C2A',
           }}
         >
           <div>
-            <span style={{ fontSize: '11px', color: '#5C647A', fontWeight: 600 }}>Your Queue Position</span>
+            <span style={{ fontSize: '11px', color: '#8E8A85', fontWeight: 600 }}>Your Queue Position</span>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
               <span className="live-pulse-dot" />
               <span
@@ -232,7 +235,7 @@ export const BookingPass: React.FC<BookingPassProps> = ({
                   fontFamily: "'JetBrains Mono', monospace",
                   fontWeight: 700,
                   fontSize: '20px',
-                  color: '#0D1C2F',
+                  color: '#F8F6F0',
                 }}
               >
                 #{pass.queuePosition} in line
@@ -240,13 +243,13 @@ export const BookingPass: React.FC<BookingPassProps> = ({
             </div>
           </div>
           <div>
-            <span style={{ fontSize: '11px', color: '#5C647A', fontWeight: 600 }}>Estimated Chair Time</span>
+            <span style={{ fontSize: '11px', color: '#8E8A85', fontWeight: 600 }}>Estimated Chair Time</span>
             <p
               style={{
                 fontFamily: "'JetBrains Mono', monospace",
                 fontWeight: 700,
                 fontSize: '20px',
-                color: '#00685F',
+                color: '#D4AF37',
                 margin: '4px 0 0',
               }}
             >
@@ -255,74 +258,48 @@ export const BookingPass: React.FC<BookingPassProps> = ({
           </div>
         </div>
 
-        {/* Check-in Security Verification PIN */}
+        {/* Check-in Security Notice (OTP is kept private to SMS) */}
         <div
           style={{
-            backgroundColor: '#F4FFFC',
+            backgroundColor: 'rgba(212, 175, 55, 0.08)',
             borderRadius: '14px',
             padding: '16px 20px',
-            border: '1.5px solid #B2DDD9',
+            border: '1.5px solid rgba(212, 175, 55, 0.28)',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'space-between',
             gap: '14px',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div
-              style={{
-                width: '38px',
-                height: '38px',
-                borderRadius: '10px',
-                backgroundColor: '#E0F2F1',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexShrink: 0,
-              }}
-            >
-              <Icon name="shield" size={18} color="#00685F" />
-            </div>
-            <div>
-              <span
-                style={{
-                  display: 'block',
-                  fontSize: '11px',
-                  fontWeight: 700,
-                  color: '#5C647A',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.6px',
-                }}
-              >
-                Check-in Verification PIN
-              </span>
-              <span style={{ fontSize: '12px', color: '#3D4947' }}>
-                Present to barber upon arrival to start timer
-              </span>
-            </div>
-          </div>
-
           <div
             style={{
-              padding: '6px 14px',
-              backgroundColor: '#00685F',
-              color: '#FFFFFF',
-              borderRadius: '8px',
-              fontFamily: "'JetBrains Mono', monospace",
-              fontWeight: 800,
-              fontSize: '16px',
-              letterSpacing: '2px',
-              boxShadow: '0 2px 8px rgba(0, 104, 95, 0.25)',
+              width: '40px',
+              height: '40px',
+              borderRadius: '10px',
+              backgroundColor: '#26241F',
+              border: '1px solid #2E2C2A',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
               flexShrink: 0,
             }}
           >
-            {pass.otp || '8492'}
+            <Icon name="shield" size={20} color="#D4AF37" />
+          </div>
+          <div style={{ flex: 1 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
+              <span style={{ fontSize: '13px', fontWeight: 700, color: '#F8F6F0' }}>
+                Private Verification Code Sent via SMS
+              </span>
+            </div>
+            <p style={{ margin: 0, fontSize: '12px', color: '#8E8A85', lineHeight: 1.45 }}>
+              Check your mobile messages. Provide the 4-digit code to your barber upon arrival to commence your service.
+            </p>
           </div>
         </div>
 
         {/* Services Summary */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <span style={{ fontSize: '12px', fontWeight: 600, color: '#3D4947' }}>Selected Services</span>
+          <span style={{ fontSize: '12px', fontWeight: 600, color: '#8E8A85' }}>Selected Services</span>
           {pass.services.map((s) => (
             <div
               key={s.id}
@@ -330,11 +307,11 @@ export const BookingPass: React.FC<BookingPassProps> = ({
                 display: 'flex',
                 justifyContent: 'space-between',
                 fontSize: '13px',
-                color: '#0D1C2F',
+                color: '#F8F6F0',
               }}
             >
               <span>{s.name} ({s.durationMinutes}m)</span>
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600 }}>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, color: '#D4AF37' }}>
                 LKR {s.priceLkr.toLocaleString()}
               </span>
             </div>
@@ -342,7 +319,7 @@ export const BookingPass: React.FC<BookingPassProps> = ({
 
           <div
             style={{
-              borderTop: '1px solid #EFF4FF',
+              borderTop: '1px solid #2E2C2A',
               paddingTop: '8px',
               marginTop: '4px',
               display: 'flex',
@@ -351,8 +328,8 @@ export const BookingPass: React.FC<BookingPassProps> = ({
               fontSize: '14px',
             }}
           >
-            <span>Total Bill Amount</span>
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", color: '#00685F' }}>
+            <span style={{ color: '#F8F6F0' }}>Total Bill Amount</span>
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", color: '#D4AF37', fontSize: '16px' }}>
               LKR {pass.totalPriceLkr.toLocaleString()}
             </span>
           </div>

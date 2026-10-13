@@ -1,13 +1,13 @@
 /**
  * ============================================================================
- * TRIMLY / GLOWSLOT - CHAIR COLUMN COMPONENT
+ * TRIMLY - CHAIR COLUMN COMPONENT
  * ============================================================================
- * Matches Figma Structure:
+ * Modern Noir & Champagne Gold Luxury Styling:
  * - Stylist Header / State Toggle (Avatar, Online/On Break segmented control)
  * - Break Scheduler (Barber allocates 45m break to block customer booking)
- * - Active In-Chair Emerald Card
+ * - Active In-Chair Card in Champagne Gold
  * - Upcoming Queue (Real customer bookings with inline OTP verification)
- * - Walk-in Quick Dispatch Action Tray (Normal Haircut 400, Beard 300, Combo 800)
+ * - Walk-in Quick Dispatch Action Tray
  * ============================================================================
  */
 
@@ -100,9 +100,10 @@ export const ChairColumn: React.FC<ChairColumnProps> = ({
         alignItems: 'flex-start',
         padding: '24px',
         gap: '16px',
-        backgroundColor: '#FFFFFF',
+        backgroundColor: '#1A1A1E',
         borderRadius: '16px',
-        boxShadow: '0px 4px 6px -1px rgba(0, 0, 0, 0.08), 0px 2px 4px -2px rgba(0, 0, 0, 0.05)',
+        border: '1px solid #2E2C2A',
+        boxShadow: '0px 8px 32px rgba(0, 0, 0, 0.6)',
         width: '100%',
         maxWidth: '470px',
         flex: 1,
@@ -118,7 +119,8 @@ export const ChairColumn: React.FC<ChairColumnProps> = ({
           alignItems: 'center',
           padding: '16px',
           width: '100%',
-          backgroundColor: '#EFF4FF',
+          backgroundColor: '#161619',
+          border: '1px solid #2E2C2A',
           borderRadius: '12px',
           gap: '12px',
         }}
@@ -135,7 +137,7 @@ export const ChairColumn: React.FC<ChairColumnProps> = ({
                 borderRadius: '50%',
                 objectFit: 'cover',
                 display: 'block',
-                border: '2px solid #FFFFFF',
+                border: '2px solid #2E2C2A',
               }}
             />
             <div
@@ -146,8 +148,8 @@ export const ChairColumn: React.FC<ChairColumnProps> = ({
                 width: '14px',
                 height: '14px',
                 borderRadius: '50%',
-                backgroundColor: isOnline ? '#008378' : '#F59E0B',
-                border: '2px solid #FFFFFF',
+                backgroundColor: isOnline ? '#D4AF37' : '#E5A93C',
+                border: '2px solid #161619',
               }}
             />
           </div>
@@ -159,19 +161,21 @@ export const ChairColumn: React.FC<ChairColumnProps> = ({
                   fontFamily: "'Plus Jakarta Sans', sans-serif",
                   fontWeight: 700,
                   fontSize: '18px',
-                  color: '#0D1C2F',
+                  color: '#F8F6F0',
                 }}
               >
                 {chair.barberName}
               </span>
               <span
                 style={{
-                  backgroundColor: '#008378',
-                  color: '#F4FFFC',
+                  backgroundColor: '#26241F',
+                  color: '#D4AF37',
+                  border: '1px solid rgba(212, 175, 55, 0.3)',
                   fontSize: '11px',
-                  fontWeight: 600,
+                  fontWeight: 700,
                   padding: '2px 8px',
                   borderRadius: '4px',
+                  letterSpacing: '0.5px',
                 }}
               >
                 CHAIR {chair.chairNumber}
@@ -181,7 +185,7 @@ export const ChairColumn: React.FC<ChairColumnProps> = ({
               style={{
                 fontFamily: "'JetBrains Mono', monospace",
                 fontSize: '11px',
-                color: '#3D4947',
+                color: '#8E8A85',
                 marginTop: '2px',
               }}
             >
@@ -195,7 +199,8 @@ export const ChairColumn: React.FC<ChairColumnProps> = ({
           style={{
             display: 'flex',
             alignItems: 'center',
-            backgroundColor: '#E6EEFF',
+            backgroundColor: '#222227',
+            border: '1px solid #2E2C2A',
             borderRadius: '10px',
             padding: '3px',
             gap: '2px',
@@ -213,11 +218,11 @@ export const ChairColumn: React.FC<ChairColumnProps> = ({
               padding: '6px 10px',
               borderRadius: '7px',
               border: 'none',
-              backgroundColor: isOnline ? '#00685F' : 'transparent',
-              color: isOnline ? '#FFFFFF' : '#3D4947',
+              backgroundColor: isOnline ? '#D4AF37' : 'transparent',
+              color: isOnline ? '#111113' : '#8E8A85',
               fontFamily: "'Plus Jakarta Sans', sans-serif",
               fontSize: '12px',
-              fontWeight: 600,
+              fontWeight: 700,
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
@@ -230,7 +235,7 @@ export const ChairColumn: React.FC<ChairColumnProps> = ({
                 width: '6px',
                 height: '6px',
                 borderRadius: '50%',
-                backgroundColor: isOnline ? '#FFFFFF' : '#00685F',
+                backgroundColor: isOnline ? '#111113' : '#D4AF37',
               }}
             />
             Online
@@ -242,11 +247,11 @@ export const ChairColumn: React.FC<ChairColumnProps> = ({
               padding: '6px 10px',
               borderRadius: '7px',
               border: 'none',
-              backgroundColor: !isOnline ? '#B45309' : 'transparent',
-              color: !isOnline ? '#FFFFFF' : '#3D4947',
+              backgroundColor: !isOnline ? '#E5A93C' : 'transparent',
+              color: !isOnline ? '#111113' : '#8E8A85',
               fontFamily: "'Plus Jakarta Sans', sans-serif",
               fontSize: '12px',
-              fontWeight: 600,
+              fontWeight: 700,
               cursor: 'pointer',
               transition: 'all 0.18s ease',
             }}
@@ -262,8 +267,8 @@ export const ChairColumn: React.FC<ChairColumnProps> = ({
           style={{
             width: '100%',
             padding: '12px 16px',
-            backgroundColor: '#FEF3C7',
-            border: '1px solid #F59E0B',
+            backgroundColor: 'rgba(229, 169, 60, 0.12)',
+            border: '1px solid rgba(229, 169, 60, 0.35)',
             borderRadius: '10px',
             display: 'flex',
             justifyContent: 'space-between',
@@ -271,8 +276,8 @@ export const ChairColumn: React.FC<ChairColumnProps> = ({
             gap: '12px',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#B45309', fontSize: '13px', fontWeight: 600 }}>
-            <Icon name="coffee" size={16} color="#B45309" />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#E5A93C', fontSize: '13px', fontWeight: 600 }}>
+            <Icon name="coffee" size={16} color="#E5A93C" />
             <span>Chair {chair.chairNumber} ({chair.barberName}) is ON BREAK. Customers cannot book this slot.</span>
           </div>
           <button
@@ -283,12 +288,12 @@ export const ChairColumn: React.FC<ChairColumnProps> = ({
             }}
             style={{
               padding: '6px 12px',
-              backgroundColor: '#00685F',
-              color: '#FFFFFF',
+              backgroundColor: '#D4AF37',
+              color: '#111113',
               border: 'none',
               borderRadius: '6px',
               fontSize: '12px',
-              fontWeight: 600,
+              fontWeight: 700,
               cursor: 'pointer',
               whiteSpace: 'nowrap',
             }}
@@ -298,7 +303,7 @@ export const ChairColumn: React.FC<ChairColumnProps> = ({
         </div>
       )}
 
-      {/* 2. Active In-Chair Emerald Card */}
+      {/* 2. Active In-Chair Card */}
       <ActiveInChairCard
         chairId={chair.chairId}
         chairNumber={chair.chairNumber}
@@ -316,9 +321,9 @@ export const ChairColumn: React.FC<ChairColumnProps> = ({
               fontFamily: "'Plus Jakarta Sans', sans-serif",
               fontWeight: 700,
               fontSize: '12px',
-              letterSpacing: '0.4px',
+              letterSpacing: '0.5px',
               textTransform: 'uppercase',
-              color: '#3D4947',
+              color: '#8E8A85',
             }}
           >
             UPCOMING QUEUE FOR CHAIR {chair.chairNumber}
@@ -327,7 +332,7 @@ export const ChairColumn: React.FC<ChairColumnProps> = ({
             style={{
               fontFamily: "'JetBrains Mono', monospace",
               fontSize: '11px',
-              color: '#5C647A',
+              color: '#D4AF37',
             }}
           >
             {chair.upcomingQueue.length} Bookings Queued
@@ -338,14 +343,14 @@ export const ChairColumn: React.FC<ChairColumnProps> = ({
         {immediateNext ? (
           <div
             style={{
-              backgroundColor: '#EFF4FF',
+              backgroundColor: '#161619',
               borderRadius: '12px',
               padding: '16px',
               display: 'flex',
               flexDirection: 'column',
               gap: '10px',
-              boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.05)',
-              border: '1px solid #DAE2FD',
+              boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.3)',
+              border: '1px solid #2E2C2A',
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -355,7 +360,7 @@ export const ChairColumn: React.FC<ChairColumnProps> = ({
                     fontFamily: "'JetBrains Mono', monospace",
                     fontWeight: 700,
                     fontSize: '13px',
-                    color: '#00685F',
+                    color: '#D4AF37',
                   }}
                 >
                   {immediateNext.ticketNumber}
@@ -365,7 +370,7 @@ export const ChairColumn: React.FC<ChairColumnProps> = ({
                     fontFamily: "'Plus Jakarta Sans', sans-serif",
                     fontWeight: 700,
                     fontSize: '15px',
-                    color: '#0D1C2F',
+                    color: '#F8F6F0',
                   }}
                 >
                   {immediateNext.customerName}
@@ -375,8 +380,8 @@ export const ChairColumn: React.FC<ChairColumnProps> = ({
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
-              <span style={{ color: '#3D4947' }}>{immediateNext.serviceNames}</span>
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, color: '#00685F' }}>
+              <span style={{ color: '#8E8A85' }}>{immediateNext.serviceNames}</span>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, color: '#D4AF37' }}>
                 Slot: {immediateNext.scheduledTime}
               </span>
             </div>
@@ -387,7 +392,8 @@ export const ChairColumn: React.FC<ChairColumnProps> = ({
               style={{
                 display: 'flex',
                 gap: '8px',
-                backgroundColor: '#FFFFFF',
+                backgroundColor: '#1A1A1E',
+                border: '1px solid #2E2C2A',
                 padding: '8px',
                 borderRadius: '10px',
                 marginTop: '4px',
@@ -395,7 +401,7 @@ export const ChairColumn: React.FC<ChairColumnProps> = ({
             >
               <input
                 type="text"
-                placeholder={immediateNext.otp ? `Enter OTP (${immediateNext.otp})` : "Enter Customer's 4-Digit OTP"}
+                placeholder="Enter 4-Digit OTP"
                 value={otpInput}
                 onChange={(e) => setOtpInput(e.target.value.replace(/\D/g, '').slice(0, 4))}
                 maxLength={4}
@@ -403,8 +409,9 @@ export const ChairColumn: React.FC<ChairColumnProps> = ({
                   flex: 1,
                   padding: '8px 12px',
                   borderRadius: '6px',
-                  border: '1px solid #D5E3FD',
-                  backgroundColor: '#EFF4FF',
+                  border: '1px solid #2E2C2A',
+                  backgroundColor: '#111113',
+                  color: '#F8F6F0',
                   fontFamily: "'JetBrains Mono', monospace",
                   fontWeight: 700,
                   fontSize: '15px',
@@ -418,11 +425,11 @@ export const ChairColumn: React.FC<ChairColumnProps> = ({
                 style={{
                   padding: '8px 16px',
                   borderRadius: '6px',
-                  backgroundColor: '#00685F',
-                  color: '#FFFFFF',
+                  backgroundColor: '#D4AF37',
+                  color: '#111113',
                   border: 'none',
                   fontFamily: "'Plus Jakarta Sans', sans-serif",
-                  fontWeight: 600,
+                  fontWeight: 700,
                   fontSize: '13px',
                   cursor: isVerifying || otpInput.trim().length === 0 ? 'not-allowed' : 'pointer',
                   opacity: isVerifying || otpInput.trim().length === 0 ? 0.6 : 1,
@@ -437,15 +444,15 @@ export const ChairColumn: React.FC<ChairColumnProps> = ({
           <div
             style={{
               padding: '24px 16px',
-              backgroundColor: '#F8F9FF',
+              backgroundColor: '#161619',
               borderRadius: '12px',
               textAlign: 'center',
               fontSize: '13px',
-              color: '#5C647A',
-              border: '1px dashed #D5E3FD',
+              color: '#8E8A85',
+              border: '1px dashed #2E2C2A',
             }}
           >
-            <p style={{ margin: 0, fontWeight: 600, color: '#0D1C2F' }}>No upcoming bookings in queue.</p>
+            <p style={{ margin: 0, fontWeight: 600, color: '#F8F6F0' }}>No upcoming bookings in queue.</p>
             <p style={{ margin: '4px 0 0', fontSize: '12px' }}>Chair is ready for customer booking or walk-in dispatch.</p>
           </div>
         )}
@@ -455,13 +462,13 @@ export const ChairColumn: React.FC<ChairColumnProps> = ({
           <div
             key={item.appointmentId}
             style={{
-              backgroundColor: '#F8F9FF',
+              backgroundColor: '#161619',
               borderRadius: '10px',
               padding: '12px 14px',
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
-              border: '1px solid #EFF4FF',
+              border: '1px solid #2E2C2A',
             }}
           >
             <div>
@@ -471,7 +478,7 @@ export const ChairColumn: React.FC<ChairColumnProps> = ({
                     fontFamily: "'JetBrains Mono', monospace",
                     fontSize: '12px',
                     fontWeight: 600,
-                    color: '#5C647A',
+                    color: '#8E8A85',
                   }}
                 >
                   {item.ticketNumber}
@@ -481,13 +488,13 @@ export const ChairColumn: React.FC<ChairColumnProps> = ({
                     fontFamily: "'Plus Jakarta Sans', sans-serif",
                     fontWeight: 600,
                     fontSize: '14px',
-                    color: '#0D1C2F',
+                    color: '#F8F6F0',
                   }}
                 >
                   {item.customerName}
                 </span>
               </div>
-              <span style={{ fontSize: '12px', color: '#5C647A' }}>{item.serviceNames}</span>
+              <span style={{ fontSize: '12px', color: '#8E8A85' }}>{item.serviceNames}</span>
             </div>
 
             <div style={{ textAlign: 'right' }}>
@@ -496,13 +503,13 @@ export const ChairColumn: React.FC<ChairColumnProps> = ({
                   fontFamily: "'JetBrains Mono', monospace",
                   fontWeight: 600,
                   fontSize: '13px',
-                  color: '#00685F',
+                  color: '#D4AF37',
                   display: 'block',
                 }}
               >
                 {item.scheduledTime}
               </span>
-              <span style={{ fontSize: '11px', color: '#5C647A' }}>Reserved</span>
+              <span style={{ fontSize: '11px', color: '#8E8A85' }}>Reserved</span>
             </div>
           </div>
         ))}
@@ -512,14 +519,14 @@ export const ChairColumn: React.FC<ChairColumnProps> = ({
       <div
         style={{
           width: '100%',
-          backgroundColor: '#EFF4FF',
+          backgroundColor: '#161619',
           borderRadius: '12px',
           padding: '16px',
           display: 'flex',
           flexDirection: 'column',
           gap: '12px',
           marginTop: 'auto',
-          border: '1px solid #DAE2FD',
+          border: '1px solid #2E2C2A',
         }}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -530,7 +537,7 @@ export const ChairColumn: React.FC<ChairColumnProps> = ({
               fontSize: '11px',
               letterSpacing: '0.4px',
               textTransform: 'uppercase',
-              color: '#3D4947',
+              color: '#8E8A85',
             }}
           >
             WALK-IN QUICK DISPATCH TRAY
@@ -539,7 +546,7 @@ export const ChairColumn: React.FC<ChairColumnProps> = ({
             style={{
               fontFamily: "'JetBrains Mono', monospace",
               fontSize: '10px',
-              color: '#4648D4',
+              color: '#D4AF37',
               fontWeight: 600,
             }}
           >
@@ -561,8 +568,8 @@ export const ChairColumn: React.FC<ChairColumnProps> = ({
                 type="button"
                 onClick={() => handleWalkInPresetClick(preset.id)}
                 style={{
-                  backgroundColor: isSelected ? '#FFFFFF' : 'rgba(255, 255, 255, 0.7)',
-                  border: isSelected ? '1.5px solid #4648D4' : '1px solid rgba(255, 255, 255, 0.4)',
+                  backgroundColor: isSelected ? '#26241F' : '#1A1A1E',
+                  border: isSelected ? '1.5px solid #D4AF37' : '1px solid #2E2C2A',
                   borderRadius: '8px',
                   padding: '8px 4px',
                   cursor: 'pointer',
@@ -571,7 +578,7 @@ export const ChairColumn: React.FC<ChairColumnProps> = ({
                   alignItems: 'center',
                   gap: '2px',
                   transition: 'all 0.16s ease',
-                  boxShadow: isSelected ? '0 2px 4px rgba(70, 72, 212, 0.15)' : 'none',
+                  boxShadow: isSelected ? '0 2px 8px rgba(212, 175, 55, 0.2)' : 'none',
                 }}
               >
                 <span
@@ -579,7 +586,7 @@ export const ChairColumn: React.FC<ChairColumnProps> = ({
                     fontFamily: "'Plus Jakarta Sans', sans-serif",
                     fontWeight: 600,
                     fontSize: '12px',
-                    color: '#0D1C2F',
+                    color: isSelected ? '#D4AF37' : '#F8F6F0',
                   }}
                 >
                   {preset.label}
@@ -588,7 +595,7 @@ export const ChairColumn: React.FC<ChairColumnProps> = ({
                   style={{
                     fontFamily: "'JetBrains Mono', monospace",
                     fontSize: '10px',
-                    color: '#5C647A',
+                    color: '#8E8A85',
                   }}
                 >
                   {preset.time}
@@ -605,19 +612,19 @@ export const ChairColumn: React.FC<ChairColumnProps> = ({
           style={{
             width: '100%',
             minHeight: '44px',
-            backgroundColor: '#4648D4',
-            color: '#FFFFFF',
+            backgroundColor: '#D4AF37',
+            color: '#111113',
             borderRadius: '8px',
             border: 'none',
             fontFamily: "'Plus Jakarta Sans', sans-serif",
-            fontWeight: 600,
+            fontWeight: 700,
             fontSize: '14px',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             gap: '6px',
-            boxShadow: '0 2px 6px rgba(70, 72, 212, 0.25)',
+            boxShadow: '0 4px 16px rgba(212, 175, 55, 0.35)',
             transition: 'all 0.18s ease',
           }}
         >
@@ -635,7 +642,7 @@ export const ChairColumn: React.FC<ChairColumnProps> = ({
       >
         <form onSubmit={handleConfirmBreak} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div>
-            <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#0D1C2F', marginBottom: '6px' }}>
+            <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#F8F6F0', marginBottom: '6px' }}>
               Select 45-Minute Break Slot
             </label>
             <select
@@ -645,12 +652,12 @@ export const ChairColumn: React.FC<ChairColumnProps> = ({
                 width: '100%',
                 padding: '10px 14px',
                 borderRadius: '8px',
-                border: '1px solid #D5E3FD',
-                backgroundColor: '#EFF4FF',
+                border: '1px solid #2E2C2A',
+                backgroundColor: '#111113',
                 fontSize: '14px',
                 fontFamily: "'JetBrains Mono', monospace",
                 fontWeight: 600,
-                color: '#0D1C2F',
+                color: '#F8F6F0',
                 outline: 'none',
               }}
             >
@@ -664,7 +671,7 @@ export const ChairColumn: React.FC<ChairColumnProps> = ({
           </div>
 
           <div>
-            <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#0D1C2F', marginBottom: '6px' }}>
+            <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#F8F6F0', marginBottom: '6px' }}>
               Break Reason
             </label>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
@@ -678,9 +685,9 @@ export const ChairColumn: React.FC<ChairColumnProps> = ({
                     style={{
                       padding: '10px 8px',
                       borderRadius: '8px',
-                      border: isSelected ? '2px solid #00685F' : '1px solid #D5E3FD',
-                      backgroundColor: isSelected ? '#EFF4FF' : '#FFFFFF',
-                      color: isSelected ? '#00685F' : '#3D4947',
+                      border: isSelected ? '2px solid #D4AF37' : '1px solid #2E2C2A',
+                      backgroundColor: isSelected ? '#26241F' : '#161619',
+                      color: isSelected ? '#D4AF37' : '#8E8A85',
                       fontSize: '12px',
                       fontWeight: 600,
                       cursor: 'pointer',
@@ -700,12 +707,12 @@ export const ChairColumn: React.FC<ChairColumnProps> = ({
               style={{
                 flex: 1,
                 padding: '12px',
-                backgroundColor: '#EFF4FF',
-                border: '1px solid #D5E3FD',
+                backgroundColor: '#222227',
+                border: '1px solid #2E2C2A',
                 borderRadius: '8px',
                 fontWeight: 600,
                 fontSize: '14px',
-                color: '#3D4947',
+                color: '#8E8A85',
                 cursor: 'pointer',
               }}
             >
@@ -716,8 +723,8 @@ export const ChairColumn: React.FC<ChairColumnProps> = ({
               style={{
                 flex: 2,
                 padding: '12px',
-                backgroundColor: '#B45309',
-                color: '#FFFFFF',
+                backgroundColor: '#E5A93C',
+                color: '#111113',
                 border: 'none',
                 borderRadius: '8px',
                 fontWeight: 700,

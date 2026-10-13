@@ -1,6 +1,6 @@
 /* ==========================================================================
-   Trimly / GlowSlot - Micro-Animations, Interactions & Responsive Polish
-   Upgraded with extraordinary cinematic effects
+   Trimly - Modern Noir & Champagne Gold Interactions & Animations
+   Cinematic Luxury Micro-interactions & Polish
    ========================================================================== */
 
 /* ================================================================
@@ -8,31 +8,34 @@
    ================================================================ */
 
 .btn-interactive {
-  transition: transform 0.2s var(--transition-smooth), box-shadow 0.2s var(--transition-smooth), filter 0.2s ease;
+  transition: transform 0.2s var(--transition-smooth), box-shadow 0.2s var(--transition-smooth), filter 0.2s ease, background-color 0.2s ease;
 }
 
 .btn-interactive:hover {
   transform: translateY(-2px) scale(1.02);
   filter: brightness(1.06);
-  box-shadow: 0 6px 20px rgba(0, 104, 95, 0.22);
+  box-shadow: 0 6px 22px rgba(212, 175, 55, 0.32);
 }
 
 .btn-interactive:active {
   transform: translateY(1px) scale(0.97);
-  filter: brightness(0.97);
+  filter: brightness(0.96);
 }
 
 /* ================================================================
-   SERVICE CARDS — Holographic Hover
+   SERVICE CARDS — Gold Shimmer Hover
    ================================================================ */
 
 .service-card-item {
   transition:
     transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
     box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1),
-    border-color 0.25s ease;
+    border-color 0.25s ease,
+    background-color 0.25s ease;
   position: relative;
   overflow: hidden;
+  background-color: #1A1A1E !important;
+  border: 1px solid #2E2C2A !important;
 }
 
 .service-card-item::after {
@@ -42,9 +45,9 @@
   background: linear-gradient(
     115deg,
     transparent 20%,
-    rgba(255, 255, 255, 0.5) 42%,
-    rgba(0, 255, 180, 0.1) 50%,
-    rgba(255, 255, 255, 0.5) 58%,
+    rgba(212, 175, 55, 0.2) 42%,
+    rgba(248, 246, 240, 0.15) 50%,
+    rgba(212, 175, 55, 0.2) 58%,
     transparent 80%
   );
   background-size: 200% 100%;
@@ -61,11 +64,13 @@
 
 .service-card-item:hover {
   transform: translateY(-4px) scale(1.015);
-  box-shadow: 0px 16px 36px rgba(0, 104, 95, 0.12), 0px 4px 12px rgba(0, 0, 0, 0.06);
+  border-color: rgba(212, 175, 55, 0.45) !important;
+  box-shadow: 0px 16px 36px rgba(0, 0, 0, 0.6), 0px 0px 20px rgba(212, 175, 55, 0.15) !important;
 }
 
 .service-card-item.selected {
-  background-color: #FFFFFF;
+  background-color: #1E1E24 !important;
+  border-color: #D4AF37 !important;
   animation: haloRing 2.5s ease-in-out infinite;
 }
 
@@ -76,26 +81,36 @@
 .stylist-option {
   transition:
     transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
-    box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+  background-color: #1A1A1E !important;
+  border: 1px solid #2E2C2A !important;
 }
 
 .stylist-option:hover {
-  transform: translateY(-4px) scale(1.03);
-  box-shadow: 0px 12px 28px rgba(0, 0, 0, 0.09);
+  transform: translateY(-4px) scale(1.02);
+  border-color: rgba(212, 175, 55, 0.4) !important;
+  box-shadow: 0px 12px 28px rgba(0, 0, 0, 0.65), 0px 0px 16px rgba(212, 175, 55, 0.12) !important;
 }
 
 .stylist-option:active {
   transform: translateY(0px) scale(0.98);
 }
 
+.stylist-option.selected {
+  border-color: #D4AF37 !important;
+  box-shadow: 0px 0px 0px 2px #D4AF37, 0px 6px 20px rgba(212, 175, 55, 0.25) !important;
+}
+
 /* ================================================================
-   EMERALD IN-CHAIR CARD — Neon Ambient Glow
+   CHAIR IN-SERVICE CARD — Champagne Gold Ambient Glow
    ================================================================ */
 
 .active-in-chair-emerald-card {
   box-shadow:
-    0px 8px 24px rgba(0, 131, 120, 0.25),
-    0px 0px 0px 1px rgba(0, 131, 120, 0.15);
+    0px 8px 30px rgba(212, 175, 55, 0.2),
+    0px 0px 0px 1px rgba(212, 175, 55, 0.35) !important;
   animation: scaleIn 0.4s ease-out, neonPulse 3s ease-in-out infinite 0.4s;
 }
 
@@ -110,7 +125,7 @@
   position: absolute;
   top: 0; left: -100%;
   width: 55%; height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent);
+  background: linear-gradient(90deg, transparent, rgba(248, 246, 240, 0.3), transparent);
   transform: skewX(-20deg);
 }
 
@@ -119,9 +134,9 @@
 }
 
 .btn-complete-service:hover {
-  background-color: #F4FFFC !important;
+  background-color: #B8976C !important;
   transform: translateY(-2px);
-  box-shadow: 0px 6px 18px rgba(0, 104, 95, 0.2) !important;
+  box-shadow: 0px 6px 20px rgba(212, 175, 55, 0.35) !important;
 }
 
 .btn-complete-service:active {
@@ -129,7 +144,7 @@
 }
 
 /* ================================================================
-   BOTTOM DOCK CTA — Magnetic Attraction Effect
+   BOTTOM DOCK CTA — Champagne Gold Magnetic Attraction
    ================================================================ */
 
 .btn-confirm-dock {
@@ -143,7 +158,7 @@
   position: absolute;
   top: 0; left: -100%;
   width: 60%; height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  background: linear-gradient(90deg, transparent, rgba(248, 246, 240, 0.4), transparent);
   transform: skewX(-15deg);
 }
 
@@ -152,8 +167,9 @@
 }
 
 .btn-confirm-dock:hover {
+  background-color: #B8976C !important;
   transform: translateY(-2px) scale(1.02) !important;
-  box-shadow: 0px 10px 28px rgba(0, 104, 95, 0.42) !important;
+  box-shadow: 0px 10px 32px rgba(212, 175, 55, 0.45) !important;
 }
 
 .btn-confirm-dock:active {
@@ -170,8 +186,8 @@
 
 .btn-delay-shift:hover {
   transform: translateY(-2px);
-  filter: brightness(0.96);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+  filter: brightness(1.1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
 }
 
 .btn-delay-shift:active {
@@ -185,14 +201,18 @@
 .salon-card-hover {
   transition:
     transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
-    box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.3s ease;
   transform-style: preserve-3d;
   will-change: transform;
+  background-color: #1A1A1E !important;
+  border: 1px solid #2E2C2A !important;
 }
 
 .salon-card-hover:hover {
   transform: translateY(-6px) perspective(800px) rotateX(2deg) scale(1.01);
-  box-shadow: 0px 24px 48px rgba(0, 0, 0, 0.12), 0px 6px 16px rgba(0, 104, 95, 0.08) !important;
+  border-color: rgba(212, 175, 55, 0.45) !important;
+  box-shadow: 0px 24px 48px rgba(0, 0, 0, 0.7), 0px 0px 24px rgba(212, 175, 55, 0.16) !important;
 }
 
 /* ================================================================
@@ -202,20 +222,34 @@
 .customer-booking-view,
 .pass-status-view,
 .workstation-dashboard-view {
-  animation: pageSlideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: pageSlideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* ================================================================
-   INPUT FIELDS — Focus Glow
+   INPUT FIELDS — Noir & Champagne Gold Glow Focus
    ================================================================ */
+
+input,
+textarea,
+select {
+  background-color: #161619;
+  color: #F8F6F0;
+  border: 1px solid #2E2C2A;
+  transition: box-shadow 0.25s ease, border-color 0.25s ease, background-color 0.25s ease;
+}
 
 input:focus,
 textarea:focus,
 select:focus {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(0, 104, 95, 0.18), 0 0 12px rgba(0, 104, 95, 0.12);
-  border-color: #00685F !important;
-  transition: box-shadow 0.25s ease, border-color 0.25s ease;
+  background-color: #1A1A1E;
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.22), 0 0 16px rgba(212, 175, 55, 0.15);
+  border-color: #D4AF37 !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #8E8A85;
 }
 
 /* ================================================================
@@ -224,6 +258,8 @@ select:focus {
 
 .queue-ticket-card {
   animation: staggerEntrance 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  background-color: #1A1A1E !important;
+  border: 1px solid #2E2C2A !important;
 }
 
 .queue-ticket-card:nth-child(1) { animation-delay: 0.05s; }
@@ -233,7 +269,7 @@ select:focus {
 .queue-ticket-card:nth-child(5) { animation-delay: 0.33s; }
 
 /* ================================================================
-   TIME SLOTS — Wave Stagger
+   TIME SLOTS — Noir & Champagne Wave Stagger
    ================================================================ */
 
 .slot-btn {
@@ -241,12 +277,17 @@ select:focus {
     transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
     box-shadow 0.2s ease,
     background-color 0.15s ease,
-    border-color 0.15s ease;
+    border-color 0.15s ease,
+    color 0.15s ease;
+  background-color: #222227;
+  border: 1px solid #2E2C2A;
+  color: #F8F6F0;
 }
 
 .slot-btn:hover:not(:disabled) {
   transform: translateY(-3px) scale(1.06);
-  box-shadow: 0 6px 16px rgba(0, 104, 95, 0.18);
+  border-color: #B8976C;
+  box-shadow: 0 6px 16px rgba(212, 175, 55, 0.25);
 }
 
 .slot-btn:active:not(:disabled) {
@@ -254,17 +295,23 @@ select:focus {
 }
 
 .slot-btn.slot-selected {
+  background-color: #D4AF37 !important;
+  color: #111113 !important;
+  border-color: #D4AF37 !important;
+  box-shadow: 0 4px 18px rgba(212, 175, 55, 0.45) !important;
   animation: haloRing 2s ease-in-out infinite, badgeBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 /* ================================================================
-   BOOKING PASS CARD — Float + Neon
+   BOOKING PASS CARD — Float + Gold Halo
    ================================================================ */
 
 .booking-pass-card {
   animation:
     cardTiltIn 0.75s cubic-bezier(0.16, 1, 0.3, 1) both,
     magneticFloat 5s ease-in-out infinite 0.75s;
+  background-color: #1A1A1E !important;
+  border: 1px solid #2E2C2A !important;
 }
 
 /* ================================================================
@@ -273,11 +320,15 @@ select:focus {
 
 .modal-overlay {
   animation: fadeIn 0.25s ease both;
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  background-color: rgba(0, 0, 0, 0.78) !important;
 }
 
 .modal-panel {
   animation: cardTiltIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  background-color: #1A1A1E !important;
+  border: 1px solid #2E2C2A !important;
 }
 
 /* ================================================================
@@ -286,6 +337,8 @@ select:focus {
 
 header {
   transition: background-color 0.3s ease, box-shadow 0.3s ease, backdrop-filter 0.3s ease;
+  background-color: rgba(17, 17, 19, 0.92) !important;
+  border-bottom: 1px solid #2E2C2A !important;
 }
 
 /* ================================================================
@@ -294,13 +347,16 @@ header {
 
 .category-tab {
   transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  color: #8E8A85;
 }
 
 .category-tab:hover {
   transform: translateY(-2px);
+  color: #F8F6F0;
 }
 
 .category-tab.active {
+  color: #D4AF37 !important;
   animation: badgeBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
@@ -364,4 +420,3 @@ header {
     transition-duration: 0.01ms !important;
   }
 }
-

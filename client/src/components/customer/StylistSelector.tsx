@@ -1,8 +1,8 @@
 /**
  * ============================================================================
- * TRIMLY / GLOWSLOT - STYLIST & CHAIR SELECTOR COMPONENT
+ * TRIMLY - STYLIST & CHAIR SELECTOR COMPONENT
  * ============================================================================
- * Matches Figma Layers:
+ * Modern Noir & Champagne Gold Luxury Styling:
  * - Option: Any Available (Selected Default)
  * - Option: Chair 1 Rifas
  * - Option: Chair 2 Kannan
@@ -42,7 +42,7 @@ export const StylistSelector: React.FC<StylistSelectorProps> = ({
             style={{
               width: '6px',
               height: '20px',
-              backgroundColor: '#00685F',
+              backgroundColor: '#D4AF37',
               borderRadius: '9999px',
             }}
           />
@@ -52,7 +52,7 @@ export const StylistSelector: React.FC<StylistSelectorProps> = ({
               fontWeight: 700,
               fontSize: '20px',
               lineHeight: '28px',
-              color: '#0D1C2F',
+              color: '#F8F6F0',
               letterSpacing: '-0.2px',
               margin: 0,
             }}
@@ -66,7 +66,7 @@ export const StylistSelector: React.FC<StylistSelectorProps> = ({
             fontFamily: "'JetBrains Mono', monospace",
             fontWeight: 500,
             fontSize: '11px',
-            color: '#3D4947',
+            color: '#8E8A85',
             letterSpacing: '0.22px',
           }}
         >
@@ -91,13 +91,14 @@ export const StylistSelector: React.FC<StylistSelectorProps> = ({
             justifyContent: 'space-between',
             alignItems: 'center',
             padding: '16px',
-            backgroundColor: '#FFFFFF',
+            backgroundColor: selectedChairId === 'ANY' ? '#1E1E24' : '#1A1A1E',
+            border: selectedChairId === 'ANY' ? '1.5px solid #D4AF37' : '1px solid #2E2C2A',
             borderRadius: '16px',
             cursor: 'pointer',
             boxShadow:
               selectedChairId === 'ANY'
-                ? '0px 0px 0px 2px #00685F, 0px 4px 12px rgba(0, 104, 95, 0.12)'
-                : '0px 1px 2px rgba(0, 0, 0, 0.05)',
+                ? '0px 0px 0px 1px #D4AF37, 0px 8px 24px rgba(212, 175, 55, 0.22)'
+                : '0px 4px 16px rgba(0, 0, 0, 0.4)',
             transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
             minHeight: '92px',
           }}
@@ -110,12 +111,13 @@ export const StylistSelector: React.FC<StylistSelectorProps> = ({
                 style={{
                   width: '56px',
                   height: '56px',
-                  backgroundColor: '#008378',
+                  backgroundColor: '#24221F',
+                  border: '1px solid #2E2C2A',
                   borderRadius: '9999px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.05)',
+                  boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.4)',
                 }}
               >
                 <svg
@@ -123,7 +125,7 @@ export const StylistSelector: React.FC<StylistSelectorProps> = ({
                   height="22"
                   viewBox="0 0 24 24"
                   fill="none"
-                  stroke="#F4FFFC"
+                  stroke="#D4AF37"
                   strokeWidth="2.2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -142,8 +144,8 @@ export const StylistSelector: React.FC<StylistSelectorProps> = ({
                   width: '18px',
                   height: '18px',
                   borderRadius: '50%',
-                  backgroundColor: '#00685F',
-                  border: '2px solid #FFFFFF',
+                  backgroundColor: '#D4AF37',
+                  border: '2px solid #1A1A1E',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -152,8 +154,8 @@ export const StylistSelector: React.FC<StylistSelectorProps> = ({
                 <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
                   <path
                     d="M1 4L3.5 6.5L8.5 1.5"
-                    stroke="#FFFFFF"
-                    strokeWidth="1.8"
+                    stroke="#111113"
+                    strokeWidth="2"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   />
@@ -169,7 +171,7 @@ export const StylistSelector: React.FC<StylistSelectorProps> = ({
                     fontFamily: "'Plus Jakarta Sans', sans-serif",
                     fontWeight: 700,
                     fontSize: '16px',
-                    color: '#0D1C2F',
+                    color: '#F8F6F0',
                   }}
                 >
                   Any Available
@@ -182,7 +184,7 @@ export const StylistSelector: React.FC<StylistSelectorProps> = ({
                 style={{
                   fontFamily: "'Plus Jakarta Sans', sans-serif",
                   fontSize: '12px',
-                  color: '#3D4947',
+                  color: '#8E8A85',
                 }}
               >
                 Auto-assigns first free chair
@@ -194,10 +196,10 @@ export const StylistSelector: React.FC<StylistSelectorProps> = ({
                     fontFamily: "'JetBrains Mono', monospace",
                     fontSize: '11px',
                     fontWeight: 600,
-                    color: '#00685F',
+                    color: '#D4AF37',
                   }}
                 >
-                  Est. Wait: ~12m
+                  Est. Wait: 12m
                 </span>
               </div>
             </div>
@@ -209,7 +211,8 @@ export const StylistSelector: React.FC<StylistSelectorProps> = ({
               width: '24px',
               height: '24px',
               borderRadius: '50%',
-              backgroundColor: selectedChairId === 'ANY' ? '#00685F' : '#E6EEFF',
+              backgroundColor: selectedChairId === 'ANY' ? '#D4AF37' : '#222227',
+              border: selectedChairId === 'ANY' ? '1px solid #D4AF37' : '1px solid #2E2C2A',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -220,8 +223,8 @@ export const StylistSelector: React.FC<StylistSelectorProps> = ({
               <svg width="12" height="10" viewBox="0 0 12 10" fill="none">
                 <path
                   d="M1.5 5L4.5 8L10.5 2"
-                  stroke="#FFFFFF"
-                  strokeWidth="2"
+                  stroke="#111113"
+                  strokeWidth="2.2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 />
@@ -244,12 +247,13 @@ export const StylistSelector: React.FC<StylistSelectorProps> = ({
                 justifyContent: 'space-between',
                 alignItems: 'center',
                 padding: '16px',
-                backgroundColor: '#FFFFFF',
+                backgroundColor: isSelected ? '#1E1E24' : '#1A1A1E',
+                border: isSelected ? '1.5px solid #D4AF37' : '1px solid #2E2C2A',
                 borderRadius: '16px',
                 cursor: 'pointer',
                 boxShadow: isSelected
-                  ? '0px 0px 0px 2px #00685F, 0px 4px 12px rgba(0, 104, 95, 0.12)'
-                  : '0px 1px 2px rgba(0, 0, 0, 0.05)',
+                  ? '0px 0px 0px 1px #D4AF37, 0px 8px 24px rgba(212, 175, 55, 0.22)'
+                  : '0px 4px 16px rgba(0, 0, 0, 0.4)',
                 transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
                 minHeight: '92px',
               }}
@@ -267,7 +271,7 @@ export const StylistSelector: React.FC<StylistSelectorProps> = ({
                       borderRadius: '9999px',
                       objectFit: 'cover',
                       display: 'block',
-                      border: '2px solid #E6EEFF',
+                      border: '2px solid #2E2C2A',
                     }}
                   />
                   <div
@@ -278,8 +282,8 @@ export const StylistSelector: React.FC<StylistSelectorProps> = ({
                       width: '14px',
                       height: '14px',
                       borderRadius: '50%',
-                      backgroundColor: isBusy ? '#F59E0B' : '#00685F',
-                      border: '2px solid #FFFFFF',
+                      backgroundColor: isBusy ? '#E5A93C' : '#D4AF37',
+                      border: '2px solid #1A1A1E',
                     }}
                   />
                 </div>
@@ -291,7 +295,7 @@ export const StylistSelector: React.FC<StylistSelectorProps> = ({
                       fontFamily: "'Plus Jakarta Sans', sans-serif",
                       fontWeight: 700,
                       fontSize: '16px',
-                      color: '#0D1C2F',
+                      color: '#F8F6F0',
                     }}
                   >
                     {chair.name}
@@ -300,7 +304,7 @@ export const StylistSelector: React.FC<StylistSelectorProps> = ({
                     style={{
                       fontFamily: "'Plus Jakarta Sans', sans-serif",
                       fontSize: '12px',
-                      color: '#3D4947',
+                      color: '#8E8A85',
                     }}
                   >
                     {chair.role}
@@ -312,12 +316,12 @@ export const StylistSelector: React.FC<StylistSelectorProps> = ({
                         fontFamily: "'JetBrains Mono', monospace",
                         fontSize: '11px',
                         fontWeight: 600,
-                        color: isBusy ? '#B45309' : '#00685F',
+                        color: isBusy ? '#E5A93C' : '#D4AF37',
                       }}
                     >
                       {isBusy
                         ? `Busy (${chair.queueLength} in queue · Free @ ${chair.nextFreeTime})`
-                        : `Ready (~8m buffer · Next @ ${chair.nextFreeTime})`}
+                        : `Ready (8m buffer · Next @ ${chair.nextFreeTime})`}
                     </span>
                   </div>
                 </div>
@@ -329,7 +333,8 @@ export const StylistSelector: React.FC<StylistSelectorProps> = ({
                   width: '24px',
                   height: '24px',
                   borderRadius: '50%',
-                  backgroundColor: isSelected ? '#00685F' : '#E6EEFF',
+                  backgroundColor: isSelected ? '#D4AF37' : '#222227',
+                  border: isSelected ? '1px solid #D4AF37' : '1px solid #2E2C2A',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -340,8 +345,8 @@ export const StylistSelector: React.FC<StylistSelectorProps> = ({
                   <svg width="12" height="10" viewBox="0 0 12 10" fill="none">
                     <path
                       d="M1.5 5L4.5 8L10.5 2"
-                      stroke="#FFFFFF"
-                      strokeWidth="2"
+                      stroke="#111113"
+                      strokeWidth="2.2"
                       strokeLinecap="round"
                       strokeLinejoin="round"
                     />

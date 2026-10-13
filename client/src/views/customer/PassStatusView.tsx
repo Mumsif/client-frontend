@@ -67,7 +67,7 @@ export const PassStatusView: React.FC<PassStatusViewProps> = ({
     <div
       style={{
         minHeight: '100vh',
-        backgroundColor: '#F8F9FF',
+        backgroundColor: '#111113',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -84,38 +84,75 @@ export const PassStatusView: React.FC<PassStatusViewProps> = ({
           justifyContent: 'space-between',
           alignItems: 'center',
           marginBottom: '24px',
+          gap: '12px',
         }}
       >
-        {onBackToBooking && (
-          <button
-            type="button"
-            onClick={onBackToBooking}
+        <div
+          className="trimly-logo-link"
+          role="button"
+          tabIndex={0}
+          onClick={() => { window.location.hash = '#/'; }}
+          style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}
+          title="Return to Trimly Home"
+        >
+          <div
             style={{
-              padding: '8px 14px',
-              backgroundColor: '#FFFFFF',
-              border: '1px solid #D5E3FD',
+              width: '32px',
+              height: '32px',
               borderRadius: '8px',
-              fontSize: '13px',
-              fontWeight: 600,
-              color: '#00685F',
-              cursor: 'pointer',
+              background: 'linear-gradient(135deg, #C5A880 0%, #D4AF37 100%)',
               display: 'flex',
               alignItems: 'center',
-              gap: '6px',
+              justifyContent: 'center',
+              color: '#111113',
+              boxShadow: '0 2px 8px rgba(212, 175, 55, 0.25)',
             }}
           >
-            ← Service Menu
-          </button>
-        )}
+            <Icon name="scissors" size={15} color="#111113" />
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: '17px', color: '#F8F6F0', lineHeight: 1.2 }}>
+              Trimly
+            </span>
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '10px', color: '#8E8A85' }}>
+              Smart Salon Booking
+            </span>
+          </div>
+        </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: '#00685F', fontWeight: 600 }}>
-          <span className="live-pulse-dot" />
-          <span>Live Queue Sync</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          {onBackToBooking && (
+            <button
+              type="button"
+              onClick={onBackToBooking}
+              style={{
+                padding: '6px 12px',
+                backgroundColor: '#1A1A1E',
+                border: '1px solid #2E2C2A',
+                borderRadius: '8px',
+                fontSize: '12px',
+                fontWeight: 600,
+                color: '#D4AF37',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '5px',
+                transition: 'all 0.2s ease',
+              }}
+            >
+              ← Services
+            </button>
+          )}
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: '#D4AF37', fontWeight: 600 }}>
+            <span className="live-pulse-dot" />
+            <span>Live Queue</span>
+          </div>
         </div>
       </div>
 
       {isLoading ? (
-        <div style={{ padding: '60px', color: '#5C647A', textAlign: 'center' }}>
+        <div style={{ padding: '60px', color: '#8E8A85', textAlign: 'center' }}>
           Loading your active pass...
         </div>
       ) : pass ? (
@@ -131,11 +168,12 @@ export const PassStatusView: React.FC<PassStatusViewProps> = ({
           style={{
             maxWidth: '440px',
             width: '100%',
-            backgroundColor: '#FFFFFF',
+            backgroundColor: '#1A1A1E',
+            border: '1px solid #2E2C2A',
             borderRadius: '16px',
             padding: '36px 24px',
             textAlign: 'center',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.06)',
+            boxShadow: '0 4px 24px rgba(0,0,0,0.5)',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
@@ -147,16 +185,17 @@ export const PassStatusView: React.FC<PassStatusViewProps> = ({
               width: '56px',
               height: '56px',
               borderRadius: '50%',
-              backgroundColor: '#EFF4FF',
+              backgroundColor: '#26241F',
+              border: '1px solid #3E3A32',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
             }}
           >
-            <Icon name="ticket" size={26} color="#00685F" />
+            <Icon name="ticket" size={26} color="#D4AF37" />
           </div>
-          <h3 style={{ margin: 0, color: '#0D1C2F' }}>No Active Booking Pass Found</h3>
-          <p style={{ margin: 0, fontSize: '13px', color: '#5C647A' }}>
+          <h3 style={{ margin: 0, color: '#F8F6F0' }}>No Active Booking Pass Found</h3>
+          <p style={{ margin: 0, fontSize: '13px', color: '#8E8A85' }}>
             Book your haircut or grooming package from the Service Menu to generate your digital booking pass.
           </p>
           {onBackToBooking && (

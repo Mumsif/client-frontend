@@ -1,17 +1,12 @@
 /**
  * ============================================================================
- * TRIMLY / GLOWSLOT - BARBER STATION REAL-TIME CHAIR BOARD
+ * TRIMLY - BARBER STATION REAL-TIME CHAIR BOARD
  * ============================================================================
- * Full implementation translating Figma CSS Layers:
+ * Modern Noir & Champagne Gold Luxury Styling:
  * - Barber Station Real-Time Chair Board
  * - TOP STATION UTILITY HEADER (Digital IST clock, Capacity badge, Wallet pill, Delay shift)
- * - ACTIVE CHAIRS MULTI-COLUMN BOARD (Chair 1 Rifas & Chair 2 Kannan)
+ * - ACTIVE CHAIRS MULTI-COLUMN BOARD (Chair 1 Dhanu & Chair 2 Thambi)
  * - SALON STATS BAR (Operational Telemetry)
- *
- * Connects with Spring Boot:
- * - com.glowslot.controller.BarberController.java
- * - com.glowslot.service.QueueManagementService.java
- * - com.glowslot.service.WalletService.java (Rs. 50 deduction on service close)
  * ============================================================================
  */
 
@@ -27,13 +22,13 @@ import { Icon } from '../../components/common/Icon';
 import westernCuttersImg from '../../assets/salon_hero.jpg';
 
 export interface WorkstationDashboardViewProps {
-  onNavigateToCustomerBooking?: () => void;
   onLogout?: () => void;
+  onNavigateToHome?: () => void;
 }
 
 export const WorkstationDashboardView: React.FC<WorkstationDashboardViewProps> = ({
-  onNavigateToCustomerBooking,
   onLogout,
+  onNavigateToHome,
 }) => {
   const {
     chairs,
@@ -61,7 +56,6 @@ export const WorkstationDashboardView: React.FC<WorkstationDashboardViewProps> =
     appointmentId: string;
     customerName: string;
     ticketNumber: string;
-    expectedOtp?: string;
   }>({
     isOpen: false,
     chairId: '',
@@ -155,12 +149,13 @@ export const WorkstationDashboardView: React.FC<WorkstationDashboardViewProps> =
           minute: '2-digit',
           second: '2-digit',
           hour12: true,
-        })
+        }) + ' IST'
       );
     };
+
     updateTime();
-    const interval = setInterval(updateTime, 1000);
-    return () => clearInterval(interval);
+    const timer = setInterval(updateTime, 1000);
+    return () => clearInterval(timer);
   }, []);
 
   const handleOpenWalkIn = (chairId: string) => {
@@ -168,12 +163,11 @@ export const WorkstationDashboardView: React.FC<WorkstationDashboardViewProps> =
     setWalkInModalState({
       isOpen: true,
       chairId,
-      chairName: chair ? `Chair ${chair.chairNumber} (${chair.barberName})` : 'Workstation',
+      chairName: chair ? `Chair ${chair.chairNumber} (${chair.barberName})` : 'Barber Chair',
     });
   };
 
   const handleGlobalDelayShift = async () => {
-    // Apply cascading +15m shift to first active chair
     if (chairs.length > 0) {
       await applyDelayShift(chairs[0].chairId);
     }
@@ -192,7 +186,7 @@ export const WorkstationDashboardView: React.FC<WorkstationDashboardViewProps> =
         alignItems: 'center',
         width: '100%',
         minHeight: '100vh',
-        backgroundColor: '#F8F9FF',
+        backgroundColor: '#111113',
         paddingBottom: '60px',
       }}
       className="workstation-dashboard-view"
@@ -206,12 +200,12 @@ export const WorkstationDashboardView: React.FC<WorkstationDashboardViewProps> =
             right: '24px',
             zIndex: 10000,
             padding: '12px 20px',
-            backgroundColor: toastMessage.type === 'success' ? '#00685F' : toastMessage.type === 'warning' ? '#B45309' : '#4648D4',
-            color: '#FFFFFF',
+            backgroundColor: toastMessage.type === 'success' ? '#D4AF37' : toastMessage.type === 'warning' ? '#E5A93C' : '#C5A880',
+            color: '#111113',
             borderRadius: '10px',
-            boxShadow: '0 4px 14px rgba(0, 0, 0, 0.15)',
+            boxShadow: '0 8px 24px rgba(0, 0, 0, 0.6)',
             fontFamily: "'Plus Jakarta Sans', sans-serif",
-            fontWeight: 600,
+            fontWeight: 700,
             fontSize: '14px',
             display: 'flex',
             alignItems: 'center',
@@ -219,47 +213,66 @@ export const WorkstationDashboardView: React.FC<WorkstationDashboardViewProps> =
             animation: 'slideUpFade 0.3s ease-out',
           }}
         >
-          <Icon name="check" size={14} color="#FFFFFF" />
+          <Icon name="check" size={14} color="#111113" />
           <span>{toastMessage.text}</span>
         </div>
       )}
 
-      {/* 1. Header (80px Backdrop blur) */}
+      {/* 1. Header (68px) */}
       <header
+        className="trimly-header-padding"
         style={{
           width: '100%',
-          height: '80px',
+          minHeight: '68px',
           position: 'sticky',
           top: 0,
           zIndex: 100,
-          backgroundColor: 'rgba(255, 255, 255, 0.95)',
-          boxShadow: '0px 1px 8px rgba(0, 0, 0, 0.04)',
-          backdropFilter: 'blur(8px)',
-          WebkitBackdropFilter: 'blur(8px)',
+          backgroundColor: 'rgba(20, 20, 23, 0.95)',
+          boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.8)',
+          borderBottom: '1px solid #2E2C2A',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
+          boxSizing: 'border-box',
         }}
       >
         <div
           style={{
             maxWidth: '1280px',
             width: '100%',
-            padding: '0 24px',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
+            gap: '8px',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+          <div
+            className="trimly-logo-link"
+            role="button"
+            tabIndex={0}
+            onClick={() => {
+              if (onNavigateToHome) onNavigateToHome();
+              else window.location.hash = '#/';
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                if (onNavigateToHome) onNavigateToHome();
+                else window.location.hash = '#/';
+              }
+            }}
+            style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', flexShrink: 0 }}
+            title="Return to Trimly Home"
+          >
             <div
               style={{
-                width: '42px',
-                height: '42px',
+                width: '38px',
+                height: '38px',
                 borderRadius: '10px',
                 overflow: 'hidden',
-                border: '1.5px solid #D5E3FD',
-                boxShadow: '0 2px 6px rgba(0, 0, 0, 0.08)',
+                border: '1.5px solid #2E2C2A',
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.5)',
                 flexShrink: 0,
               }}
             >
@@ -269,78 +282,80 @@ export const WorkstationDashboardView: React.FC<WorkstationDashboardViewProps> =
                 style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
               />
             </div>
-            <div>
-              <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: '18px', color: '#0D1C2F' }}>
-                Trimly <span style={{ color: '#00685F' }}>Barber Station</span>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <span
+                style={{
+                  fontFamily: "'Plus Jakarta Sans', sans-serif",
+                  fontWeight: 800,
+                  fontSize: '16px',
+                  color: '#F8F6F0',
+                  letterSpacing: '-0.3px',
+                  whiteSpace: 'nowrap',
+                  lineHeight: '1.2',
+                }}
+              >
+                Trimly <span style={{ color: '#D4AF37' }}>Barber Station</span>
               </span>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <div
+                className="trimly-header-tagline"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  whiteSpace: 'nowrap',
+                }}
+              >
                 <span className="live-pulse-dot" />
-                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: '#00685F' }}>
+                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: '#D4AF37', whiteSpace: 'nowrap' }}>
                   Real-Time Chair Board · Western Cutters
                 </span>
               </div>
             </div>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            {onNavigateToCustomerBooking && (
-              <button
-                type="button"
-                onClick={onNavigateToCustomerBooking}
-                style={{
-                  padding: '8px 14px',
-                  backgroundColor: '#EFF4FF',
-                  border: '1px solid #DAE2FD',
-                  borderRadius: '8px',
-                  fontFamily: "'Plus Jakarta Sans', sans-serif",
-                  fontWeight: 600,
-                  fontSize: '13px',
-                  color: '#00685F',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                }}
-              >
-                <span>← Customer Booking View</span>
-              </button>
-            )}
-
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
             {onLogout && (
               <button
                 type="button"
                 onClick={onLogout}
                 style={{
-                  padding: '8px 12px',
+                  padding: '7px 11px',
                   backgroundColor: 'transparent',
-                  border: '1px solid #D5E3FD',
+                  border: '1px solid #2E2C2A',
                   borderRadius: '8px',
-                  fontSize: '13px',
-                  color: '#5C647A',
+                  fontSize: '12px',
+                  fontWeight: 500,
+                  color: '#8E8A85',
                   cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  transition: 'all 0.15s ease',
                 }}
+                title="Exit Station"
               >
-                Exit Station
+                <span className="mobile-hide">Exit Station</span>
+                <span className="mobile-only-inline">Exit</span>
               </button>
             )}
           </div>
         </div>
       </header>
 
-      {/* 2. Top Station Utility Header (160px from Figma) */}
+      {/* 2. Top Station Utility Header */}
       <div
+        className="trimly-content-padding"
         style={{
           maxWidth: '1280px',
           width: '100%',
-          padding: '24px 24px 0',
+          paddingTop: '20px',
         }}
       >
         <div
           style={{
-            backgroundColor: '#FFFFFF',
+            backgroundColor: '#1A1A1E',
+            border: '1px solid #2E2C2A',
             borderRadius: '16px',
             padding: '24px',
-            boxShadow: '0px 4px 6px -1px rgba(0, 0, 0, 0.08), 0px 2px 4px -2px rgba(0, 0, 0, 0.04)',
+            boxShadow: '0px 8px 32px rgba(0, 0, 0, 0.6)',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
@@ -355,12 +370,13 @@ export const WorkstationDashboardView: React.FC<WorkstationDashboardViewProps> =
                 style={{
                   width: '40px',
                   height: '40px',
-                  backgroundColor: '#008378',
+                  backgroundColor: '#26241F',
+                  border: '1px solid rgba(212, 175, 55, 0.3)',
                   borderRadius: '12px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: '#F4FFFC',
+                  color: '#D4AF37',
                 }}
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
@@ -370,19 +386,19 @@ export const WorkstationDashboardView: React.FC<WorkstationDashboardViewProps> =
 
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '20px', fontWeight: 700, margin: 0, color: '#0D1C2F' }}>
+                  <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '20px', fontWeight: 700, margin: 0, color: '#F8F6F0' }}>
                     Station Active
                   </h2>
                   <Badge variant="teal">CHAIRS 1 & 2</Badge>
                 </div>
-                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: '#5C647A' }}>
+                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: '#8E8A85' }}>
                   Eastern Province Hub Sync
                 </span>
               </div>
             </div>
 
             {/* Vertical Divider */}
-            <div style={{ width: '1px', height: '36px', backgroundColor: '#DAE2FD' }} className="desktop-only" />
+            <div style={{ width: '1px', height: '36px', backgroundColor: '#2E2C2A' }} className="desktop-only" />
 
             {/* Live Digital Clock (IST) */}
             <div
@@ -391,24 +407,25 @@ export const WorkstationDashboardView: React.FC<WorkstationDashboardViewProps> =
                 alignItems: 'center',
                 gap: '8px',
                 padding: '8px 16px',
-                backgroundColor: '#EFF4FF',
+                backgroundColor: '#161619',
+                border: '1px solid #2E2C2A',
                 borderRadius: '12px',
               }}
             >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00685F" strokeWidth="2.2">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D4AF37" strokeWidth="2.2">
                 <circle cx="12" cy="12" r="10" />
                 <polyline points="12 6 12 12 16 14" />
               </svg>
               <div>
-                <span style={{ display: 'block', fontFamily: "'JetBrains Mono', monospace", fontSize: '10px', color: '#5C647A' }}>
+                <span style={{ display: 'block', fontFamily: "'JetBrains Mono', monospace", fontSize: '10px', color: '#8E8A85' }}>
                   CURRENT TIME (IST)
                 </span>
                 <span
                   style={{
                     fontFamily: "'JetBrains Mono', monospace",
                     fontWeight: 700,
-                    fontSize: '18px',
-                    color: '#0D1C2F',
+                    fontSize: '17px',
+                    color: '#F8F6F0',
                     letterSpacing: '-0.3px',
                   }}
                 >
@@ -424,16 +441,17 @@ export const WorkstationDashboardView: React.FC<WorkstationDashboardViewProps> =
                 alignItems: 'center',
                 gap: '8px',
                 padding: '8px 16px',
-                backgroundColor: '#DAE2FD',
+                backgroundColor: '#161619',
+                border: '1px solid #2E2C2A',
                 borderRadius: '12px',
               }}
             >
               <span className="live-pulse-dot" />
               <div>
-                <span style={{ display: 'block', fontSize: '10px', color: '#5C647A', fontWeight: 600 }}>
+                <span style={{ display: 'block', fontSize: '10px', color: '#8E8A85', fontWeight: 600 }}>
                   CHAIR OCCUPANCY
                 </span>
-                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: '15px', color: '#0D1C2F' }}>
+                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: '15px', color: '#D4AF37' }}>
                   {chairs.filter((c) => c.status === 'BUSY').length} / {chairs.length} Chairs Active
                 </span>
               </div>
@@ -449,13 +467,14 @@ export const WorkstationDashboardView: React.FC<WorkstationDashboardViewProps> =
                 alignItems: 'center',
                 padding: '6px 16px',
                 gap: '14px',
-                backgroundColor: '#E6EEFF',
+                backgroundColor: '#161619',
+                border: '1px solid #2E2C2A',
                 borderRadius: '12px',
                 minHeight: '48px',
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00685F" strokeWidth="2.2">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D4AF37" strokeWidth="2.2">
                   <rect x="2" y="4" width="20" height="16" rx="2" />
                   <line x1="2" y1="10" x2="22" y2="10" />
                 </svg>
@@ -466,12 +485,12 @@ export const WorkstationDashboardView: React.FC<WorkstationDashboardViewProps> =
                       fontFamily: "'JetBrains Mono', monospace",
                       fontWeight: 700,
                       fontSize: '15px',
-                      color: '#0D1C2F',
+                      color: '#D4AF37',
                     }}
                   >
                     LKR {walletBalance.toLocaleString()}
                   </span>
-                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '10px', color: '#5C647A' }}>
+                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '10px', color: '#8E8A85' }}>
                     Rs. 50 / cut platform fee
                   </span>
                 </div>
@@ -481,16 +500,17 @@ export const WorkstationDashboardView: React.FC<WorkstationDashboardViewProps> =
                 type="button"
                 onClick={handleWalletTopUp}
                 style={{
-                  padding: '6px 12px',
-                  backgroundColor: '#00685F',
+                  padding: '6px 14px',
+                  backgroundColor: '#D4AF37',
                   borderRadius: '8px',
-                  color: '#FFFFFF',
+                  color: '#111113',
                   border: 'none',
                   fontSize: '12px',
                   fontFamily: "'Plus Jakarta Sans', sans-serif",
-                  fontWeight: 600,
+                  fontWeight: 700,
                   cursor: 'pointer',
                   transition: 'background 0.15s ease',
+                  boxShadow: '0 2px 8px rgba(212, 175, 55, 0.35)',
                 }}
               >
                 + Top Up
@@ -505,17 +525,20 @@ export const WorkstationDashboardView: React.FC<WorkstationDashboardViewProps> =
 
       {/* 3. Active Chairs Multi-Column Board (Grid with Chair 1 & Chair 2) */}
       <div
+        className="trimly-content-padding"
         style={{
           maxWidth: '1280px',
           width: '100%',
-          padding: '24px',
+          paddingTop: '20px',
+          paddingBottom: '20px',
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))',
-          gap: '24px',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 340px), 1fr))',
+          gap: '20px',
+          boxSizing: 'border-box',
         }}
       >
         {isLoading ? (
-          <div style={{ padding: '48px', textAlign: 'center', color: '#5C647A', gridColumn: '1 / -1' }}>
+          <div style={{ padding: '48px', textAlign: 'center', color: '#8E8A85', gridColumn: '1 / -1' }}>
             Connecting to Real-time Firestore Queue...
           </div>
         ) : (
@@ -537,25 +560,28 @@ export const WorkstationDashboardView: React.FC<WorkstationDashboardViewProps> =
 
       {/* 4. Salon Stats Bar (Operational Telemetry) */}
       <div
+        className="trimly-content-padding"
         style={{
           maxWidth: '1280px',
           width: '100%',
-          padding: '0 24px',
+          paddingBottom: '36px',
+          boxSizing: 'border-box',
         }}
       >
         <div
           style={{
-            backgroundColor: '#FFFFFF',
+            backgroundColor: '#1A1A1E',
+            border: '1px solid #2E2C2A',
             borderRadius: '16px',
             padding: '24px',
-            boxShadow: '0px 4px 6px -1px rgba(0, 0, 0, 0.08)',
+            boxShadow: '0px 8px 32px rgba(0, 0, 0, 0.6)',
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
             gap: '16px',
           }}
         >
           <div>
-            <span style={{ fontSize: '11px', color: '#5C647A', textTransform: 'uppercase', fontFamily: "'JetBrains Mono', monospace" }}>
+            <span style={{ fontSize: '11px', color: '#8E8A85', textTransform: 'uppercase', fontFamily: "'JetBrains Mono', monospace" }}>
               Today's Gross Bookings
             </span>
             <div
@@ -563,17 +589,17 @@ export const WorkstationDashboardView: React.FC<WorkstationDashboardViewProps> =
                 fontFamily: "'JetBrains Mono', monospace",
                 fontWeight: 700,
                 fontSize: '24px',
-                color: '#00685F',
+                color: '#D4AF37',
                 marginTop: '4px',
               }}
             >
               LKR {stats?.dailyRevenueLkr.toLocaleString() || '28,400'}
             </div>
-            <span style={{ fontSize: '11px', color: '#3D4947' }}>Updated in real-time</span>
+            <span style={{ fontSize: '11px', color: '#8E8A85' }}>Updated in real-time</span>
           </div>
 
           <div>
-            <span style={{ fontSize: '11px', color: '#5C647A', textTransform: 'uppercase', fontFamily: "'JetBrains Mono', monospace" }}>
+            <span style={{ fontSize: '11px', color: '#8E8A85', textTransform: 'uppercase', fontFamily: "'JetBrains Mono', monospace" }}>
               Completed Appointments
             </span>
             <div
@@ -581,17 +607,17 @@ export const WorkstationDashboardView: React.FC<WorkstationDashboardViewProps> =
                 fontFamily: "'JetBrains Mono', monospace",
                 fontWeight: 700,
                 fontSize: '24px',
-                color: '#0D1C2F',
+                color: '#F8F6F0',
                 marginTop: '4px',
               }}
             >
               {stats?.completedAppointmentsCount || 16} Serviced
             </div>
-            <span style={{ fontSize: '11px', color: '#3D4947' }}>Rs. 50 commission cleared</span>
+            <span style={{ fontSize: '11px', color: '#8E8A85' }}>Rs. 50 commission cleared</span>
           </div>
 
           <div>
-            <span style={{ fontSize: '11px', color: '#5C647A', textTransform: 'uppercase', fontFamily: "'JetBrains Mono', monospace" }}>
+            <span style={{ fontSize: '11px', color: '#8E8A85', textTransform: 'uppercase', fontFamily: "'JetBrains Mono', monospace" }}>
               Avg. Turnaround Time
             </span>
             <div
@@ -599,17 +625,17 @@ export const WorkstationDashboardView: React.FC<WorkstationDashboardViewProps> =
                 fontFamily: "'JetBrains Mono', monospace",
                 fontWeight: 700,
                 fontSize: '24px',
-                color: '#0D1C2F',
+                color: '#F8F6F0',
                 marginTop: '4px',
               }}
             >
               {stats?.avgTurnaroundMinutes || 24} Mins
             </div>
-            <span style={{ fontSize: '11px', color: '#00685F' }}>Within target variance</span>
+            <span style={{ fontSize: '11px', color: '#D4AF37' }}>Within target variance</span>
           </div>
 
           <div>
-            <span style={{ fontSize: '11px', color: '#5C647A', textTransform: 'uppercase', fontFamily: "'JetBrains Mono', monospace" }}>
+            <span style={{ fontSize: '11px', color: '#8E8A85', textTransform: 'uppercase', fontFamily: "'JetBrains Mono', monospace" }}>
               Queue Velocity Score
             </span>
             <div
@@ -617,13 +643,13 @@ export const WorkstationDashboardView: React.FC<WorkstationDashboardViewProps> =
                 fontFamily: "'JetBrains Mono', monospace",
                 fontWeight: 700,
                 fontSize: '24px',
-                color: '#4648D4',
+                color: '#D4AF37',
                 marginTop: '4px',
               }}
             >
               {stats?.queueVelocityScore || 98}% On-Time
             </div>
-            <span style={{ fontSize: '11px', color: '#3D4947' }}>Optimal salon flow</span>
+            <span style={{ fontSize: '11px', color: '#8E8A85' }}>Optimal salon flow</span>
           </div>
         </div>
       </div>
@@ -637,7 +663,6 @@ export const WorkstationDashboardView: React.FC<WorkstationDashboardViewProps> =
         appointmentId={otpModalState.appointmentId}
         customerName={otpModalState.customerName}
         ticketNumber={otpModalState.ticketNumber}
-        expectedOtp={otpModalState.expectedOtp}
         onConfirmVerify={async (cId, aId, otp) => {
           return await verifyOtp({ chairId: cId, appointmentId: aId, otp });
         }}

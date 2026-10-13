@@ -19,6 +19,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import confetti from 'canvas-confetti';
 import {
   bookingApi,
@@ -31,7 +32,9 @@ import { ServiceCard } from '../../components/customer/ServiceCard';
 import { StylistSelector } from '../../components/customer/StylistSelector';
 import { SlotGrid } from '../../components/customer/SlotGrid';
 import { Badge } from '../../components/common/Badge';
-import { Modal } from '../../components/common/Modal';
+import { Icon } from '../../components/common/Icon';
+import { useAuth } from '../../hooks/useAuth';
+import { AuthView } from '../auth/AuthView';
 import { useAvailableSlots } from '../../hooks/useAvailableSlots';
 import { getLocalDateString } from '../../utils/salonStore';
 import westernCuttersImg from '../../assets/salon_hero.jpg';
@@ -45,16 +48,21 @@ export interface ServiceBookingViewProps {
   onNavigateToBarberStation?: () => void;
   onNavigateToPassStatus?: () => void;
   onNavigateToSalons?: () => void;
+  onNavigateToHome?: () => void;
+  onNavigateToLogin?: () => void;
 }
 
 export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
   salonId = 'salon_1',
   hasActivePass,
   onBookingConfirmed,
-  onNavigateToBarberStation,
   onNavigateToPassStatus,
   onNavigateToSalons,
+  onNavigateToHome,
+  onNavigateToLogin,
 }) => {
+  const { customer, isCustomerAuthenticated, logoutCustomer } = useAuth();
+
   // State
   const [salon, setSalon] = useState<SalonDetails | null>(null);
   const [services, setServices] = useState<ServiceItem[]>([]);
@@ -64,10 +72,36 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
   const [selectedDate, setSelectedDate] = useState<string>(getLocalDateString());
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const [activeCategory, setActiveCategory] = useState<string>('all');
-  const [customerName, setCustomerName] = useState<string>('');
-  const [customerPhone, setCustomerPhone] = useState<string>('');
+  const [customerName, setCustomerName] = useState<string>(customer?.name || '');
+  const [customerPhone, setCustomerPhone] = useState<string>(customer?.phone || '');
   const [isBooking, setIsBooking] = useState<boolean>(false);
-  const [showCustomerModal, setShowCustomerModal] = useState<boolean>(false);
+  const [showAuthModal, setShowAuthModal] = useState<boolean>(false);
+
+  // Lock background scroll when Auth Modal is open & center over current viewport
+  useEffect(() => {
+    if (!showAuthModal) return;
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setShowAuthModal(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [showAuthModal]);
+
+  useEffect(() => {
+    if (customer) {
+      setCustomerName(customer.name);
+      setCustomerPhone(customer.phone);
+    }
+  }, [customer]);
 
   // Resolved hero image with robust fallback
   const heroImg =
@@ -136,7 +170,43 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
     return true;
   });
 
-  // Booking Flow Trigger
+  // Core Booking Execution
+  const executeBooking = async (nameToUse: string, phoneToUse: string) => {
+    setIsBooking(true);
+    try {
+      const pass = await bookingApi.createBooking({
+        salonId: salon?.id || 'salon_1',
+        customerName: nameToUse.trim(),
+        customerPhone: phoneToUse.trim(),
+        serviceIds: selectedServiceIds,
+        preferredChairId: selectedChairId === 'ANY' ? undefined : selectedChairId,
+        date: selectedDate,
+        timeSlot: selectedSlot || '',
+      });
+
+      // Celebration confetti
+      try {
+        confetti({
+          particleCount: 80,
+          spread: 70,
+          origin: { y: 0.7 },
+          colors: ['#D4AF37', '#C5A880', '#F8F6F0', '#B8976C'],
+        });
+      } catch {
+        // Confetti fallback
+      }
+
+      setShowAuthModal(false);
+      onBookingConfirmed(pass, nameToUse.trim(), phoneToUse.trim(), salon?.name);
+    } catch (err) {
+      console.error('Booking failed:', err);
+      alert('Failed to reserve booking. Please try again.');
+    } finally {
+      setIsBooking(false);
+    }
+  };
+
+  // Booking Flow Trigger (Checks Auth first)
   const handleProceedBooking = () => {
     if (selectedServiceIds.length === 0) {
       alert('Please select at least one grooming service.');
@@ -157,52 +227,15 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
         return;
       }
     }
-    setShowCustomerModal(true);
-  };
 
-  const handleFinalBookingSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!customerName.trim()) {
-      alert('Please enter your full name.');
-      return;
-    }
-    if (!customerPhone.trim()) {
-      alert('Please enter your mobile phone number.');
+    // AUTH CHECK: If customer is not authenticated, show Authentication Page modal!
+    if (!isCustomerAuthenticated || !customer) {
+      setShowAuthModal(true);
       return;
     }
 
-    setIsBooking(true);
-    try {
-      const pass = await bookingApi.createBooking({
-        salonId: salon?.id || 'salon_1',
-        customerName: customerName.trim(),
-        customerPhone: customerPhone.trim(),
-        serviceIds: selectedServiceIds,
-        preferredChairId: selectedChairId === 'ANY' ? undefined : selectedChairId,
-        date: selectedDate,
-        timeSlot: selectedSlot || '',
-      });
-
-      // Celebration confetti
-      try {
-        confetti({
-          particleCount: 80,
-          spread: 70,
-          origin: { y: 0.7 },
-          colors: ['#00685F', '#008378', '#4648D4', '#E1E0FF'],
-        });
-      } catch {
-        // Confetti fallback
-      }
-
-      setShowCustomerModal(false);
-      onBookingConfirmed(pass, customerName.trim(), customerPhone.trim(), salon?.name);
-    } catch (err) {
-      console.error('Booking failed:', err);
-      alert('Failed to reserve booking. Please try again.');
-    } finally {
-      setIsBooking(false);
-    }
+    // Customer is ALREADY authenticated -> let them book!
+    executeBooking(customer.name, customer.phone);
   };
 
   return (
@@ -213,7 +246,7 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
         alignItems: 'center',
         width: '100%',
         minHeight: '100vh',
-        backgroundColor: '#F8F9FF',
+        backgroundColor: '#111113',
         paddingBottom: '120px', // Space for bottom sticky floating dock
       }}
       className="customer-booking-view"
@@ -226,8 +259,9 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
           position: 'sticky',
           top: 0,
           zIndex: 100,
-          backgroundColor: 'rgba(255, 255, 255, 0.95)',
-          boxShadow: '0px 1px 8px rgba(0, 0, 0, 0.04)',
+          backgroundColor: 'rgba(17, 17, 19, 0.95)',
+          borderBottom: '1px solid #2E2C2A',
+          boxShadow: '0px 1px 8px rgba(0, 0, 0, 0.5)',
           backdropFilter: 'blur(8px)',
           WebkitBackdropFilter: 'blur(8px)',
           display: 'flex',
@@ -247,18 +281,38 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
         >
           {/* Logo & Brand Identity */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div
+              className="trimly-logo-link"
+              role="button"
+              tabIndex={0}
+              onClick={() => {
+                if (onNavigateToHome) {
+                  onNavigateToHome();
+                } else {
+                  window.location.hash = '#/';
+                }
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  if (onNavigateToHome) onNavigateToHome();
+                  else window.location.hash = '#/';
+                }
+              }}
+              style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', flexShrink: 0 }}
+              title="Return to Trimly Home"
+            >
               <div
                 style={{
                   width: '38px',
                   height: '38px',
-                  backgroundColor: '#00685F',
+                  background: 'linear-gradient(135deg, #C5A880 0%, #D4AF37 100%)',
                   borderRadius: '10px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: '#FFFFFF',
-                  boxShadow: '0 2px 8px rgba(0, 104, 95, 0.3)',
+                  color: '#111113',
+                  boxShadow: '0 2px 8px rgba(212, 175, 55, 0.25)',
+                  flexShrink: 0,
                 }}
               >
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
@@ -275,21 +329,24 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
                     fontFamily: "'Plus Jakarta Sans', sans-serif",
                     fontWeight: 800,
                     fontSize: '18px',
-                    color: '#0D1C2F',
+                    color: '#F8F6F0',
                     letterSpacing: '-0.4px',
+                    whiteSpace: 'nowrap',
                   }}
                 >
-                  Trimly <span style={{ color: '#00685F' }}>GlowSlot</span>
+                  Trimly
                 </span>
                 <span
+                  className="trimly-header-tagline"
                   style={{
                     fontFamily: "'JetBrains Mono', monospace",
                     fontSize: '10px',
-                    color: '#5C647A',
+                    color: '#8E8A85',
                     letterSpacing: '0.2px',
+                    whiteSpace: 'nowrap',
                   }}
                 >
-                  Smart Booking Hub
+                  Smart Salon Booking
                 </span>
               </div>
             </div>
@@ -301,13 +358,14 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
                 alignItems: 'center',
                 gap: '6px',
                 padding: '4px 10px',
-                backgroundColor: '#EFF4FF',
+                backgroundColor: '#1A1A1E',
+                border: '1px solid #2E2C2A',
                 borderRadius: '9999px',
               }}
               className="desktop-only"
             >
               <span className="live-pulse-dot" />
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: '#00685F' }}>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: '#D4AF37' }}>
                 Eastern Province · 09:00 - 22:00 IST
               </span>
             </div>
@@ -321,13 +379,13 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
                 onClick={onNavigateToSalons}
                 style={{
                   padding: '7px 12px',
-                  backgroundColor: '#FFFFFF',
-                  border: '1px solid #D5E3FD',
+                  backgroundColor: '#1A1A1E',
+                  border: '1px solid #2E2C2A',
                   borderRadius: '8px',
                   fontFamily: "'Plus Jakarta Sans', sans-serif",
                   fontWeight: 600,
                   fontSize: '12px',
-                  color: '#0D1C2F',
+                  color: '#D4AF37',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
@@ -345,21 +403,89 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
                 onClick={onNavigateToPassStatus}
                 style={{
                   padding: '7px 14px',
-                  backgroundColor: hasActivePass ? '#00685F' : '#EFF4FF',
-                  border: hasActivePass ? 'none' : '1px solid #DAE2FD',
+                  backgroundColor: hasActivePass ? '#D4AF37' : '#1A1A1E',
+                  border: hasActivePass ? 'none' : '1px solid #2E2C2A',
                   borderRadius: '8px',
                   fontFamily: "'Plus Jakarta Sans', sans-serif",
                   fontWeight: 700,
                   fontSize: '12px',
-                  color: hasActivePass ? '#FFFFFF' : '#00685F',
+                  color: hasActivePass ? '#111113' : '#D4AF37',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '6px',
-                  boxShadow: hasActivePass ? '0 2px 8px rgba(0, 104, 95, 0.25)' : 'none',
+                  boxShadow: hasActivePass ? '0 2px 10px rgba(212, 175, 55, 0.25)' : 'none',
+                  transition: 'all 0.15s ease',
                 }}
               >
                 <span>{hasActivePass ? 'Active Pass' : 'My Pass'}</span>
+              </button>
+            )}
+
+            {isCustomerAuthenticated && customer ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span
+                  style={{
+                    padding: '6px 11px',
+                    backgroundColor: '#26241F',
+                    border: '1px solid #3E3A32',
+                    borderRadius: '8px',
+                    fontFamily: "'Plus Jakarta Sans', sans-serif",
+                    fontWeight: 700,
+                    fontSize: '12px',
+                    color: '#D4AF37',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '5px',
+                  }}
+                  title={customer.phone}
+                >
+                  <Icon name="user" size={13} color="#D4AF37" />
+                  <span>{customer.name.split(' ')[0]}</span>
+                </span>
+                <button
+                  type="button"
+                  onClick={logoutCustomer}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: '#8E8A85',
+                    fontSize: '11px',
+                    cursor: 'pointer',
+                    padding: '4px',
+                    fontWeight: 500,
+                    transition: 'color 0.15s ease',
+                  }}
+                  title="Sign Out"
+                >
+                  Sign Out
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  if (onNavigateToLogin) onNavigateToLogin();
+                  else setShowAuthModal(true);
+                }}
+                style={{
+                  padding: '7px 12px',
+                  backgroundColor: '#1A1A1E',
+                  border: '1px solid #2E2C2A',
+                  borderRadius: '8px',
+                  fontFamily: "'Plus Jakarta Sans', sans-serif",
+                  fontWeight: 600,
+                  fontSize: '12px',
+                  color: '#D4AF37',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '5px',
+                  transition: 'all 0.15s ease',
+                }}
+              >
+                <Icon name="user" size={13} color="#D4AF37" />
+                <span>Sign In</span>
               </button>
             )}
           </div>
@@ -370,9 +496,9 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
       <div
         style={{
           width: '100%',
-          backgroundColor: '#FFFFFF',
-          borderBottom: '1px solid #EFF4FF',
-          boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.05)',
+          backgroundColor: '#161619',
+          borderBottom: '1px solid #2E2C2A',
+          boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.4)',
           display: 'flex',
           justifyContent: 'center',
         }}
@@ -397,8 +523,8 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
                 height: '42px',
                 borderRadius: '12px',
                 overflow: 'hidden',
-                boxShadow: '0 2px 6px rgba(0, 0, 0, 0.1)',
-                border: '1.5px solid #D5E3FD',
+                boxShadow: '0 2px 6px rgba(0, 0, 0, 0.4)',
+                border: '1.5px solid #2E2C2A',
                 flexShrink: 0,
               }}
             >
@@ -416,14 +542,14 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
                     fontFamily: "'Plus Jakarta Sans', sans-serif",
                     fontWeight: 700,
                     fontSize: '16px',
-                    color: '#0D1C2F',
+                    color: '#F8F6F0',
                     letterSpacing: '-0.4px',
                   }}
                 >
                   {salon?.name || 'Western Cutters'}
                 </span>
-                <span style={{ color: '#00685F', fontWeight: 600 }}>{salon?.rating || 4.9} / 5.0</span>
-                <Badge variant="soft" isMono>
+                <span style={{ color: '#D4AF37', fontWeight: 600 }}>{salon?.rating || 4.9} / 5.0</span>
+                <Badge variant="slate" isMono>
                   {salon?.reviewsCount || 342} Reviews
                 </Badge>
               </div>
@@ -431,7 +557,7 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
                 style={{
                   fontFamily: "'Plus Jakarta Sans', sans-serif",
                   fontSize: '12px',
-                  color: '#3D4947',
+                  color: '#8E8A85',
                 }}
               >
                 {salon?.address || 'Main Street, Akkaraipattu'} · Eastern Province
@@ -447,7 +573,8 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
                 alignItems: 'center',
                 gap: '8px',
                 padding: '6px 12px',
-                backgroundColor: '#EFF4FF',
+                backgroundColor: '#26241F',
+                border: '1px solid #3E3A32',
                 borderRadius: '9999px',
               }}
             >
@@ -457,7 +584,7 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
                   fontFamily: "'Plus Jakarta Sans', sans-serif",
                   fontWeight: 600,
                   fontSize: '13px',
-                  color: '#00685F',
+                  color: '#D4AF37',
                 }}
               >
                 {salon?.activeChairsCount || 2} Chairs Active Now
@@ -470,15 +597,16 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
                 alignItems: 'center',
                 gap: '6px',
                 padding: '6px 14px',
-                backgroundColor: '#E6EEFF',
+                backgroundColor: '#1A1A1E',
+                border: '1px solid #2E2C2A',
                 borderRadius: '9999px',
                 fontFamily: "'JetBrains Mono', monospace",
                 fontSize: '11px',
-                color: '#3D4947',
+                color: '#8E8A85',
               }}
             >
               <span>Turnaround:</span>
-              <strong style={{ color: '#00685F' }}>~{salon?.estWaitMinutes || 12}m Est. Wait</strong>
+              <strong style={{ color: '#D4AF37' }}>{salon?.estWaitMinutes || 12}m Est. Wait</strong>
             </div>
           </div>
         </div>
@@ -509,10 +637,11 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
             style={{
               display: 'flex',
               flexDirection: 'column',
-              backgroundColor: '#FFFFFF',
+              backgroundColor: '#1A1A1E',
+              border: '1px solid #2E2C2A',
               borderRadius: '16px',
               overflow: 'hidden',
-              boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.05)',
+              boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.4)',
               gridColumn: 'span 2',
             }}
           >
@@ -534,7 +663,7 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
                   left: 0,
                   right: 0,
                   bottom: 0,
-                  background: 'linear-gradient(180deg, rgba(13, 28, 47, 0.2) 0%, rgba(13, 28, 47, 0.8) 100%)',
+                  background: 'linear-gradient(180deg, rgba(17, 17, 19, 0.3) 0%, rgba(17, 17, 19, 0.85) 100%)',
                 }}
               />
               <div
@@ -546,10 +675,10 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
                   gap: '8px',
                 }}
               >
-                <Badge variant="mint" isMono>
+                <Badge variant="gold" isMono>
                   {salon?.id === 'salon_3' ? 'UNISEX LUXURY LOUNGE' : 'CLINICAL PRECISION LAB'}
                 </Badge>
-                <Badge variant="teal" isMono>
+                <Badge variant="slate" isMono>
                   UV STERILIZED
                 </Badge>
               </div>
@@ -560,7 +689,7 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
                   bottom: '16px',
                   left: '20px',
                   right: '20px',
-                  color: '#FFFFFF',
+                  color: '#F8F6F0',
                 }}
               >
                 <h1
@@ -570,7 +699,7 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
                     fontSize: '28px',
                     lineHeight: '34px',
                     margin: 0,
-                    color: '#F4FFFC',
+                    color: '#F8F6F0',
                   }}
                 >
                   {salon?.name || 'Western Cutters'}
@@ -584,7 +713,7 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
                   fontFamily: "'Plus Jakarta Sans', sans-serif",
                   fontSize: '14px',
                   lineHeight: '22px',
-                  color: '#3D4947',
+                  color: '#8E8A85',
                   margin: 0,
                 }}
               >
@@ -599,7 +728,8 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
                   gridTemplateColumns: 'repeat(3, 1fr)',
                   gap: '12px',
                   padding: '12px',
-                  backgroundColor: '#EFF4FF',
+                  backgroundColor: '#161619',
+                  border: '1px solid #2E2C2A',
                   borderRadius: '12px',
                   textAlign: 'center',
                 }}
@@ -610,12 +740,12 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
                       fontFamily: "'JetBrains Mono', monospace",
                       fontWeight: 700,
                       fontSize: '18px',
-                      color: '#00685F',
+                      color: '#D4AF37',
                     }}
                   >
                     {salon?.rating || 4.9} / 5.0
                   </div>
-                  <span style={{ fontSize: '11px', color: '#5C647A' }}>Quality Rating</span>
+                  <span style={{ fontSize: '11px', color: '#8E8A85' }}>Quality Rating</span>
                 </div>
                 <div>
                   <div
@@ -623,12 +753,12 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
                       fontFamily: "'JetBrains Mono', monospace",
                       fontWeight: 700,
                       fontSize: '18px',
-                      color: '#0D1C2F',
+                      color: '#F8F6F0',
                     }}
                   >
                     {salon?.estWaitMinutes || 12} Mins
                   </div>
-                  <span style={{ fontSize: '11px', color: '#5C647A' }}>Avg. Turnaround</span>
+                  <span style={{ fontSize: '11px', color: '#8E8A85' }}>Avg. Turnaround</span>
                 </div>
                 <div>
                   <div
@@ -636,12 +766,12 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
                       fontFamily: "'JetBrains Mono', monospace",
                       fontWeight: 700,
                       fontSize: '18px',
-                      color: '#4648D4',
+                      color: '#D4AF37',
                     }}
                   >
                     {salon?.activeChairsCount || 2} Chairs
                   </div>
-                  <span style={{ fontSize: '11px', color: '#5C647A' }}>Active Stylists</span>
+                  <span style={{ fontSize: '11px', color: '#8E8A85' }}>Active Stylists</span>
                 </div>
               </div>
             </div>
@@ -650,10 +780,11 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
           {/* Quick Operations Diagnostic Card */}
           <div
             style={{
-              backgroundColor: '#FFFFFF',
+              backgroundColor: '#1A1A1E',
+              border: '1px solid #2E2C2A',
               borderRadius: '16px',
               padding: '24px',
-              boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.05)',
+              boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.4)',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'space-between',
@@ -666,21 +797,21 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
                   display: 'flex',
                   justifyContent: 'space-between',
                   alignItems: 'center',
-                  borderBottom: '1px solid #EFF4FF',
+                  borderBottom: '1px solid #2E2C2A',
                   paddingBottom: '12px',
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00685F" strokeWidth="2.2">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D4AF37" strokeWidth="2.2">
                     <circle cx="12" cy="12" r="10" />
                     <line x1="12" y1="6" x2="12" y2="12" />
                     <line x1="12" y1="16" x2="12.01" y2="16" />
                   </svg>
-                  <h3 style={{ fontSize: '16px', fontWeight: 700, margin: 0, color: '#0D1C2F' }}>
+                  <h3 style={{ fontSize: '16px', fontWeight: 700, margin: 0, color: '#F8F6F0' }}>
                     Salon Operations
                   </h3>
                 </div>
-                <Badge variant="mint" isMono>
+                <Badge variant="slate" isMono>
                   LIVE TELEMETRY
                 </Badge>
               </div>
@@ -692,14 +823,15 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
                     display: 'flex',
                     justifyContent: 'space-between',
                     padding: '10px 12px',
-                    backgroundColor: '#EFF4FF',
+                    backgroundColor: '#161619',
+                    border: '1px solid #2E2C2A',
                     borderRadius: '10px',
                     fontSize: '13px',
                   }}
                 >
-                  <span style={{ color: '#0D1C2F', fontWeight: 600 }}>Queue Mode</span>
-                  <span style={{ fontFamily: "'JetBrains Mono', monospace", color: '#00685F', fontWeight: 600 }}>
-                    Real-time OTP Guard
+                  <span style={{ color: '#F8F6F0', fontWeight: 600 }}>Queue Mode</span>
+                  <span style={{ fontFamily: "'JetBrains Mono', monospace", color: '#D4AF37', fontWeight: 600 }}>
+                    Live Queue Sync
                   </span>
                 </div>
 
@@ -708,13 +840,14 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
                     display: 'flex',
                     justifyContent: 'space-between',
                     padding: '10px 12px',
-                    backgroundColor: '#EFF4FF',
+                    backgroundColor: '#161619',
+                    border: '1px solid #2E2C2A',
                     borderRadius: '10px',
                     fontSize: '13px',
                   }}
                 >
-                  <span style={{ color: '#0D1C2F', fontWeight: 600 }}>Opening Hours</span>
-                  <span style={{ fontFamily: "'JetBrains Mono', monospace", color: '#00685F', fontWeight: 500 }}>
+                  <span style={{ color: '#F8F6F0', fontWeight: 600 }}>Opening Hours</span>
+                  <span style={{ fontFamily: "'JetBrains Mono', monospace", color: '#D4AF37', fontWeight: 500 }}>
                     09:00 - 22:00 IST
                   </span>
                 </div>
@@ -724,20 +857,21 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
                     display: 'flex',
                     justifyContent: 'space-between',
                     padding: '10px 12px',
-                    backgroundColor: '#EFF4FF',
+                    backgroundColor: '#161619',
+                    border: '1px solid #2E2C2A',
                     borderRadius: '10px',
                     fontSize: '13px',
                   }}
                 >
-                  <span style={{ color: '#0D1C2F', fontWeight: 600 }}>Buffer Protocol</span>
-                  <span style={{ fontFamily: "'JetBrains Mono', monospace", color: '#0D1C2F', fontWeight: 500 }}>
+                  <span style={{ color: '#F8F6F0', fontWeight: 600 }}>Buffer Protocol</span>
+                  <span style={{ fontFamily: "'JetBrains Mono', monospace", color: '#8E8A85', fontWeight: 500 }}>
                     10m Sanitization
                   </span>
                 </div>
               </div>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#5C647A' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#8E8A85' }}>
               <span>Powered by Trimly Queue Engine</span>
               <span>Eastern Province Hub</span>
             </div>
@@ -768,7 +902,7 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
                 style={{
                   width: '6px',
                   height: '20px',
-                  backgroundColor: '#00685F',
+                  backgroundColor: '#D4AF37',
                   borderRadius: '9999px',
                 }}
               />
@@ -778,14 +912,14 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
                   fontWeight: 700,
                   fontSize: '20px',
                   lineHeight: '28px',
-                  color: '#0D1C2F',
+                  color: '#F8F6F0',
                   letterSpacing: '-0.2px',
                   margin: 0,
                 }}
               >
                 Service Menu
               </h2>
-              <span style={{ fontSize: '12px', color: '#5C647A' }}>
+              <span style={{ fontSize: '12px', color: '#8E8A85' }}>
                 (Multi-select allowed)
               </span>
             </div>
@@ -815,14 +949,14 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
                     style={{
                       padding: '8px 16px',
                       borderRadius: '12px',
-                      border: 'none',
-                      backgroundColor: isActive ? '#00685F' : '#FFFFFF',
-                      color: isActive ? '#FFFFFF' : '#0D1C2F',
+                      border: isActive ? '1px solid #D4AF37' : '1px solid #2E2C2A',
+                      backgroundColor: isActive ? '#D4AF37' : '#1A1A1E',
+                      color: isActive ? '#111113' : '#8E8A85',
                       fontFamily: "'Plus Jakarta Sans', sans-serif",
-                      fontWeight: 600,
+                      fontWeight: isActive ? 700 : 600,
                       fontSize: '13px',
                       cursor: 'pointer',
-                      boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.05)',
+                      boxShadow: isActive ? '0px 2px 10px rgba(212, 175, 55, 0.25)' : 'none',
                       transition: 'all 0.18s ease',
                       whiteSpace: 'nowrap',
                     }}
@@ -868,25 +1002,26 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
         {/* 7. Customer Contact Information Input */}
         <section
           style={{
-            backgroundColor: '#FFFFFF',
+            backgroundColor: '#1A1A1E',
+            border: '1px solid #2E2C2A',
             borderRadius: '16px',
             padding: '24px',
-            boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.05)',
+            boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.4)',
             display: 'flex',
             flexDirection: 'column',
             gap: '16px',
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <div style={{ width: '6px', height: '20px', backgroundColor: '#00685F', borderRadius: '9999px' }} />
-            <h3 style={{ fontSize: '18px', fontWeight: 700, margin: 0, color: '#0D1C2F' }}>
-              Guest Details for Digital OTP Pass
+            <div style={{ width: '6px', height: '20px', backgroundColor: '#D4AF37', borderRadius: '9999px' }} />
+            <h3 style={{ fontSize: '18px', fontWeight: 700, margin: 0, color: '#F8F6F0' }}>
+              Guest Details for Booking Pass
             </h3>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '16px' }}>
             <div>
-              <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#0D1C2F', marginBottom: '6px' }}>
+              <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#F8F6F0', marginBottom: '6px' }}>
                 Your Name
               </label>
               <input
@@ -898,8 +1033,9 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
                   width: '100%',
                   padding: '12px 16px',
                   borderRadius: '10px',
-                  border: '1px solid #D5E3FD',
-                  backgroundColor: '#EFF4FF',
+                  border: '1px solid #2E2C2A',
+                  backgroundColor: '#141416',
+                  color: '#F8F6F0',
                   fontFamily: "'Plus Jakarta Sans', sans-serif",
                   fontSize: '14px',
                   outline: 'none',
@@ -908,8 +1044,8 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
             </div>
 
             <div>
-              <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#0D1C2F', marginBottom: '6px' }}>
-                Phone Number (for SMS & OTP)
+              <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#F8F6F0', marginBottom: '6px' }}>
+                Mobile Phone Number (for SMS Pass)
               </label>
               <input
                 type="tel"
@@ -920,8 +1056,9 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
                   width: '100%',
                   padding: '12px 16px',
                   borderRadius: '10px',
-                  border: '1px solid #D5E3FD',
-                  backgroundColor: '#EFF4FF',
+                  border: '1px solid #2E2C2A',
+                  backgroundColor: '#141416',
+                  color: '#F8F6F0',
                   fontFamily: "'JetBrains Mono', monospace",
                   fontSize: '14px',
                   outline: 'none',
@@ -938,7 +1075,8 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
             justifyContent: 'space-between',
             alignItems: 'center',
             padding: '24px',
-            backgroundColor: '#EFF4FF',
+            backgroundColor: '#1A1A1E',
+            border: '1px solid #2E2C2A',
             borderRadius: '16px',
             flexWrap: 'wrap',
             gap: '16px',
@@ -949,13 +1087,13 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
               style={{
                 width: '48px',
                 height: '48px',
-                backgroundColor: '#FFFFFF',
+                backgroundColor: '#26241F',
+                border: '1px solid #3E3A32',
                 borderRadius: '12px',
-                boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.05)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: '#00685F',
+                color: '#D4AF37',
               }}
             >
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
@@ -963,16 +1101,16 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
               </svg>
             </div>
             <div>
-              <h3 style={{ fontSize: '16px', fontWeight: 700, color: '#0D1C2F', margin: 0 }}>
+              <h3 style={{ fontSize: '16px', fontWeight: 700, color: '#F8F6F0', margin: 0 }}>
                 100% Hygiene & Queue Precision Guarantee
               </h3>
-              <p style={{ fontSize: '12px', color: '#3D4947', margin: '4px 0 0' }}>
+              <p style={{ fontSize: '12px', color: '#8E8A85', margin: '4px 0 0' }}>
                 Sterilized clipper guards, fresh disposable neck strips, and guaranteed seat time within 10 minutes.
               </p>
             </div>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#00685F', fontSize: '13px', fontWeight: 600 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#D4AF37', fontSize: '13px', fontWeight: 600 }}>
             <span>Verified Salon</span>
           </div>
         </section>
@@ -984,11 +1122,11 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
             maxWidth: '1280px',
             marginTop: '40px',
             padding: '24px 16px 40px',
-            borderTop: '1px solid #E1E8F5',
+            borderTop: '1px solid #2E2C2A',
             display: 'flex',
             flexDirection: 'column',
             gap: '12px',
-            color: '#707A8A',
+            color: '#8E8A85',
             fontSize: '12px',
           }}
         >
@@ -1002,8 +1140,8 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
             }}
           >
             <div>
-              <strong style={{ color: '#0D1C2F', fontSize: '13px' }}>Trimly</strong> · Smart Salon Network
-              <p style={{ margin: '3px 0 0', color: '#8893A4', fontSize: '11px' }}>
+              <strong style={{ color: '#F8F6F0', fontSize: '13px' }}>Trimly</strong> · Smart Salon Network
+              <p style={{ margin: '3px 0 0', color: '#8E8A85', fontSize: '11px' }}>
                 Zero-wait salon queue management, real-time chair tracking & digital pass verification.
               </p>
             </div>
@@ -1016,7 +1154,7 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
                   style={{
                     background: 'none',
                     border: 'none',
-                    color: '#00685F',
+                    color: '#D4AF37',
                     fontSize: '12px',
                     fontWeight: 600,
                     cursor: 'pointer',
@@ -1026,33 +1164,11 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
                   Salon Directory
                 </button>
               )}
-
-              {onNavigateToBarberStation && (
-                <button
-                  type="button"
-                  onClick={onNavigateToBarberStation}
-                  style={{
-                    background: 'none',
-                    border: '1px solid #D5E3FD',
-                    borderRadius: '6px',
-                    padding: '5px 10px',
-                    color: '#5C647A',
-                    fontSize: '11px',
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '4px',
-                  }}
-                >
-                  <span>Staff Portal</span>
-                </button>
-              )}
             </div>
           </div>
           <div
             style={{
-              borderTop: '1px solid #EFF4FF',
+              borderTop: '1px solid #2E2C2A',
               paddingTop: '10px',
               display: 'flex',
               justifyContent: 'space-between',
@@ -1060,10 +1176,10 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
               flexWrap: 'wrap',
               gap: '8px',
               fontSize: '11px',
-              color: '#8D98AA',
+              color: '#8E8A85',
             }}
           >
-            <span>© 2026 Trimly GlowSlot. All rights reserved.</span>
+            <span>© 2026 Trimly. All rights reserved.</span>
             <span>Eastern Province, Sri Lanka</span>
           </div>
         </footer>
@@ -1077,11 +1193,11 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
           left: 0,
           right: 0,
           height: '76px',
-          backgroundColor: 'rgba(255, 255, 255, 0.96)',
+          backgroundColor: 'rgba(22, 22, 25, 0.96)',
           backdropFilter: 'blur(10px)',
           WebkitBackdropFilter: 'blur(10px)',
-          boxShadow: '0px -4px 24px rgba(0, 0, 0, 0.08)',
-          borderTop: '1px solid rgba(0, 104, 95, 0.1)',
+          boxShadow: '0px -4px 30px rgba(0, 0, 0, 0.6)',
+          borderTop: '1px solid #2E2C2A',
           zIndex: 1000,
           display: 'flex',
           justifyContent: 'center',
@@ -1105,33 +1221,33 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
           <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: '16px', color: '#0D1C2F' }}>
+                <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: '16px', color: '#F8F6F0' }}>
                   {selectedServices.length} {selectedServices.length === 1 ? 'Service' : 'Services'} Selected
                 </span>
-                <span style={{ color: '#3D4947' }}>·</span>
-                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: '14px', color: '#00685F' }}>
+                <span style={{ color: '#8E8A85' }}>·</span>
+                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: '14px', color: '#D4AF37' }}>
                   {totalDurationMinutes} Mins
                 </span>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#5C647A' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#8E8A85' }}>
                 <span>Selected Slot:</span>
-                <strong style={{ color: '#0D1C2F' }}>{selectedSlot || 'Next available'} IST</strong>
+                <strong style={{ color: '#F8F6F0' }}>{selectedSlot || 'Next available'} IST</strong>
                 <span>({selectedChairId === 'ANY' ? 'Any Available' : selectedChairId === 'chair_rifas' ? 'Chair 1 Dhanu' : 'Chair 2 Thambi'})</span>
               </div>
             </div>
 
             {/* Total Price */}
-            <div style={{ borderLeft: '1px solid #EFF4FF', paddingLeft: '20px' }}>
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: '#5C647A', textTransform: 'uppercase' }}>
+            <div style={{ borderLeft: '1px solid #2E2C2A', paddingLeft: '20px' }}>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: '#8E8A85', textTransform: 'uppercase' }}>
                 Total Bill
               </span>
-              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: '22px', color: '#0D1C2F' }}>
+              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: '22px', color: '#D4AF37' }}>
                 LKR {totalPriceLkr.toLocaleString()}
               </div>
             </div>
           </div>
 
-          {/* Action Button (Min 48px height, solid Teal with glow) */}
+          {/* Action Button (Min 48px height, Champagne Gold with dark text) */}
           <button
             type="button"
             onClick={handleProceedBooking}
@@ -1139,11 +1255,11 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
             style={{
               minHeight: '48px',
               padding: '12px 32px',
-              backgroundColor: '#00685F',
-              color: '#FFFFFF',
+              backgroundColor: '#D4AF37',
+              color: '#111113',
               borderRadius: '12px',
               border: 'none',
-              boxShadow: '0px 4px 16px rgba(0, 104, 95, 0.28)',
+              boxShadow: '0px 4px 18px rgba(212, 175, 55, 0.3)',
               fontFamily: "'Plus Jakarta Sans', sans-serif",
               fontWeight: 700,
               fontSize: '16px',
@@ -1155,6 +1271,16 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
               transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
             }}
             className="btn-confirm-dock"
+            onMouseEnter={(e) => {
+              if (!isBooking && selectedServiceIds.length > 0) {
+                e.currentTarget.style.backgroundColor = '#B8976C';
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!isBooking && selectedServiceIds.length > 0) {
+                e.currentTarget.style.backgroundColor = '#D4AF37';
+              }
+            }}
           >
             <span>{isBooking ? 'Securing Slot...' : 'Confirm Booking Pass'}</span>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -1165,143 +1291,91 @@ export const ServiceBookingView: React.FC<ServiceBookingViewProps> = ({
         </div>
       </aside>
 
-      {/* Real Customer Information Modal */}
-      <Modal
-        isOpen={showCustomerModal}
-        onClose={() => setShowCustomerModal(false)}
-        title="Confirm Your Appointment"
-        subtitle="Enter your name and phone number — we'll send an OTP to confirm your slot."
-        maxWidth="500px"
-      >
-        <form onSubmit={handleFinalBookingSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          {/* Booking Summary Box */}
+      {/* Authentication Modal / Overlay for Booking Confirmation & Sign In (Portaled directly to Body) */}
+      {showAuthModal &&
+        createPortal(
           <div
             style={{
-              padding: '14px',
-              backgroundColor: '#EFF4FF',
-              borderRadius: '10px',
-              border: '1px solid #D5E3FD',
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              width: '100vw',
+              height: '100vh',
+              backgroundColor: 'rgba(0, 0, 0, 0.82)',
+              backdropFilter: 'blur(8px)',
+              WebkitBackdropFilter: 'blur(8px)',
+              zIndex: 99999,
               display: 'flex',
-              flexDirection: 'column',
-              gap: '6px',
-              fontSize: '12px',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '16px',
+              boxSizing: 'border-box',
+              overflowY: 'auto',
+              animation: 'fadeIn 0.2s ease-out',
+            }}
+            onClick={(e) => {
+              if (e.target === e.currentTarget) {
+                setShowAuthModal(false);
+              }
             }}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', color: '#0D1C2F' }}>
-              <span><strong>Slot:</strong> {selectedDate} at {selectedSlot} IST (45m block)</span>
-              <span style={{ color: '#00685F', fontWeight: 700 }}>
-                {selectedChairId === 'ANY' ? 'Any Available' : selectedChairId === 'chair_rifas' ? 'Chair 1: Dhanu' : 'Chair 2: Thambi'}
-              </span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', color: '#3D4947' }}>
-              <span><strong>Services:</strong> {selectedServices.map((s) => s.name).join(', ')}</span>
-              <strong style={{ color: '#00685F', fontSize: '13px' }}>LKR {totalPriceLkr.toLocaleString()}</strong>
-            </div>
-          </div>
-
-          <div>
-            <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#0D1C2F', marginBottom: '6px' }}>
-              Customer Full Name <span style={{ color: '#EF4444' }}>*</span>
-            </label>
-            <input
-              type="text"
-              required
-              placeholder="e.g. Farhan Mohamed"
-              value={customerName}
-              onChange={(e) => setCustomerName(e.target.value)}
+            <div
               style={{
+                maxWidth: '440px',
                 width: '100%',
-                padding: '12px 14px',
-                borderRadius: '8px',
-                border: '1px solid #D5E3FD',
-                backgroundColor: '#FFFFFF',
-                fontSize: '14px',
-                color: '#0D1C2F',
-                outline: 'none',
+                maxHeight: 'calc(100vh - 32px)',
+                overflowY: 'auto',
+                borderRadius: '20px',
+                boxShadow: '0 25px 60px -15px rgba(0, 0, 0, 0.65)',
+                animation: 'scaleIn 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
               }}
-            />
-          </div>
-
-          <div>
-            <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#0D1C2F', marginBottom: '6px' }}>
-              Mobile Phone Number <span style={{ color: '#EF4444' }}>*</span>
-            </label>
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <div
-                style={{
-                  padding: '12px 14px',
-                  backgroundColor: '#EFF4FF',
-                  border: '1px solid #D5E3FD',
-                  borderRadius: '8px',
-                  fontSize: '14px',
-                  fontWeight: 600,
-                  color: '#0D1C2F',
+              onClick={(e) => e.stopPropagation()}
+            >
+              <AuthView
+                initialMode="login"
+                bookingContext={{
+                  salonName: salon?.name || 'Selected Salon',
+                  timeSlot: selectedSlot || undefined,
+                  date: selectedDate,
+                  totalPrice: totalPriceLkr,
+                  chairLabel:
+                    selectedChairId === 'ANY'
+                      ? 'Any Available Stylist'
+                      : selectedChairId === 'chair_rifas'
+                      ? 'Chair 1: Master Dhanu'
+                      : 'Chair 2: Senior Thambi',
+                  servicesLabel: selectedServices.map((s) => s.name).join(', '),
                 }}
-              >
-                +94
-              </div>
-              <input
-                type="tel"
-                required
-                placeholder="77 123 4567"
-                value={customerPhone}
-                onChange={(e) => setCustomerPhone(e.target.value)}
-                style={{
-                  flex: 1,
-                  padding: '12px 14px',
-                  borderRadius: '8px',
-                  border: '1px solid #D5E3FD',
-                  backgroundColor: '#FFFFFF',
-                  fontSize: '14px',
-                  color: '#0D1C2F',
-                  outline: 'none',
+                onSuccess={(role) => {
+                  if (role === 'staff') {
+                    window.location.hash = '#/barber';
+                  } else {
+                    try {
+                      const saved = localStorage.getItem('trimly_customer_user');
+                      const loggedInCustomer = saved ? JSON.parse(saved) : null;
+                      if (loggedInCustomer) {
+                        setShowAuthModal(false);
+                        executeBooking(loggedInCustomer.name, loggedInCustomer.phone);
+                        return;
+                      }
+                    } catch {
+                      // Fallback
+                    }
+                    setShowAuthModal(false);
+                    if (customer) {
+                      executeBooking(customer.name, customer.phone);
+                    }
+                  }
                 }}
+                onBack={() => setShowAuthModal(false)}
               />
             </div>
-            <span style={{ fontSize: '11px', color: '#5C647A', marginTop: '4px', display: 'block' }}>
-              We'll send an OTP to this number to confirm your booking.
-            </span>
-          </div>
-
-          <div style={{ display: 'flex', gap: '10px', marginTop: '8px' }}>
-            <button
-              type="button"
-              onClick={() => setShowCustomerModal(false)}
-              style={{
-                flex: 1,
-                padding: '12px',
-                backgroundColor: '#EFF4FF',
-                border: '1px solid #D5E3FD',
-                borderRadius: '8px',
-                fontWeight: 600,
-                fontSize: '14px',
-                color: '#3D4947',
-                cursor: 'pointer',
-              }}
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={isBooking}
-              style={{
-                flex: 2,
-                padding: '12px',
-                backgroundColor: '#00685F',
-                border: 'none',
-                borderRadius: '8px',
-                fontWeight: 700,
-                fontSize: '14px',
-                color: '#FFFFFF',
-                cursor: isBooking ? 'not-allowed' : 'pointer',
-                opacity: isBooking ? 0.7 : 1,
-              }}
-            >
-              {isBooking ? 'Securing Slot...' : 'Book Now →'}
-            </button>
-          </div>
-        </form>
-      </Modal>
+          </div>,
+          document.body
+        )}
     </div>
   );
 };
+

@@ -1,7 +1,8 @@
 /**
  * ============================================================================
- * TRIMLY / GLOWSLOT - SLOT GRID COMPONENT
+ * TRIMLY - SLOT GRID COMPONENT
  * ============================================================================
+ * Modern Noir & Champagne Gold Luxury Styling:
  * Connects with Spring Boot Slot Calculation Service:
  * -> com.glowslot.service.SlotCalculationService.java
  *
@@ -69,10 +70,11 @@ export const SlotGrid: React.FC<SlotGridProps> = ({
         display: 'flex',
         flexDirection: 'column',
         gap: '16px',
-        backgroundColor: '#FFFFFF',
+        backgroundColor: '#1A1A1E',
         padding: '24px',
         borderRadius: '16px',
-        boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.05)',
+        border: '1px solid #2E2C2A',
+        boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.4)',
       }}
     >
       {/* Header and Date Pills */}
@@ -90,7 +92,7 @@ export const SlotGrid: React.FC<SlotGridProps> = ({
             style={{
               width: '6px',
               height: '20px',
-              backgroundColor: '#00685F',
+              backgroundColor: '#D4AF37',
               borderRadius: '9999px',
             }}
           />
@@ -99,7 +101,7 @@ export const SlotGrid: React.FC<SlotGridProps> = ({
               fontFamily: "'Plus Jakarta Sans', sans-serif",
               fontWeight: 700,
               fontSize: '18px',
-              color: '#0D1C2F',
+              color: '#F8F6F0',
               margin: 0,
             }}
           >
@@ -118,9 +120,9 @@ export const SlotGrid: React.FC<SlotGridProps> = ({
             style={{
               padding: '6px 14px',
               borderRadius: '8px',
-              border: selectedDate === todayIso ? '1.5px solid #00685F' : '1px solid #E6EEFF',
-              backgroundColor: selectedDate === todayIso ? '#EFF4FF' : '#FFFFFF',
-              color: selectedDate === todayIso ? '#00685F' : '#3D4947',
+              border: selectedDate === todayIso ? '1.5px solid #D4AF37' : '1px solid #2E2C2A',
+              backgroundColor: selectedDate === todayIso ? '#26241F' : '#161619',
+              color: selectedDate === todayIso ? '#D4AF37' : '#8E8A85',
               fontFamily: "'Plus Jakarta Sans', sans-serif",
               fontSize: '13px',
               fontWeight: 600,
@@ -136,9 +138,9 @@ export const SlotGrid: React.FC<SlotGridProps> = ({
             style={{
               padding: '6px 14px',
               borderRadius: '8px',
-              border: selectedDate === tomorrowIso ? '1.5px solid #00685F' : '1px solid #E6EEFF',
-              backgroundColor: selectedDate === tomorrowIso ? '#EFF4FF' : '#FFFFFF',
-              color: selectedDate === tomorrowIso ? '#00685F' : '#3D4947',
+              border: selectedDate === tomorrowIso ? '1.5px solid #D4AF37' : '1px solid #2E2C2A',
+              backgroundColor: selectedDate === tomorrowIso ? '#26241F' : '#161619',
+              color: selectedDate === tomorrowIso ? '#D4AF37' : '#8E8A85',
               fontFamily: "'Plus Jakarta Sans', sans-serif",
               fontSize: '13px',
               fontWeight: 600,
@@ -164,13 +166,13 @@ export const SlotGrid: React.FC<SlotGridProps> = ({
           style={{
             fontFamily: "'Plus Jakarta Sans', sans-serif",
             fontSize: '13px',
-            color: '#5C647A',
+            color: '#8E8A85',
             margin: 0,
           }}
         >
           {isToday ? (
             <span>
-              Showing <strong>upcoming times</strong> from current time. Past time slots cannot be booked.
+              Showing <strong style={{ color: '#F8F6F0' }}>upcoming times</strong> from current time. Past time slots cannot be booked.
             </span>
           ) : (
             <span>
@@ -185,13 +187,13 @@ export const SlotGrid: React.FC<SlotGridProps> = ({
             type="button"
             onClick={() => setShowAllPastSlots((prev) => !prev)}
             style={{
-              background: 'none',
-              border: '1px solid #E2E8F0',
+              background: '#161619',
+              border: '1px solid #2E2C2A',
               borderRadius: '6px',
-              padding: '3px 8px',
+              padding: '4px 10px',
               fontSize: '11px',
               fontWeight: 600,
-              color: '#64748B',
+              color: '#8E8A85',
               cursor: 'pointer',
               display: 'inline-flex',
               alignItems: 'center',
@@ -206,7 +208,7 @@ export const SlotGrid: React.FC<SlotGridProps> = ({
 
       {/* Slots Matrix */}
       {isLoading ? (
-        <div style={{ padding: '32px', textAlign: 'center', color: '#5C647A' }}>
+        <div style={{ padding: '32px', textAlign: 'center', color: '#8E8A85' }}>
           Checking barber schedule...
         </div>
       ) : isToday && upcomingSlots.length === 0 ? (
@@ -214,8 +216,8 @@ export const SlotGrid: React.FC<SlotGridProps> = ({
           style={{
             padding: '24px 16px',
             borderRadius: '12px',
-            backgroundColor: '#F8FAFC',
-            border: '1px dashed #CBD5E1',
+            backgroundColor: '#161619',
+            border: '1px dashed #2E2C2A',
             textAlign: 'center',
             display: 'flex',
             flexDirection: 'column',
@@ -228,18 +230,19 @@ export const SlotGrid: React.FC<SlotGridProps> = ({
               width: '44px',
               height: '44px',
               borderRadius: '50%',
-              backgroundColor: '#E6F4F3',
+              backgroundColor: '#24221F',
+              border: '1px solid #2E2C2A',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
             }}
           >
-            <Icon name="moon" size={22} color="#00685F" />
+            <Icon name="moon" size={22} color="#D4AF37" />
           </div>
-          <div style={{ fontWeight: 700, fontSize: '15px', color: '#0D1C2F' }}>
+          <div style={{ fontWeight: 700, fontSize: '15px', color: '#F8F6F0' }}>
             All booking time slots for today have ended
           </div>
-          <p style={{ fontSize: '12px', color: '#64748B', margin: 0, maxWidth: '400px' }}>
+          <p style={{ fontSize: '12px', color: '#8E8A85', margin: 0, maxWidth: '400px' }}>
             The salon is closed for new appointments today. Reserve your dedicated chair slot for tomorrow!
           </p>
           <button
@@ -249,20 +252,20 @@ export const SlotGrid: React.FC<SlotGridProps> = ({
               marginTop: '4px',
               padding: '8px 18px',
               borderRadius: '8px',
-              backgroundColor: '#00685F',
-              color: '#FFFFFF',
+              backgroundColor: '#D4AF37',
+              color: '#111113',
               border: 'none',
               fontWeight: 600,
               fontSize: '13px',
               cursor: 'pointer',
-              boxShadow: '0 2px 8px rgba(0, 104, 95, 0.25)',
+              boxShadow: '0 4px 16px rgba(212, 175, 55, 0.35)',
               display: 'inline-flex',
               alignItems: 'center',
               gap: '6px',
             }}
           >
             <span>Book For Tomorrow</span>
-            <Icon name="arrow-right" size={14} color="#FFFFFF" />
+            <Icon name="arrow-right" size={14} color="#111113" />
           </button>
         </div>
       ) : (
@@ -291,47 +294,47 @@ export const SlotGrid: React.FC<SlotGridProps> = ({
                   padding: '12px 6px',
                   borderRadius: '10px',
                   border: isSelected
-                    ? '2px solid #00685F'
+                    ? '2px solid #D4AF37'
                     : isBreak
-                    ? '1px dashed #F59E0B'
+                    ? '1px dashed #E5A93C'
                     : isPassed
-                    ? '1px solid #E2E8F0'
+                    ? '1px solid #242220'
                     : isAvailable
-                    ? '1px solid #DAE2FD'
-                    : '1px dashed #E2E8F0',
+                    ? '1px solid #2E2C2A'
+                    : '1px dashed #2E2C2A',
                   backgroundColor: isSelected
-                    ? '#00685F'
+                    ? '#D4AF37'
                     : isBreak
-                    ? '#FFFBEB'
+                    ? 'rgba(229, 169, 60, 0.12)'
                     : isPassed
-                    ? '#F8FAFC'
+                    ? '#141416'
                     : isAvailable
-                    ? '#EFF4FF'
-                    : '#F8F9FF',
+                    ? '#222227'
+                    : '#161619',
                   color: isSelected
-                    ? '#FFFFFF'
+                    ? '#111113'
                     : isBreak
-                    ? '#B45309'
+                    ? '#E5A93C'
                     : isPassed
-                    ? '#94A3B8'
+                    ? '#55524E'
                     : isAvailable
-                    ? '#0D1C2F'
-                    : '#A0AEC0',
+                    ? '#F8F6F0'
+                    : '#55524E',
                   cursor: isAvailable ? 'pointer' : 'not-allowed',
-                  opacity: isPassed ? 0.6 : 1,
+                  opacity: isPassed ? 0.5 : 1,
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center',
                   gap: '4px',
                   transition: 'all 0.18s ease-in-out',
                   transform: isSelected ? 'scale(1.04)' : 'scale(1)',
-                  boxShadow: isSelected ? '0 4px 12px rgba(0, 104, 95, 0.25)' : 'none',
+                  boxShadow: isSelected ? '0 4px 18px rgba(212, 175, 55, 0.45)' : 'none',
                 }}
               >
                 <span
                   style={{
                     fontFamily: "'JetBrains Mono', monospace",
-                    fontWeight: 600,
+                    fontWeight: 700,
                     fontSize: '13px',
                     letterSpacing: '-0.2px',
                     textDecoration: isPassed ? 'line-through' : 'none',

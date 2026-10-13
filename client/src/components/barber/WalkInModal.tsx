@@ -1,7 +1,8 @@
 /**
  * ============================================================================
- * TRIMLY / GLOWSLOT - WALK-IN REGISTRATION MODAL
+ * TRIMLY - WALK-IN REGISTRATION MODAL
  * ============================================================================
+ * Modern Noir & Champagne Gold Luxury Styling:
  * Connects with Spring Boot Barber Controller:
  * -> com.glowslot.controller.BarberController.java: registerWalkIn
  * -> com.glowslot.service.QueueManagementService.java
@@ -75,7 +76,7 @@ export const WalkInModal: React.FC<WalkInModalProps> = ({
           <Button variant="ghost" size="md" onClick={onClose}>
             Cancel
           </Button>
-          <Button variant="indigo" size="md" onClick={handleSubmit}>
+          <Button variant="primary" size="md" onClick={handleSubmit}>
             Dispatch to Chair Queue
           </Button>
         </>
@@ -88,7 +89,7 @@ export const WalkInModal: React.FC<WalkInModalProps> = ({
               display: 'block',
               fontSize: '13px',
               fontWeight: 600,
-              color: '#0D1C2F',
+              color: '#F8F6F0',
               marginBottom: '6px',
             }}
           >
@@ -103,10 +104,11 @@ export const WalkInModal: React.FC<WalkInModalProps> = ({
               width: '100%',
               padding: '10px 14px',
               borderRadius: '8px',
-              border: '1px solid #D5E3FD',
-              backgroundColor: '#EFF4FF',
+              border: '1px solid #2E2C2A',
+              backgroundColor: '#111113',
               fontFamily: "'Plus Jakarta Sans', sans-serif",
               fontSize: '14px',
+              color: '#F8F6F0',
               outline: 'none',
             }}
           />
@@ -118,7 +120,7 @@ export const WalkInModal: React.FC<WalkInModalProps> = ({
               display: 'block',
               fontSize: '13px',
               fontWeight: 600,
-              color: '#0D1C2F',
+              color: '#F8F6F0',
               marginBottom: '6px',
             }}
           >
@@ -139,9 +141,9 @@ export const WalkInModal: React.FC<WalkInModalProps> = ({
                   style={{
                     padding: '10px 8px',
                     borderRadius: '10px',
-                    border: isSelected ? '2px solid #4648D4' : '1px solid #D5E3FD',
-                    backgroundColor: isSelected ? '#E1E0FF' : '#F8F9FF',
-                    color: isSelected ? '#07006C' : '#3D4947',
+                    border: isSelected ? '2px solid #D4AF37' : '1px solid #2E2C2A',
+                    backgroundColor: isSelected ? '#26241F' : '#161619',
+                    color: isSelected ? '#D4AF37' : '#8E8A85',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
@@ -163,7 +165,7 @@ export const WalkInModal: React.FC<WalkInModalProps> = ({
         {/* Duration & Price adjustments */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
           <div>
-            <label style={{ display: 'block', fontSize: '12px', color: '#5C647A', marginBottom: '4px' }}>
+            <label style={{ display: 'block', fontSize: '12px', color: '#8E8A85', marginBottom: '4px' }}>
               Duration (Minutes)
             </label>
             <input
@@ -176,29 +178,35 @@ export const WalkInModal: React.FC<WalkInModalProps> = ({
                 width: '100%',
                 padding: '8px 12px',
                 borderRadius: '8px',
-                border: '1px solid #D5E3FD',
+                border: '1px solid #2E2C2A',
+                backgroundColor: '#111113',
                 fontFamily: "'JetBrains Mono', monospace",
                 fontSize: '14px',
+                color: '#F8F6F0',
+                outline: 'none',
               }}
             />
           </div>
           <div>
-            <label style={{ display: 'block', fontSize: '12px', color: '#5C647A', marginBottom: '4px' }}>
+            <label style={{ display: 'block', fontSize: '12px', color: '#8E8A85', marginBottom: '4px' }}>
               Price (LKR)
             </label>
             <input
               type="number"
               value={price}
               onChange={(e) => setPrice(Number(e.target.value))}
-              min={500}
-              step={100}
+              min={100}
+              step={50}
               style={{
                 width: '100%',
                 padding: '8px 12px',
                 borderRadius: '8px',
-                border: '1px solid #D5E3FD',
+                border: '1px solid #2E2C2A',
+                backgroundColor: '#111113',
                 fontFamily: "'JetBrains Mono', monospace",
                 fontSize: '14px',
+                color: '#F8F6F0',
+                outline: 'none',
               }}
             />
           </div>

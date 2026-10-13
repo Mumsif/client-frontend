@@ -1,15 +1,15 @@
 /**
  * ============================================================================
- * TRIMLY / GLOWSLOT - PAYMENT & SERVICE SETTLEMENT MODAL
+ * TRIMLY - PAYMENT & SERVICE SETTLEMENT MODAL
  * ============================================================================
- * Handles the final step in the haircut lifecycle:
+ * Modern Noir & Champagne Gold Luxury Styling:
  * Flow: Barber completes haircut -> Payment Settlement -> Chair Released
  *
  * Features:
  * - Customer & Chair summary
  * - Bill breakdown (Service cost, Platform commission, Net barber payout)
  * - Payment methods: Cash (with change calculator), LankaQR / UPI, Card
- * - Confetti celebration upon payment completion
+ * - Champagne Gold Confetti celebration upon payment completion
  * - Digital receipt generation with "PAID" badge
  * ============================================================================
  */
@@ -64,13 +64,13 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
     try {
       await onConfirmPayment(chairId, customerData.appointmentId, paymentMethod, billAmount);
       
-      // Trigger confetti celebration
+      // Trigger champagne gold confetti celebration
       try {
         confetti({
           particleCount: 100,
           spread: 80,
           origin: { y: 0.6 },
-          colors: ['#00685F', '#008378', '#10B981', '#F59E0B'],
+          colors: ['#D4AF37', '#C5A880', '#F8F6F0', '#B8976C'],
         });
       } catch {
         // Confetti fallback
@@ -104,7 +104,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
       maxWidth="500px"
       footer={
         isPaid ? (
-          <Button variant="emerald" size="md" fullWidth onClick={handleFinishAndClose}>
+          <Button variant="primary" size="md" fullWidth onClick={handleFinishAndClose}>
             Release Chair for Next Customer
           </Button>
         ) : (
@@ -113,7 +113,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
               Back to Station
             </Button>
             <Button
-              variant="emerald"
+              variant="primary"
               size="md"
               fullWidth
               onClick={handleProcessPayment}
@@ -133,14 +133,15 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
               width: '64px',
               height: '64px',
               borderRadius: '50%',
-              backgroundColor: '#E6F4F3',
-              color: '#00685F',
+              backgroundColor: '#26241F',
+              border: '1.5px solid #D4AF37',
+              color: '#D4AF37',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
             }}
           >
-            <Icon name="check" size={32} color="#00685F" />
+            <Icon name="check" size={32} color="#D4AF37" />
           </div>
 
           <div>
@@ -148,7 +149,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
               style={{
                 fontFamily: "'JetBrains Mono', monospace",
                 fontSize: '11px',
-                color: '#00685F',
+                color: '#D4AF37',
                 fontWeight: 700,
                 letterSpacing: '1px',
                 textTransform: 'uppercase',
@@ -156,10 +157,10 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
             >
               TRANSACTION COMPLETED · PAID
             </span>
-            <h3 style={{ margin: '4px 0 0', fontSize: '24px', fontWeight: 800, color: '#0D1C2F' }}>
+            <h3 style={{ margin: '4px 0 0', fontSize: '26px', fontWeight: 800, color: '#F8F6F0' }}>
               LKR {billAmount.toLocaleString()}
             </h3>
-            <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#5C647A' }}>
+            <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#8E8A85' }}>
               Paid via {paymentMethod === 'CASH' ? 'Cash' : paymentMethod === 'QR' ? 'LankaQR / Transfer' : 'Credit/Debit Card'}
             </p>
           </div>
@@ -167,10 +168,10 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
           <div
             style={{
               width: '100%',
-              backgroundColor: '#F8F9FF',
+              backgroundColor: '#161619',
               borderRadius: '12px',
               padding: '16px',
-              border: '1px solid #D5E3FD',
+              border: '1px solid #2E2C2A',
               textAlign: 'left',
               display: 'flex',
               flexDirection: 'column',
@@ -179,26 +180,26 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: '#5C647A' }}>Ticket No:</span>
-              <strong style={{ fontFamily: "'JetBrains Mono', monospace" }}>{customerData.ticketNumber}</strong>
+              <span style={{ color: '#8E8A85' }}>Ticket No:</span>
+              <strong style={{ fontFamily: "'JetBrains Mono', monospace", color: '#D4AF37' }}>{customerData.ticketNumber}</strong>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: '#5C647A' }}>Customer:</span>
-              <strong>{customerData.customerName}</strong>
+              <span style={{ color: '#8E8A85' }}>Customer:</span>
+              <strong style={{ color: '#F8F6F0' }}>{customerData.customerName}</strong>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: '#5C647A' }}>Services:</span>
-              <strong>{customerData.serviceNames}</strong>
+              <span style={{ color: '#8E8A85' }}>Services:</span>
+              <strong style={{ color: '#F8F6F0' }}>{customerData.serviceNames}</strong>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: '#5C647A' }}>Stylist:</span>
-              <strong>{barberName} (Chair {chairNumber})</strong>
+              <span style={{ color: '#8E8A85' }}>Stylist:</span>
+              <strong style={{ color: '#F8F6F0' }}>{barberName} (Chair {chairNumber})</strong>
             </div>
-            <div style={{ borderTop: '1px dashed #D5E3FD', paddingTop: '8px', display: 'flex', justifyContent: 'space-between', color: '#00685F', fontWeight: 700 }}>
+            <div style={{ borderTop: '1px dashed #2E2C2A', paddingTop: '8px', display: 'flex', justifyContent: 'space-between', color: '#D4AF37', fontWeight: 700 }}>
               <span>Barber Net Payout:</span>
               <span>LKR {barberNetPayout.toLocaleString()}</span>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', color: '#5C647A', fontSize: '11px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', color: '#8E8A85', fontSize: '11px' }}>
               <span>Platform Commission:</span>
               <span>LKR {platformCommission.toLocaleString()}</span>
             </div>
@@ -210,53 +211,53 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
           {/* Bill Summary Banner */}
           <div
             style={{
-              backgroundColor: '#EFF4FF',
+              backgroundColor: '#161619',
               borderRadius: '14px',
               padding: '16px 20px',
-              border: '1px solid #DAE2FD',
+              border: '1px solid #2E2C2A',
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
             }}
           >
             <div>
-              <span style={{ fontSize: '12px', color: '#5C647A', fontWeight: 600 }}>Total Bill Amount</span>
+              <span style={{ fontSize: '12px', color: '#8E8A85', fontWeight: 600 }}>Total Bill Amount</span>
               <div
                 style={{
                   fontFamily: "'JetBrains Mono', monospace",
                   fontSize: '26px',
                   fontWeight: 800,
-                  color: '#00685F',
+                  color: '#D4AF37',
                   marginTop: '2px',
                 }}
               >
                 LKR {billAmount.toLocaleString()}
               </div>
-              <span style={{ fontSize: '12px', color: '#3D4947' }}>{customerData.serviceNames}</span>
+              <span style={{ fontSize: '12px', color: '#8E8A85' }}>{customerData.serviceNames}</span>
             </div>
 
             <div
               style={{
                 textAlign: 'right',
-                backgroundColor: '#FFFFFF',
+                backgroundColor: '#1A1A1E',
                 padding: '8px 12px',
                 borderRadius: '10px',
-                border: '1px solid #D5E3FD',
+                border: '1px solid #2E2C2A',
               }}
             >
-              <div style={{ fontSize: '10px', color: '#5C647A', fontWeight: 700, textTransform: 'uppercase' }}>
+              <div style={{ fontSize: '10px', color: '#8E8A85', fontWeight: 700, textTransform: 'uppercase' }}>
                 Barber Cut
               </div>
-              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: '14px', color: '#0D1C2F' }}>
+              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: '14px', color: '#F8F6F0' }}>
                 LKR {barberNetPayout}
               </div>
-              <div style={{ fontSize: '10px', color: '#00685F' }}>Fee: LKR 50</div>
+              <div style={{ fontSize: '10px', color: '#D4AF37' }}>Fee: LKR 50</div>
             </div>
           </div>
 
           {/* Payment Method Selector */}
           <div>
-            <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#0D1C2F', marginBottom: '8px' }}>
+            <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#F8F6F0', marginBottom: '8px' }}>
               Select Payment Method
             </label>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
@@ -274,8 +275,8 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                     style={{
                       padding: '12px 8px',
                       borderRadius: '10px',
-                      border: isSelected ? '2px solid #00685F' : '1.5px solid #DAE2FD',
-                      backgroundColor: isSelected ? '#F4FFFC' : '#FFFFFF',
+                      border: isSelected ? '2px solid #D4AF37' : '1px solid #2E2C2A',
+                      backgroundColor: isSelected ? '#26241F' : '#161619',
                       cursor: 'pointer',
                       textAlign: 'center',
                       display: 'flex',
@@ -285,11 +286,11 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                       transition: 'all 0.15s ease',
                     }}
                   >
-                    <Icon name={m.icon} size={18} color={isSelected ? '#00685F' : '#5C647A'} />
-                    <span style={{ fontWeight: 700, fontSize: '13px', color: isSelected ? '#00685F' : '#0D1C2F' }}>
+                    <Icon name={m.icon} size={18} color={isSelected ? '#D4AF37' : '#8E8A85'} />
+                    <span style={{ fontWeight: 700, fontSize: '13px', color: isSelected ? '#D4AF37' : '#F8F6F0' }}>
                       {m.label}
                     </span>
-                    <span style={{ fontSize: '10px', color: '#5C647A' }}>{m.sub}</span>
+                    <span style={{ fontSize: '10px', color: '#8E8A85' }}>{m.sub}</span>
                   </button>
                 );
               })}
@@ -300,17 +301,17 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
           {paymentMethod === 'CASH' && (
             <div
               style={{
-                backgroundColor: '#F8F9FF',
+                backgroundColor: '#161619',
                 padding: '14px',
                 borderRadius: '12px',
-                border: '1px solid #D5E3FD',
+                border: '1px solid #2E2C2A',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '10px',
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <label style={{ fontSize: '12px', fontWeight: 600, color: '#3D4947' }}>
+                <label style={{ fontSize: '12px', fontWeight: 600, color: '#8E8A85' }}>
                   Cash Tendered by Customer (LKR):
                 </label>
                 <div style={{ display: 'flex', gap: '6px' }}>
@@ -322,12 +323,12 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                       style={{
                         padding: '3px 8px',
                         borderRadius: '6px',
-                        border: '1px solid #D5E3FD',
-                        backgroundColor: '#FFFFFF',
+                        border: '1px solid #2E2C2A',
+                        backgroundColor: '#222227',
                         fontSize: '11px',
                         fontWeight: 600,
                         cursor: 'pointer',
-                        color: '#00685F',
+                        color: '#D4AF37',
                       }}
                     >
                       {quickAmt}
@@ -345,12 +346,12 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                   width: '100%',
                   padding: '10px 14px',
                   borderRadius: '8px',
-                  border: '1.5px solid #D5E3FD',
-                  backgroundColor: '#FFFFFF',
+                  border: '1.5px solid #2E2C2A',
+                  backgroundColor: '#111113',
                   fontFamily: "'JetBrains Mono', monospace",
                   fontSize: '16px',
                   fontWeight: 700,
-                  color: '#0D1C2F',
+                  color: '#F8F6F0',
                   outline: 'none',
                 }}
               />
@@ -363,8 +364,9 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                     alignItems: 'center',
                     padding: '8px 12px',
                     borderRadius: '8px',
-                    backgroundColor: changeDue > 0 ? '#FEF3C7' : '#EFF4FF',
-                    color: changeDue > 0 ? '#B45309' : '#00685F',
+                    backgroundColor: changeDue > 0 ? '#281E12' : '#222227',
+                    border: changeDue > 0 ? '1px solid rgba(229, 169, 60, 0.4)' : '1px solid #2E2C2A',
+                    color: changeDue > 0 ? '#E5A93C' : '#D4AF37',
                     fontSize: '13px',
                     fontWeight: 700,
                   }}
@@ -383,8 +385,8 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
               style={{
                 padding: '16px',
                 borderRadius: '12px',
-                backgroundColor: '#EFF4FF',
-                border: '1px solid #DAE2FD',
+                backgroundColor: '#161619',
+                border: '1px solid #2E2C2A',
                 textAlign: 'center',
                 display: 'flex',
                 flexDirection: 'column',
@@ -396,21 +398,21 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                 style={{
                   width: '100px',
                   height: '100px',
-                  backgroundColor: '#FFFFFF',
-                  border: '2px solid #00685F',
+                  backgroundColor: '#1A1A1E',
+                  border: '2px solid #D4AF37',
                   borderRadius: '10px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   fontSize: '11px',
-                  color: '#00685F',
+                  color: '#D4AF37',
                   fontWeight: 700,
                   fontFamily: "'JetBrains Mono', monospace",
                 }}
               >
                 [LankaQR]
               </div>
-              <span style={{ fontSize: '12px', color: '#5C647A' }}>
+              <span style={{ fontSize: '12px', color: '#8E8A85' }}>
                 Customer scans the salon QR code with Commercial Bank / BOC / FriMi app.
               </span>
             </div>

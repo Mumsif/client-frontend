@@ -22,7 +22,6 @@ export interface OtpVerifyModalProps {
   appointmentId: string;
   customerName: string;
   ticketNumber: string;
-  expectedOtp?: string;
   onConfirmVerify: (chairId: string, appointmentId: string, otp: string) => Promise<boolean>;
 }
 
@@ -34,7 +33,6 @@ export const OtpVerifyModal: React.FC<OtpVerifyModalProps> = ({
   appointmentId,
   customerName,
   ticketNumber,
-  expectedOtp,
   onConfirmVerify,
 }) => {
   const [digits, setDigits] = useState<string[]>(['', '', '', '']);
@@ -123,20 +121,9 @@ export const OtpVerifyModal: React.FC<OtpVerifyModalProps> = ({
       }
     >
       <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', alignItems: 'center' }}>
-        {expectedOtp && (
-          <div
-            style={{
-              padding: '6px 12px',
-              backgroundColor: '#EFF4FF',
-              borderRadius: '8px',
-              fontSize: '12px',
-              color: '#00685F',
-              fontFamily: "'JetBrains Mono', monospace",
-            }}
-          >
-            Demo Pass OTP: <strong>{expectedOtp}</strong>
-          </div>
-        )}
+        <p style={{ margin: 0, fontSize: '13px', color: '#8E8A85', textAlign: 'center' }}>
+          Ask customer for the 4-digit verification code shown on their booking pass or SMS.
+        </p>
 
         <div style={{ display: 'flex', gap: '12px' }}>
           {digits.map((digit, idx) => (
@@ -153,15 +140,16 @@ export const OtpVerifyModal: React.FC<OtpVerifyModalProps> = ({
                 width: '56px',
                 height: '64px',
                 borderRadius: '12px',
-                border: digit ? '2px solid #00685F' : '1.5px solid #DAE2FD',
-                backgroundColor: digit ? '#F4FFFC' : '#EFF4FF',
+                border: digit ? '2px solid #D4AF37' : '1px solid #2E2C2A',
+                backgroundColor: digit ? '#24221F' : '#141416',
                 textAlign: 'center',
                 fontFamily: "'JetBrains Mono', monospace",
                 fontWeight: 700,
                 fontSize: '26px',
-                color: '#0D1C2F',
+                color: digit ? '#D4AF37' : '#F8F6F0',
                 outline: 'none',
                 transition: 'all 0.15s ease',
+                boxShadow: digit ? '0 0 16px rgba(212, 175, 55, 0.25)' : 'none',
               }}
             />
           ))}
@@ -183,13 +171,13 @@ export const OtpVerifyModal: React.FC<OtpVerifyModalProps> = ({
         <p
           style={{
             fontSize: '12px',
-            color: '#5C647A',
+            color: '#8E8A85',
             textAlign: 'center',
             margin: 0,
             lineHeight: '18px',
           }}
         >
-          Customer receives this 4-digit code on their GlowSlot digital pass. Entering it starts the session timer.
+          Customer receives this 4-digit code on their Trimly digital pass. Entering it starts the session timer.
         </p>
       </div>
     </Modal>

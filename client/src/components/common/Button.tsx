@@ -36,48 +36,48 @@ export const Button: React.FC<ButtonProps> = ({
     switch (variant) {
       case 'primary':
         return {
-          backgroundColor: '#00685F',
-          color: '#FFFFFF',
-          boxShadow: '0px 4px 16px rgba(0, 104, 95, 0.25)',
+          backgroundColor: '#D4AF37',
+          color: '#111113',
+          boxShadow: '0px 4px 20px rgba(212, 175, 55, 0.35)',
           border: 'none',
         };
       case 'emerald':
         return {
-          backgroundColor: '#008378',
-          color: '#F4FFFC',
-          boxShadow: '0px 2px 8px rgba(0, 131, 120, 0.25)',
+          backgroundColor: '#C5A880',
+          color: '#111113',
+          boxShadow: '0px 2px 12px rgba(197, 168, 128, 0.3)',
           border: 'none',
         };
       case 'indigo':
         return {
-          backgroundColor: '#4648D4',
-          color: '#FFFFFF',
-          boxShadow: '0px 4px 12px rgba(70, 72, 212, 0.25)',
+          backgroundColor: '#D4AF37',
+          color: '#111113',
+          boxShadow: '0px 4px 16px rgba(212, 175, 55, 0.3)',
           border: 'none',
         };
       case 'secondary':
         return {
-          backgroundColor: '#EFF4FF',
-          color: '#0D1C2F',
-          border: '1px solid #D5E3FD',
+          backgroundColor: '#222227',
+          color: '#F8F6F0',
+          border: '1px solid #2E2C2A',
         };
       case 'white':
         return {
-          backgroundColor: '#FFFFFF',
-          color: '#00685F',
-          boxShadow: '0px 1px 3px rgba(0, 0, 0, 0.1)',
-          border: '1px solid rgba(0, 104, 95, 0.15)',
+          backgroundColor: '#1A1A1E',
+          color: '#D4AF37',
+          boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.4)',
+          border: '1px solid #2E2C2A',
         };
       case 'outline':
         return {
           backgroundColor: 'transparent',
-          color: '#00685F',
-          border: '1.5px solid #00685F',
+          color: '#D4AF37',
+          border: '1.5px solid #D4AF37',
         };
       case 'ghost':
         return {
           backgroundColor: 'transparent',
-          color: '#3D4947',
+          color: '#8E8A85',
           border: 'none',
         };
       default:
